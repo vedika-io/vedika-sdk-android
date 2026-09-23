@@ -18,7 +18,7 @@ import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
 /**
- * Credential-routing hardening (R-004), ported from
+ * Credential-routing hardening, ported from
  * `sdks/flutter/test/credential_routing_test.dart` onto OkHttp's
  * `MockWebServer`. Five properties, same as the Dart suite:
  *

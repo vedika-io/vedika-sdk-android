@@ -8,13 +8,13 @@
 // ordinary dependency for a real Android app to consume (Android apps take
 // plain JVM/Kotlin libraries all the time). This also matches the plan's
 // explicit call-out: "a plain JVM/Android library (no Compose dependency
-// needed)" (docs/ops/2026-08-11-vastu-native-adapters-plan.md, section 3.1).
+// needed)".
 plugins {
     kotlin("jvm") version "2.0.20"
 }
 
 group = "io.vedika"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()

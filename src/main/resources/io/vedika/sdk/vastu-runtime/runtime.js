@@ -19,6 +19,7 @@ exports.createAdaptiveSmoother = createAdaptiveSmoother;
 exports.evaluateInterferenceWindow = evaluateInterferenceWindow;
 exports.computeConfidence = computeConfidence;
 exports.requestMotionPermission = requestMotionPermission;
+exports.fetchDeclinationResult = fetchDeclinationResult;
 exports.fetchDeclination = fetchDeclination;
 exports.getCurrentPositionSafe = getCurrentPositionSafe;
 exports.createHeadingProvider = createHeadingProvider;
@@ -340,7 +341,7 @@ async function requestMotionPermission(opts = {}) {
         ? { status: exports.MOTION_PERMISSION.GRANTED, detail: pre.needed ? 'iOS prompt granted + event confirmed' : 'event confirmed' }
         : { status: exports.MOTION_PERMISSION.NO_EVENT_TIMEOUT, detail: `no orientation event within ${cfg.timeoutMs}ms` };
 }
-async function fetchDeclination({ apiBase, lat, lon, apiKey, keyed, fetchImpl }) {
+async function fetchDeclinationResult({ apiBase, lat, lon, apiKey, keyed, fetchImpl }) {
     const impl = fetchImpl || (typeof fetch !== 'undefined' ? fetch : null);
     if (!impl)
         throw new Error('fetchDeclination: no fetch implementation available');
@@ -352,8 +353,13 @@ async function fetchDeclination({ apiBase, lat, lon, apiKey, keyed, fetchImpl })
     const data = await resp.json().catch(() => null);
     if (!resp.ok)
         throw new Error((data && (data.error || data.message)) || `HTTP ${resp.status}`);
+    const body = data && data.data && typeof data.data === 'object' ? data.data : data;
     const decl = data && (data.declinationDeg ?? (data.data && data.data.declinationDeg));
-    return typeof decl === 'number' && Number.isFinite(decl) ? decl : null;
+    const coverage = body && typeof body.declinationCoverage === 'string' ? body.declinationCoverage : null;
+    return { declinationDeg: typeof decl === 'number' && Number.isFinite(decl) ? decl : null, coverage };
+}
+async function fetchDeclination(args) {
+    return (await fetchDeclinationResult(args)).declinationDeg;
 }
 function getCurrentPositionSafe(env, geoOpts) {
     return new Promise((resolve, reject) => {
@@ -635,7 +641,7 @@ function createHeadingProvider(opts = {}) {
         }
         const wantKeyed = source === 'keyed' || (source === 'auto' && !!cfg.apiKey);
         try {
-            const decl = await fetchDeclination({
+            const { declinationDeg: decl, coverage } = await fetchDeclinationResult({
                 apiBase: cfg.apiBase,
                 lat,
                 lon,
@@ -649,7 +655,8 @@ function createHeadingProvider(opts = {}) {
             }
             state.declination = {
                 valueDeg: decl,
-                provenance: wantKeyed ? exports.DECLINATION_PROVENANCE.LIVE : exports.DECLINATION_PROVENANCE.FIXTURE,
+                provenance: wantKeyed || coverage === 'wmm2025' ? exports.DECLINATION_PROVENANCE.LIVE : exports.DECLINATION_PROVENANCE.FIXTURE,
+                coverage,
                 resolvedAtMs: nowMs(),
                 lat,
                 lon,
@@ -1112,6 +1119,7 @@ exports.default = {
     MOTION_PERMISSION: exports.MOTION_PERMISSION,
     requestMotionPermission,
     fetchDeclination,
+    fetchDeclinationResult,
     getCurrentPositionSafe,
 };
 

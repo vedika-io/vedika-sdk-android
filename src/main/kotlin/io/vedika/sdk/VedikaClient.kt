@@ -31,8 +31,7 @@ import java.util.concurrent.TimeUnit
  * val score = client.vastu.vastuScore("overall", mapOf("rooms" to rooms))
  * ```
  *
- * First deliverable scope (see
- * docs/ops/2026-08-11-vastu-native-adapters-plan.md section 3.4): the Vastu
+ * First deliverable scope: the Vastu
  * domain only, not the full 23-domain surface `sdks/flutter` covers. New
  * domains get their own `*Service` class alongside [VastuService], exposed
  * as a new `val` here — this class's own shape (construction, origin policy,
@@ -93,7 +92,7 @@ class VedikaClient @JvmOverloads constructor(
 
     /**
      * The underlying OkHttp client. Redirect-following is disabled on both
-     * axes on purpose (credential-routing hardening, R-004): OkHttp's default
+     * axes on purpose (credential-routing hardening): OkHttp's default
      * `followRedirects = true` would re-send the `Authorization` header to
      * whatever origin a 3xx response names, leaking the API key to a
      * different host. With both flags false, a 3xx comes back from
@@ -231,7 +230,7 @@ class VedikaClient @JvmOverloads constructor(
             )
             else -> when {
                 code in 300..399 -> {
-                    // Credential-routing (R-004): redirects are not followed (see
+                    // Credential-routing: redirects are not followed (see
                     // `httpClient` above), so the API key is never forwarded to the
                     // redirect destination. A 3xx from the API is unexpected and
                     // surfaced as an error rather than chased.

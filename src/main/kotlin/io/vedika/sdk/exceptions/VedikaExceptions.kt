@@ -7,7 +7,7 @@ import org.json.JSONObject
  * `sdks/flutter/lib/src/exceptions.dart`'s `VedikaApiError`.
  *
  * Only the 5 classes the Flutter SDK proved sufficient are ported here
- * (docs/ops/2026-08-11-vastu-native-adapters-plan.md section 3.4: "do not
+ * (design note: "do not
  * build error-type parity beyond the 5 classes sdks/flutter already
  * defines"). Dart's 6th class, `VedikaSubscriptionError` (HTTP 403), is
  * intentionally NOT ported — a 403 falls through to the generic

@@ -9,7 +9,7 @@ monorepo.
 
 ## Install
 
-The published jar is `vedika-android-sdk-1.0.0.jar`, attached to each release. Build
+The published jar is `vedika-android-sdk-1.0.1.jar`, attached to each release. Build
 it yourself with:
 
 ```sh
