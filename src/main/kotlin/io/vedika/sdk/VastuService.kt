@@ -2705,6 +2705,17 @@ data class VastuAssessmentDataSourcesItem(val raw: JSONObject) {
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
 }
 
+data class VastuAssessmentDataNotAssessedItem(val raw: JSONObject) {
+    val room: String
+        get() = raw.getString("room")
+    val zone: String
+        get() = raw.getString("zone")
+    val reason: String
+        get() = raw.getString("reason")
+    val graded: Boolean
+        get() = raw.getBoolean("graded")
+}
+
 data class VastuCatalogReferenceDataDefectsItem(val raw: JSONObject) {
     val labelKey: String?
         get() = if (!raw.has("labelKey") || raw.isNull("labelKey")) null else raw.getString("labelKey")
@@ -2797,6 +2808,17 @@ data class VastuComplianceIndexDataScoring(val raw: JSONObject) {
         get() = raw.getInt("duplicatePlacementCount")
     val verified: Boolean
         get() = raw.getBoolean("verified")
+}
+
+data class VastuComplianceIndexDataNotAssessedItem(val raw: JSONObject) {
+    val room: String
+        get() = raw.getString("room")
+    val zone: String
+        get() = raw.getString("zone")
+    val reason: String
+        get() = raw.getString("reason")
+    val graded: Boolean
+        get() = raw.getBoolean("graded")
 }
 
 data class VastuDetailedFloorPlanAuditDataDefectsItemIssueParams(val raw: JSONObject) {
@@ -2919,6 +2941,17 @@ data class VastuDetailedFloorPlanAuditDataCompleteness(val raw: JSONObject) {
         get() = raw.getBoolean("physicalCoverageVerified")
     val note: String
         get() = raw.getString("note")
+}
+
+data class VastuDetailedFloorPlanAuditDataNotAssessedItem(val raw: JSONObject) {
+    val room: String
+        get() = raw.getString("room")
+    val zone: String
+        get() = raw.getString("zone")
+    val reason: String
+        get() = raw.getString("reason")
+    val graded: Boolean
+        get() = raw.getBoolean("graded")
 }
 
 data class VastuDirectionsReferenceDataDirectionsItem(val raw: JSONObject) {
@@ -3061,6 +3094,17 @@ data class VastuFloorPlanAuditDataTextParse(val raw: JSONObject) {
         get() = raw.getInt("parsedClauseCount")
 }
 
+data class VastuFloorPlanAuditDataNotAssessedItem(val raw: JSONObject) {
+    val room: String
+        get() = raw.getString("room")
+    val zone: String
+        get() = raw.getString("zone")
+    val reason: String
+        get() = raw.getString("reason")
+    val graded: Boolean
+        get() = raw.getBoolean("graded")
+}
+
 data class VastuMandalaReferenceDataZonesItem(val raw: JSONObject) {
     val remedyKey: String?
         get() = if (!raw.has("remedyKey") || raw.isNull("remedyKey")) null else raw.getString("remedyKey")
@@ -3199,6 +3243,17 @@ data class VastuOverallScoreDataScoring(val raw: JSONObject) {
         get() = raw.getBoolean("verified")
 }
 
+data class VastuOverallScoreDataNotAssessedItem(val raw: JSONObject) {
+    val room: String
+        get() = raw.getString("room")
+    val zone: String
+        get() = raw.getString("zone")
+    val reason: String
+        get() = raw.getString("reason")
+    val graded: Boolean
+        get() = raw.getBoolean("graded")
+}
+
 data class VastuPlanAuditDataRoomByRoomItem(val raw: JSONObject) {
     val room: String?
         get() = if (!raw.has("room") || raw.isNull("room")) null else raw.getString("room")
@@ -3293,6 +3348,17 @@ data class VastuPlanAuditDataArtifact(val raw: JSONObject) {
         get() = raw.getString("content")
 }
 
+data class VastuPlanAuditDataNotAssessedItem(val raw: JSONObject) {
+    val room: String
+        get() = raw.getString("room")
+    val zone: String
+        get() = raw.getString("zone")
+    val reason: String
+        get() = raw.getString("reason")
+    val graded: Boolean
+        get() = raw.getBoolean("graded")
+}
+
 data class VastuRemedyComparisonDataBeforeDefectsItem(val raw: JSONObject) {
     val room: String?
         get() = if (!raw.has("room") || raw.isNull("room")) null else raw.getString("room")
@@ -3365,6 +3431,17 @@ data class VastuRemedyComparisonDataAfter(val raw: JSONObject) {
         get() = if (!raw.has("defects") || raw.isNull("defects")) null else List(raw.getJSONArray("defects").length()) { index0 -> VastuRemedyComparisonDataAfterDefectsItem((raw.getJSONArray("defects").get(index0) as JSONObject)) }
 }
 
+data class VastuRemedyComparisonDataNotAssessedItem(val raw: JSONObject) {
+    val room: String
+        get() = raw.getString("room")
+    val zone: String
+        get() = raw.getString("zone")
+    val reason: String
+        get() = raw.getString("reason")
+    val graded: Boolean
+        get() = raw.getBoolean("graded")
+}
+
 data class VastuSpecializedAuditDataFindingsItem(val raw: JSONObject) {
     val room: String?
         get() = if (!raw.has("room") || raw.isNull("room")) null else raw.getString("room")
@@ -3402,6 +3479,17 @@ data class VastuSpecializedAuditDataFindingsItem(val raw: JSONObject) {
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
     val source: String?
         get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getString("source")
+}
+
+data class VastuSpecializedAuditDataNotAssessedItem(val raw: JSONObject) {
+    val room: String
+        get() = raw.getString("room")
+    val zone: String
+        get() = raw.getString("zone")
+    val reason: String
+        get() = raw.getString("reason")
+    val graded: Boolean
+        get() = raw.getBoolean("graded")
 }
 
 data class VastuSunPathDataInput(val raw: JSONObject) {
@@ -3478,6 +3566,17 @@ data class VastuZoneWiseScoreDataScoring(val raw: JSONObject) {
         get() = raw.getInt("duplicatePlacementCount")
     val verified: Boolean
         get() = raw.getBoolean("verified")
+}
+
+data class VastuZoneWiseScoreDataNotAssessedItem(val raw: JSONObject) {
+    val room: String
+        get() = raw.getString("room")
+    val zone: String
+        get() = raw.getString("zone")
+    val reason: String
+        get() = raw.getString("reason")
+    val graded: Boolean
+        get() = raw.getBoolean("graded")
 }
 
 data class VastuArAnchorRecommendationsData(override val raw: JSONObject) : VastuData {
@@ -3756,6 +3855,8 @@ data class VastuAssessmentData(override val raw: JSONObject) : VastuData {
         get() = raw.getJSONObject("meta")
     val listingId: Any?
         get() = if (!raw.has("listingId") || raw.isNull("listingId")) null else raw.get("listingId").takeUnless { it == JSONObject.NULL }
+    val notAssessed: List<VastuAssessmentDataNotAssessedItem>?
+        get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuAssessmentDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
 }
 
 data class VastuAuspiciousFacingData(override val raw: JSONObject) : VastuData {
@@ -3879,10 +3980,10 @@ data class VastuCatalogReferenceData(override val raw: JSONObject) : VastuData {
 }
 
 data class VastuComplianceIndexData(override val raw: JSONObject) : VastuData {
-    val score: Double
-        get() = raw.getDouble("score")
-    val complianceIndex: String
-        get() = raw.getString("complianceIndex")
+    val score: Double?
+        get() = if (!raw.has("score") || raw.isNull("score")) null else raw.getDouble("score")
+    val complianceIndex: String?
+        get() = if (!raw.has("complianceIndex") || raw.isNull("complianceIndex")) null else raw.getString("complianceIndex")
     val drivingDefects: List<VastuComplianceIndexDataDrivingDefectsItem>
         get() = List(raw.getJSONArray("drivingDefects").length()) { index0 -> VastuComplianceIndexDataDrivingDefectsItem((raw.getJSONArray("drivingDefects").get(index0) as JSONObject)) }
     val sources: List<JSONObject>
@@ -3915,13 +4016,17 @@ data class VastuComplianceIndexData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("verdict") || raw.isNull("verdict")) null else raw.getString("verdict")
     val scoring: VastuComplianceIndexDataScoring
         get() = VastuComplianceIndexDataScoring(raw.getJSONObject("scoring"))
+    val notAssessed: List<VastuComplianceIndexDataNotAssessedItem>?
+        get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuComplianceIndexDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
+    val scoreNote: String?
+        get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
 }
 
 data class VastuDetailedFloorPlanAuditData(override val raw: JSONObject) : VastuData {
-    val score: Double
-        get() = raw.getDouble("score")
-    val grade: String
-        get() = raw.getString("grade")
+    val score: Double?
+        get() = if (!raw.has("score") || raw.isNull("score")) null else raw.getDouble("score")
+    val grade: String?
+        get() = if (!raw.has("grade") || raw.isNull("grade")) null else raw.getString("grade")
     val totalRooms: Int
         get() = raw.getInt("totalRooms")
     val prescribedCount: Int
@@ -3950,6 +4055,10 @@ data class VastuDetailedFloorPlanAuditData(override val raw: JSONObject) : Vastu
         get() = VastuDetailedFloorPlanAuditDataScoring(raw.getJSONObject("scoring"))
     val completeness: VastuDetailedFloorPlanAuditDataCompleteness
         get() = VastuDetailedFloorPlanAuditDataCompleteness(raw.getJSONObject("completeness"))
+    val notAssessed: List<VastuDetailedFloorPlanAuditDataNotAssessedItem>?
+        get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuDetailedFloorPlanAuditDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
+    val scoreNote: String?
+        get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
 }
 
 data class VastuDirectionCorrectData(override val raw: JSONObject) : VastuData {
@@ -3957,8 +4066,8 @@ data class VastuDirectionCorrectData(override val raw: JSONObject) : VastuData {
         get() = raw.getJSONObject("input")
     val magneticBearingDeg: Double?
         get() = if (!raw.has("magneticBearingDeg") || raw.isNull("magneticBearingDeg")) null else raw.getDouble("magneticBearingDeg")
-    val declinationDeg: Double
-        get() = raw.getDouble("declinationDeg")
+    val declinationDeg: Double?
+        get() = if (!raw.has("declinationDeg") || raw.isNull("declinationDeg")) null else raw.getDouble("declinationDeg")
     val trueBearingDeg: Double?
         get() = if (!raw.has("trueBearingDeg") || raw.isNull("trueBearingDeg")) null else raw.getDouble("trueBearingDeg")
     val correctedZone: String
@@ -3980,8 +4089,8 @@ data class VastuDirectionDeclinationData(override val raw: JSONObject) : VastuDa
         get() = raw.getDouble("lon")
     val date: String
         get() = raw.getString("date")
-    val declinationDeg: Double
-        get() = raw.getDouble("declinationDeg")
+    val declinationDeg: Double?
+        get() = if (!raw.has("declinationDeg") || raw.isNull("declinationDeg")) null else raw.getDouble("declinationDeg")
     val interpretation: String
         get() = raw.getString("interpretation")
     val gridEpoch: String
@@ -4141,10 +4250,10 @@ data class VastuEntranceRecommendData(override val raw: JSONObject) : VastuData 
 }
 
 data class VastuFloorPlanAuditData(override val raw: JSONObject) : VastuData {
-    val score: Double
-        get() = raw.getDouble("score")
-    val grade: String
-        get() = raw.getString("grade")
+    val score: Double?
+        get() = if (!raw.has("score") || raw.isNull("score")) null else raw.getDouble("score")
+    val grade: String?
+        get() = if (!raw.has("grade") || raw.isNull("grade")) null else raw.getString("grade")
     val totalRooms: Int
         get() = raw.getInt("totalRooms")
     val prescribedCount: Int
@@ -4165,6 +4274,10 @@ data class VastuFloorPlanAuditData(override val raw: JSONObject) : VastuData {
         get() = VastuFloorPlanAuditDataScoring(raw.getJSONObject("scoring"))
     val textParse: VastuFloorPlanAuditDataTextParse?
         get() = if (!raw.has("textParse") || raw.isNull("textParse")) null else VastuFloorPlanAuditDataTextParse(raw.getJSONObject("textParse"))
+    val notAssessed: List<VastuFloorPlanAuditDataNotAssessedItem>?
+        get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuFloorPlanAuditDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
+    val scoreNote: String?
+        get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
 }
 
 data class VastuFloorRulesData(override val raw: JSONObject) : VastuData {
@@ -4377,10 +4490,10 @@ data class VastuObstructionData(override val raw: JSONObject) : VastuData {
 }
 
 data class VastuOverallScoreData(override val raw: JSONObject) : VastuData {
-    val score: Double
-        get() = raw.getDouble("score")
-    val grade: String
-        get() = raw.getString("grade")
+    val score: Double?
+        get() = if (!raw.has("score") || raw.isNull("score")) null else raw.getDouble("score")
+    val grade: String?
+        get() = if (!raw.has("grade") || raw.isNull("grade")) null else raw.getString("grade")
     val placements: List<VastuOverallScoreDataPlacementsItem>
         get() = List(raw.getJSONArray("placements").length()) { index0 -> VastuOverallScoreDataPlacementsItem((raw.getJSONArray("placements").get(index0) as JSONObject)) }
     val sources: List<JSONObject>
@@ -4413,6 +4526,10 @@ data class VastuOverallScoreData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("verdict") || raw.isNull("verdict")) null else raw.getString("verdict")
     val scoring: VastuOverallScoreDataScoring
         get() = VastuOverallScoreDataScoring(raw.getJSONObject("scoring"))
+    val notAssessed: List<VastuOverallScoreDataNotAssessedItem>?
+        get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuOverallScoreDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
+    val scoreNote: String?
+        get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
 }
 
 data class VastuPlacementData(override val raw: JSONObject) : VastuData {
@@ -4475,10 +4592,10 @@ data class VastuPlanAuditData(override val raw: JSONObject) : VastuData {
         get() = raw.getJSONObject("facing")
     val plotShape: JSONObject
         get() = raw.getJSONObject("plotShape")
-    val overallScore: Double
-        get() = raw.getDouble("overallScore")
-    val grade: String
-        get() = raw.getString("grade")
+    val overallScore: Double?
+        get() = if (!raw.has("overallScore") || raw.isNull("overallScore")) null else raw.getDouble("overallScore")
+    val grade: String?
+        get() = if (!raw.has("grade") || raw.isNull("grade")) null else raw.getString("grade")
     val summary: String
         get() = raw.getString("summary")
     val zoneCompliance: List<JSONObject>
@@ -4507,6 +4624,10 @@ data class VastuPlanAuditData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("scoreDisclaimer") || raw.isNull("scoreDisclaimer")) null else raw.getString("scoreDisclaimer")
     val artifact: VastuPlanAuditDataArtifact?
         get() = if (!raw.has("artifact") || raw.isNull("artifact")) null else VastuPlanAuditDataArtifact(raw.getJSONObject("artifact"))
+    val notAssessed: List<VastuPlanAuditDataNotAssessedItem>?
+        get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuPlanAuditDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
+    val scoreNote: String?
+        get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
 }
 
 data class VastuPlanGenerateData(override val raw: JSONObject) : VastuData {
@@ -4761,12 +4882,12 @@ data class VastuRemedyComparisonData(override val raw: JSONObject) : VastuData {
         get() = VastuRemedyComparisonDataBefore(raw.getJSONObject("before"))
     val after: VastuRemedyComparisonDataAfter
         get() = VastuRemedyComparisonDataAfter(raw.getJSONObject("after"))
-    val scoreDelta: Double
-        get() = raw.getDouble("scoreDelta")
+    val scoreDelta: Double?
+        get() = if (!raw.has("scoreDelta") || raw.isNull("scoreDelta")) null else raw.getDouble("scoreDelta")
     val scoring: JSONObject
         get() = raw.getJSONObject("scoring")
-    val verdict: String
-        get() = raw.getString("verdict")
+    val verdict: String?
+        get() = if (!raw.has("verdict") || raw.isNull("verdict")) null else raw.getString("verdict")
     val remediesApplied: List<JSONObject>
         get() = List(raw.getJSONArray("remediesApplied").length()) { index0 -> (raw.getJSONArray("remediesApplied").get(index0) as JSONObject) }
     val roomChanges: List<JSONObject>
@@ -4783,6 +4904,8 @@ data class VastuRemedyComparisonData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
     val verified: Boolean?
         get() = if (!raw.has("verified") || raw.isNull("verified")) null else raw.getBoolean("verified")
+    val notAssessed: List<VastuRemedyComparisonDataNotAssessedItem>?
+        get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuRemedyComparisonDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
 }
 
 data class VastuRoadOrientationData(override val raw: JSONObject) : VastuData {
@@ -4977,10 +5100,10 @@ data class VastuSpecializedAuditData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("method")
     val buildingType: String
         get() = raw.getString("buildingType")
-    val score: Double
-        get() = raw.getDouble("score")
-    val grade: String
-        get() = raw.getString("grade")
+    val score: Double?
+        get() = if (!raw.has("score") || raw.isNull("score")) null else raw.getDouble("score")
+    val grade: String?
+        get() = if (!raw.has("grade") || raw.isNull("grade")) null else raw.getString("grade")
     val scoringBasis: String
         get() = raw.getString("scoringBasis")
     val auditedRooms: Int
@@ -5005,33 +5128,45 @@ data class VastuSpecializedAuditData(override val raw: JSONObject) : VastuData {
         get() = raw.getJSONObject("meta")
     val buildingDirection: JSONObject?
         get() = if (!raw.has("buildingDirection") || raw.isNull("buildingDirection")) null else raw.getJSONObject("buildingDirection")
+    val notAssessed: List<VastuSpecializedAuditDataNotAssessedItem>?
+        get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuSpecializedAuditDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
+    val scoreNote: String?
+        get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
 }
 
 data class VastuSunPathData(override val raw: JSONObject) : VastuData {
     val input: VastuSunPathDataInput
         get() = VastuSunPathDataInput(raw.getJSONObject("input"))
-    val sunriseUtc: String
-        get() = raw.getString("sunriseUtc")
-    val sunriseAzimuthDeg: Double
-        get() = raw.getDouble("sunriseAzimuthDeg")
-    val solarNoonUtc: String
-        get() = raw.getString("solarNoonUtc")
-    val solarNoonAzimuthDeg: Double
-        get() = raw.getDouble("solarNoonAzimuthDeg")
-    val solarNoonElevationDeg: Double
-        get() = raw.getDouble("solarNoonElevationDeg")
-    val sunsetUtc: String
-        get() = raw.getString("sunsetUtc")
-    val sunsetAzimuthDeg: Double
-        get() = raw.getDouble("sunsetAzimuthDeg")
-    val declinationDeg: Double
-        get() = raw.getDouble("declinationDeg")
+    val sunriseUtc: String?
+        get() = if (!raw.has("sunriseUtc") || raw.isNull("sunriseUtc")) null else raw.getString("sunriseUtc")
+    val sunriseAzimuthDeg: Double?
+        get() = if (!raw.has("sunriseAzimuthDeg") || raw.isNull("sunriseAzimuthDeg")) null else raw.getDouble("sunriseAzimuthDeg")
+    val solarNoonUtc: String?
+        get() = if (!raw.has("solarNoonUtc") || raw.isNull("solarNoonUtc")) null else raw.getString("solarNoonUtc")
+    val solarNoonAzimuthDeg: Double?
+        get() = if (!raw.has("solarNoonAzimuthDeg") || raw.isNull("solarNoonAzimuthDeg")) null else raw.getDouble("solarNoonAzimuthDeg")
+    val solarNoonElevationDeg: Double?
+        get() = if (!raw.has("solarNoonElevationDeg") || raw.isNull("solarNoonElevationDeg")) null else raw.getDouble("solarNoonElevationDeg")
+    val sunsetUtc: String?
+        get() = if (!raw.has("sunsetUtc") || raw.isNull("sunsetUtc")) null else raw.getString("sunsetUtc")
+    val sunsetAzimuthDeg: Double?
+        get() = if (!raw.has("sunsetAzimuthDeg") || raw.isNull("sunsetAzimuthDeg")) null else raw.getDouble("sunsetAzimuthDeg")
+    val declinationDeg: Double?
+        get() = if (!raw.has("declinationDeg") || raw.isNull("declinationDeg")) null else raw.getDouble("declinationDeg")
     val arc: List<JSONObject>
         get() = List(raw.getJSONArray("arc").length()) { index0 -> (raw.getJSONArray("arc").get(index0) as JSONObject) }
     val sources: List<String>
         get() = List(raw.getJSONArray("sources").length()) { index0 -> (raw.getJSONArray("sources").get(index0) as String) }
     val verified: Boolean
         get() = raw.getBoolean("verified")
+    val dayStatus: String?
+        get() = if (!raw.has("dayStatus") || raw.isNull("dayStatus")) null else raw.getString("dayStatus")
+    val note: String?
+        get() = if (!raw.has("note") || raw.isNull("note")) null else raw.getString("note")
+    val noonUtc: String?
+        get() = if (!raw.has("noonUtc") || raw.isNull("noonUtc")) null else raw.getString("noonUtc")
+    val noonElevationDeg: Double?
+        get() = if (!raw.has("noonElevationDeg") || raw.isNull("noonElevationDeg")) null else raw.getDouble("noonElevationDeg")
 }
 
 data class VastuTimingData(override val raw: JSONObject) : VastuData {
@@ -5118,10 +5253,10 @@ data class VastuZoneWiseScoreData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("meta") || raw.isNull("meta")) null else raw.getJSONObject("meta")
     val method: String?
         get() = if (!raw.has("method") || raw.isNull("method")) null else raw.getString("method")
-    val overallGrade: String
-        get() = raw.getString("overallGrade")
-    val overallScore: Double
-        get() = raw.getDouble("overallScore")
+    val overallGrade: String?
+        get() = if (!raw.has("overallGrade") || raw.isNull("overallGrade")) null else raw.getString("overallGrade")
+    val overallScore: Double?
+        get() = if (!raw.has("overallScore") || raw.isNull("overallScore")) null else raw.getDouble("overallScore")
     val strongestZone: String?
         get() = if (!raw.has("strongestZone") || raw.isNull("strongestZone")) null else raw.getString("strongestZone")
     val system: String?
@@ -5134,6 +5269,10 @@ data class VastuZoneWiseScoreData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("zoneWeightingNote") || raw.isNull("zoneWeightingNote")) null else raw.getString("zoneWeightingNote")
     val scoring: VastuZoneWiseScoreDataScoring
         get() = VastuZoneWiseScoreDataScoring(raw.getJSONObject("scoring"))
+    val notAssessed: List<VastuZoneWiseScoreDataNotAssessedItem>?
+        get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuZoneWiseScoreDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
+    val scoreNote: String?
+        get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
 }
 
 data class VastuTypedResponse<Data : VastuData>(val success: Boolean, val data: Data, val raw: JSONObject) {

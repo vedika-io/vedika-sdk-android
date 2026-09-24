@@ -36,7 +36,7 @@ class VastuScanTest {
         try {
             server.enqueue(MockResponse().setHeader("Content-Type", "application/json").setBody("""{"success":true,"data":{"scans":[],"nextCursor":null}}"""))
             val client = VedikaClient(apiKey = "vk_test", baseUrl = server.url("/").toString())
-            val result = client.vastu.vastuScansList(VastuScansListRequest("request-00000001", 1), "retained-scan-list")
+            val result = client.vastu.vastuScansList(VastuScansListRequest("request-00000001", 1))
             assertTrue(result.success)
             assertNull(result.billing)
             assertNull(result.meta)
@@ -44,8 +44,17 @@ class VastuScanTest {
             val wire = server.takeRequest()
             assertEquals("POST", wire.method)
             assertEquals("/v2/astrology/vastu/scans/list", wire.path)
-            assertEquals("retained-scan-list", wire.getHeader("Idempotency-Key"))
+            // The server answers 422 to any retry header on scan operations.
+            assertNull(wire.getHeader("Idempotency-Key"))
             assertTrue(JSONObject("""{"requestId":"request-00000001","limit":1}""").similar(JSONObject(wire.body.readUtf8())))
         } finally { server.shutdown() }
+    }
+
+    @Test fun `scan operations refuse a caller Idempotency-Key before sending`() = runBlocking {
+        val client = VedikaClient(apiKey = "vk_test", baseUrl = "https://api.vedika.io")
+        val error = runCatching { client.vastu.vastuScansList(VastuScansListRequest("request-00000001", 1), "retained-scan-list") }.exceptionOrNull()
+        assertTrue(error is IllegalArgumentException)
+        assertTrue(usesBodyIdentity("/v2/vastu/scans/timelapse"))
+        assertFalse(usesBodyIdentity("/v2/vastu/assessments"))
     }
 }

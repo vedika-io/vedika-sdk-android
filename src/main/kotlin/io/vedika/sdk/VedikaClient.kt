@@ -45,7 +45,7 @@ class VedikaClient @JvmOverloads constructor(
     allowInsecureHttp: Boolean = false,
 ) {
     companion object {
-        private const val SDK_VERSION = "vedika-android/1.0.0"
+        private const val SDK_VERSION = "vedika-android/1.0.2"
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
         /**
@@ -170,7 +170,13 @@ class VedikaClient @JvmOverloads constructor(
         if (path.substringBefore("?") in setOf("/v2/vastu/assessments/batch", "/v2/astrology/vastu/assessments/batch")) {
             require(!idempotencyKey.isNullOrBlank()) { "A nonblank caller-retained Idempotency-Key is required" }
         }
-        val key = idempotencyKey ?: UUID.randomUUID().toString()
+        // Scan save/retrieve/list/timelapse identify a retry by scanId or the
+        // body's requestId and answer 422 to any retry header, so none is sent.
+        val bodyIdentity = usesBodyIdentity(path)
+        require(!bodyIdentity || idempotencyKey == null) {
+            "Scan operations use scanId or requestId in the body; do not pass an Idempotency-Key"
+        }
+        val key = if (bodyIdentity) null else idempotencyKey ?: UUID.randomUUID().toString()
         val request = Request.Builder()
             .url((config.baseUrl + path).toHttpUrl())
             .headers(headers(key))
@@ -181,8 +187,8 @@ class VedikaClient @JvmOverloads constructor(
 
     /**
      * Runs [request], retrying transient failures (see [MAX_RETRIES]).
-     * Every POST and mounted billed Vastu GET carries an
-     * `Idempotency-Key` (see [post] and [get]), so a retry of the exact same [Request]
+     * Every POST (except the scan operations, whose identity is in the body)
+     * and mounted billed Vastu GET carries an `Idempotency-Key` (see [post] and [get]), so a retry of the exact same [Request]
      * object (same body, same key) cannot double-charge even if the first
      * attempt's request actually reached the server before the network
      * dropped the response.
@@ -276,4 +282,13 @@ class VedikaClient @JvmOverloads constructor(
         }
         else -> value
     }
+}
+
+private val SCAN_PREFIXES = listOf("/v2/vastu/scans/", "/v2/astrology/vastu/scans/")
+private val BODY_IDENTITY_SCAN_OPS = setOf("save", "retrieve", "list", "delete", "timelapse")
+
+/** True for the scan operations whose retry identity lives in the JSON body. */
+internal fun usesBodyIdentity(path: String): Boolean {
+    val bare = path.substringBefore("?")
+    return SCAN_PREFIXES.any { bare.startsWith(it) && bare.removePrefix(it) in BODY_IDENTITY_SCAN_OPS }
 }

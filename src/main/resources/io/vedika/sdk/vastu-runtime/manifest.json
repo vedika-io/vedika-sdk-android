@@ -4,7 +4,7 @@
   "sources": {
     "scripts/sdks/package-vastu-native-runtime.mjs": "9f5cb17846743c8fa4c78ca770765ac7d2f0457b7e389595884d8dc218501da9",
     "web/vedika-public/js/vastu/ar-overlay.js": "f043f1f5c0e06172b945500911358d1a6bf0403ed8cae0abb67cf6c053a69e4a",
-    "web/vedika-public/js/vastu/heading-provider.js": "b4d54a84bd00de46e593ca7c7f1201a2529eb04a19b9baa9f294d3796335aaca",
+    "web/vedika-public/js/vastu/heading-provider.js": "02531e91461f52ebf0845929585b58bc3ca802281b518ecb208c2c359d56c341",
     "web/vedika-public/js/vastu/hud-mandala.png": "12b1e9d6d7a1a842f3918232f057ac6b3e78e35d5c09df80ce8078d5233f73a1",
     "web/vedika-public/js/vastu/native-bridge.js": "b378a93bd04353931bdaa56bcac745624794a6954d1f7de6228f18f034ef3908",
     "web/vedika-public/js/vastu/widget-locales.js": "7fd4a25c66476c5a88063b3d44cd2c688f2aa71f4905d0a71afba3219813a580"
@@ -12,6 +12,6 @@
   "files": {
     "hud-mandala.png": "12b1e9d6d7a1a842f3918232f057ac6b3e78e35d5c09df80ce8078d5233f73a1",
     "index.html": "784f332a411931cb35b8ba51312883725e4637129b9e25955c446fd63152d015",
-    "runtime.js": "a590230245b4e3f8f82719dd9b20d827cf19ebe601ff9ea16b05d51685f205f7"
+    "runtime.js": "050c6dab127e93ce37e7e8bd00805458980ceb0d487109c6293ebc15a25cca1d"
   }
 }

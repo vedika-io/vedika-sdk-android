@@ -777,7 +777,7 @@ function createHeadingProvider(opts = {}) {
     }
     function lock() {
         state.locked = true;
-        state.lockedHeadingTrue = state.headingTrueLive != null ? state.headingTrueLive : state.headingTrue;
+        state.lockedHeadingTrue = state.headingTrue != null ? state.headingTrue : state.headingTrueLive;
         recomputeOutputHeading();
         emitEvent('lock', { locked: true, headingTrue: state.lockedHeadingTrue });
     }
@@ -996,6 +996,7 @@ function createHeadingProvider(opts = {}) {
                     Number.isFinite(sample.accuracyDeg) && sample.accuracyDeg >= 0 ? sample.accuracyDeg : null;
                 if (frame === 'true') {
                     state.headingTrueLive = headingDeg;
+                    state.headingMagnetic = null;
                     if (!state.manualOverrideActive)
                         state.referenceFrame = 'true';
                     recomputeOutputHeading();
