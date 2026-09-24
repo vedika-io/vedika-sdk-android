@@ -78,8 +78,8 @@ class CredentialRoutingTest {
     @Test
     fun `typed inventory exposes every mounted logical operation exactly once`() {
         val paths = VastuOperation.entries.map { it.path }
-        assertEquals(93, paths.size)
-        assertEquals(93, paths.toSet().size)
+        assertEquals(94, paths.size)
+        assertEquals(94, paths.toSet().size)
         assertEquals("assessments", VastuOperation.Assessments.path)
         assertEquals("ar/true-north-calibrate", VastuOperation.ArTrueNorthCalibrate.path)
     }

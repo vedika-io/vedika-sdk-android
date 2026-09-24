@@ -18,6 +18,7 @@ enum class VastuOperation(val path: String) {
     ScansSave("scans/save"),
     ArDeityIcons("ar/deity-icons"),
     ArRoomCapture("ar/room-capture"),
+    ArAttestationChallenge("ar/attestation/challenge"),
     ArYantraMeshes("ar/yantra-meshes"),
     ArZoneTextures("ar/zone-textures"),
     ArAnchorRecommendations("ar/anchor-recommendations"),
@@ -428,13 +429,42 @@ data class VastuRoomCapture(
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
+/** Optional native-app device attestation proof; see [VastuOperation.ArAttestationChallenge]. */
+data class VastuDeviceAttestation(
+    val platform: String,
+    val challenge: String,
+    val keyId: String? = null,
+    val attestationObject: String? = null,
+    val assertion: String? = null,
+    val integrityToken: String? = null
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "platform" to platform,
+        "challenge" to challenge,
+        "keyId" to keyId,
+        "attestationObject" to attestationObject,
+        "assertion" to assertion,
+        "integrityToken" to integrityToken
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArAttestationChallengeRequest(
+    val platform: String
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "platform" to platform
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
 data class VastuArRoomCaptureRequest(
     val capture: VastuRoomCapture,
-    val zoneResolution: Int? = null
+    val zoneResolution: Int? = null,
+    val deviceAttestation: VastuDeviceAttestation? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
         "capture" to capture,
-        "zoneResolution" to zoneResolution
+        "zoneResolution" to zoneResolution,
+        "deviceAttestation" to deviceAttestation
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -495,14 +525,16 @@ data class VastuScansSaveRequest(
     val propertyId: String,
     val title: String,
     val retentionDays: Int,
-    val snapshot: VastuScanSnapshot
+    val snapshot: VastuScanSnapshot,
+    val deviceAttestation: VastuDeviceAttestation? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
         "scanId" to scanId,
         "propertyId" to propertyId,
         "title" to title,
         "retentionDays" to retentionDays,
-        "snapshot" to snapshot
+        "snapshot" to snapshot,
+        "deviceAttestation" to deviceAttestation
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -560,7 +592,8 @@ data class VastuArScanQualityRequest(
     val pointCloudDensityPerM2: Double? = null,
     val polygonClosed: Boolean? = null,
     val coveragePercent: Double? = null,
-    val pointCloudDensityBasis: String? = null
+    val pointCloudDensityBasis: String? = null,
+    val deviceAttestation: VastuDeviceAttestation? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
         "pointCloudDensity" to pointCloudDensity,
@@ -575,7 +608,8 @@ data class VastuArScanQualityRequest(
         "pointCloudDensityPerM2" to pointCloudDensityPerM2,
         "polygonClosed" to polygonClosed,
         "coveragePercent" to coveragePercent,
-        "pointCloudDensityBasis" to pointCloudDensityBasis
+        "pointCloudDensityBasis" to pointCloudDensityBasis,
+        "deviceAttestation" to deviceAttestation
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -592,7 +626,8 @@ data class VastuArCountedScanQualityRequest(
     val pointCloudDensityPerM2: Double? = null,
     val polygonClosed: Boolean? = null,
     val coveragePercent: Double? = null,
-    val pointCloudDensityBasis: String? = null
+    val pointCloudDensityBasis: String? = null,
+    val deviceAttestation: VastuDeviceAttestation? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
         "pointCloudDensity" to pointCloudDensity,
@@ -607,7 +642,8 @@ data class VastuArCountedScanQualityRequest(
         "pointCloudDensityPerM2" to pointCloudDensityPerM2,
         "polygonClosed" to polygonClosed,
         "coveragePercent" to coveragePercent,
-        "pointCloudDensityBasis" to pointCloudDensityBasis
+        "pointCloudDensityBasis" to pointCloudDensityBasis,
+        "deviceAttestation" to deviceAttestation
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -2191,6 +2227,13 @@ data class VastuArAnchorRecommendationsDataAnchorsItem(val raw: JSONObject) {
         get() = raw.getBoolean("insidePlot")
 }
 
+data class VastuArAttestationChallengeDataDeviceAttestation(val raw: JSONObject) {
+    val status: String
+        get() = raw.getString("status")
+    val platform: String
+        get() = raw.getString("platform")
+}
+
 data class VastuArDeityIconsDataIconsItem(val raw: JSONObject) {
     val zone: String
         get() = raw.getString("zone")
@@ -3105,6 +3148,30 @@ data class VastuFloorPlanAuditDataNotAssessedItem(val raw: JSONObject) {
         get() = raw.getBoolean("graded")
 }
 
+data class VastuJobStatusDataCounts(val raw: JSONObject) {
+    val succeeded: Int
+        get() = raw.getInt("succeeded")
+    val failed: Int
+        get() = raw.getInt("failed")
+    val pending: Int
+        get() = raw.getInt("pending")
+    val cancelled: Int
+        get() = raw.getInt("cancelled")
+}
+
+data class VastuJobStatusDataBilling(val raw: JSONObject) {
+    val currency: String
+        get() = raw.getString("currency")
+    val pricePerItem: Double
+        get() = raw.getDouble("pricePerItem")
+    val maxCharge: Double
+        get() = raw.getDouble("maxCharge")
+    val charged: Double
+        get() = raw.getDouble("charged")
+    val basis: String
+        get() = raw.getString("basis")
+}
+
 data class VastuMandalaReferenceDataZonesItem(val raw: JSONObject) {
     val remedyKey: String?
         get() = if (!raw.has("remedyKey") || raw.isNull("remedyKey")) null else raw.getString("remedyKey")
@@ -3610,6 +3677,19 @@ data class VastuArAnchorRecommendationsData(override val raw: JSONObject) : Vast
         get() = raw.getString("omissionNote")
 }
 
+data class VastuArAttestationChallengeData(override val raw: JSONObject) : VastuData {
+    val challenge: String?
+        get() = if (!raw.has("challenge") || raw.isNull("challenge")) null else raw.getString("challenge")
+    val expiresAtEpoch: Int?
+        get() = if (!raw.has("expiresAtEpoch") || raw.isNull("expiresAtEpoch")) null else raw.getInt("expiresAtEpoch")
+    val ttlSeconds: Int?
+        get() = if (!raw.has("ttlSeconds") || raw.isNull("ttlSeconds")) null else raw.getInt("ttlSeconds")
+    val singleUse: Boolean
+        get() = raw.getBoolean("singleUse")
+    val deviceAttestation: VastuArAttestationChallengeDataDeviceAttestation
+        get() = VastuArAttestationChallengeDataDeviceAttestation(raw.getJSONObject("deviceAttestation"))
+}
+
 data class VastuArDeityIconsData(override val raw: JSONObject) : VastuData {
     val icons: List<VastuArDeityIconsDataIconsItem>
         get() = List(raw.getJSONArray("icons").length()) { index0 -> VastuArDeityIconsDataIconsItem((raw.getJSONArray("icons").get(index0) as JSONObject)) }
@@ -3683,6 +3763,8 @@ data class VastuArRoomCaptureData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("attestation")
     val note: String
         get() = raw.getString("note")
+    val deviceAttestation: Any?
+        get() = raw.get("deviceAttestation").takeUnless { it == JSONObject.NULL }
 }
 
 data class VastuArScanQualityData(override val raw: JSONObject) : VastuData {
@@ -3720,6 +3802,10 @@ data class VastuArScanQualityData(override val raw: JSONObject) : VastuData {
         get() = raw.getBoolean("sensorAttestation")
     val limitations: String
         get() = raw.getString("limitations")
+    val deviceAttestation: Any?
+        get() = if (!raw.has("deviceAttestation") || raw.isNull("deviceAttestation")) null else raw.get("deviceAttestation").takeUnless { it == JSONObject.NULL }
+    val deviceAttested: Boolean?
+        get() = if (!raw.has("deviceAttested") || raw.isNull("deviceAttested")) null else raw.getBoolean("deviceAttested")
 }
 
 data class VastuArTrueNorthData(override val raw: JSONObject) : VastuData {
@@ -4328,6 +4414,63 @@ data class VastuFusionChartData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
     val verified: Boolean?
         get() = if (!raw.has("verified") || raw.isNull("verified")) null else raw.getBoolean("verified")
+}
+
+data class VastuJobResultsData(override val raw: JSONObject) : VastuData {
+    val jobId: String
+        get() = raw.getString("jobId")
+    val jobStatus: String
+        get() = raw.getString("jobStatus")
+    val results: List<Any?>
+        get() = List(raw.getJSONArray("results").length()) { index0 -> raw.getJSONArray("results").get(index0).takeUnless { it == JSONObject.NULL } }
+    val nextCursor: String?
+        get() = if (!raw.has("nextCursor") || raw.isNull("nextCursor")) null else raw.getString("nextCursor")
+}
+
+data class VastuJobStatusData(override val raw: JSONObject) : VastuData {
+    val jobId: String
+        get() = raw.getString("jobId")
+    val status: String
+        get() = raw.getString("status")
+    val operation: String
+        get() = raw.getString("operation")
+    val itemCount: Int
+        get() = raw.getInt("itemCount")
+    val counts: VastuJobStatusDataCounts
+        get() = VastuJobStatusDataCounts(raw.getJSONObject("counts"))
+    val billing: VastuJobStatusDataBilling
+        get() = VastuJobStatusDataBilling(raw.getJSONObject("billing"))
+    val cancelRequested: Boolean
+        get() = raw.getBoolean("cancelRequested")
+    val webhookId: String?
+        get() = if (!raw.has("webhookId") || raw.isNull("webhookId")) null else raw.getString("webhookId")
+    val createdAt: Int
+        get() = raw.getInt("createdAt")
+    val updatedAt: Int
+        get() = raw.getInt("updatedAt")
+    val finishedAt: Int?
+        get() = if (!raw.has("finishedAt") || raw.isNull("finishedAt")) null else raw.getInt("finishedAt")
+    val expiresAt: Int
+        get() = raw.getInt("expiresAt")
+    val resultsUrl: String
+        get() = raw.getString("resultsUrl")
+}
+
+data class VastuJobSubmitData(override val raw: JSONObject) : VastuData {
+    val jobId: String
+        get() = raw.getString("jobId")
+    val status: String
+        get() = raw.getString("status")
+    val itemCount: Int
+        get() = raw.getInt("itemCount")
+    val maxCharge: Double
+        get() = raw.getDouble("maxCharge")
+    val replayed: Boolean
+        get() = raw.getBoolean("replayed")
+    val preview: List<Any?>?
+        get() = if (!raw.has("preview") || raw.isNull("preview")) null else List(raw.getJSONArray("preview").length()) { index0 -> raw.getJSONArray("preview").get(index0).takeUnless { it == JSONObject.NULL } }
+    val previewNote: String?
+        get() = if (!raw.has("previewNote") || raw.isNull("previewNote")) null else raw.getString("previewNote")
 }
 
 data class VastuLevelAnalysisData(override val raw: JSONObject) : VastuData {
@@ -5047,6 +5190,8 @@ data class VastuScansSaveData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("persistence")
     val previewNote: String?
         get() = if (!raw.has("previewNote") || raw.isNull("previewNote")) null else raw.getString("previewNote")
+    val deviceAttestation: Any?
+        get() = if (!raw.has("deviceAttestation") || raw.isNull("deviceAttestation")) null else raw.get("deviceAttestation").takeUnless { it == JSONObject.NULL }
 }
 
 data class VastuScansTimelapseData(override val raw: JSONObject) : VastuData {
@@ -5311,6 +5456,8 @@ object VastuContracts {
 
     val arRoomCapture: VastuContract<VastuArRoomCaptureRequest, VastuArRoomCaptureData> = VastuContract(VastuOperation.ArRoomCapture, ::VastuArRoomCaptureData)
 
+    val arAttestationChallenge: VastuContract<VastuArAttestationChallengeRequest, VastuArAttestationChallengeData> = VastuContract(VastuOperation.ArAttestationChallenge, ::VastuArAttestationChallengeData)
+
     val arYantraMeshes: VastuContract<VastuArYantraMeshesRequest, VastuArYantraMeshesData> = VastuContract(VastuOperation.ArYantraMeshes, ::VastuArYantraMeshesData)
 
     val arZoneTextures: VastuContract<VastuArZoneTexturesRequest, VastuArZoneTexturesData> = VastuContract(VastuOperation.ArZoneTextures, ::VastuArZoneTexturesData)
@@ -5490,7 +5637,7 @@ object VastuContracts {
 
 /**
  * Vastu Shastra: plot geometry, mandala projection, entrance/room/placement
- * rules, compliance audits, scoring, and floor-plan generation (93 logical backend
+ * rules, compliance audits, scoring, and floor-plan generation (94 logical backend
  * operations across the full domain — this first deliverable ships the 12
  * client methods that reach all of them, including the two escape hatches,
  * [vastu] and [vastuReference], for any op/table that doesn't have its own
@@ -5511,7 +5658,7 @@ class VastuService internal constructor(private val client: VedikaClient) {
         const val BASE = "/v2/astrology/vastu"
     }
 
-    /** Exact request and result types for one of the 93 mounted operations. */
+    /** Exact request and result types for one of the 94 mounted operations. */
     suspend fun <Request : VastuRequest, Data : VastuData> vastuOperation(
         contract: VastuContract<Request, Data>,
         request: Request,

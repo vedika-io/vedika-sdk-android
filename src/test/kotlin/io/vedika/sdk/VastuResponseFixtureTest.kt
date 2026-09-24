@@ -30,7 +30,7 @@ class VastuResponseFixtureTest {
         val demos = corpus.getJSONObject("demos")
         val fixtures = corpus.getJSONObject("fixtures")
         val seen = mutableSetOf<String>()
-        assertEquals(93, demos.length())
+        assertEquals(94, demos.length())
         for (key in demos.keys()) {
             val request = fixtures.getJSONObject(key).getJSONObject("request")
             val path = request.getString("path").replace("/sandbox/vastu/", "/v2/astrology/vastu/")
@@ -43,7 +43,7 @@ class VastuResponseFixtureTest {
             val decoded = Class.forName("io.vedika.sdk.$name").getConstructor(JSONObject::class.java).newInstance(raw)
             inspect(decoded, raw, schemas.getJSONObject(name), key)
         }
-        assertEquals(57, seen.size)
+        assertEquals(58, seen.size)
     }
 
     /// Kotlin does not prefix the getter of a property whose name already begins

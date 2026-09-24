@@ -91,12 +91,35 @@ import android.webkit.WebViewClient
  *        mislabeled as true north. Once the host calls [setLocation], later
  *        samples push `"true"`.
  *
- * ## Screen orientation
- * Each sample uses the WebView display rotation and SensorManager's
- * remapCoordinateSystem before extracting azimuth. This keeps heading tied
- * to the displayed top edge in all four orientations, including devices
- * whose natural orientation is landscape. Axis selection has JVM coverage;
- * physical sensor accuracy still requires the device checklist.
+ * ## Screen orientation and device pose (2026-09-24 fix)
+ * Each sample first computes the DISPLAYED TOP EDGE's azimuth, the same as
+ * before this fix: the WebView display rotation selects a
+ * [VastuArPolicy.displayAxes] mapping, [SensorManager.remapCoordinateSystem]
+ * applies it, then [SensorManager.getOrientation] extracts the azimuth. That
+ * result is correct in all four orientations ONLY while the phone lies flat
+ * (screen up) -- it is the bearing of a specific device-local axis, and that
+ * axis is only "forward" when flat.
+ *
+ * Vastu AR is used holding the phone UPRIGHT, aimed at a room through the
+ * back camera -- the top edge and the back camera point in genuinely
+ * different (orthogonal) directions on the device, so [onSensorChanged] then
+ * picks between them via [VastuArPolicy.resolveHeading]:
+ *   - **Flat** (screen-normal close to vertical in world space): keep the
+ *     top-edge azimuth above, tied to the displayed top edge as always.
+ *   - **Upright** (screen-normal close to horizontal): use the back
+ *     camera's own facing direction instead, computed straight from the
+ *     rotation matrix and independent of display rotation -- this is what a
+ *     held-up AR view needs, and it does not flip when the OS rotates the
+ *     displayed UI, unlike the top-edge azimuth.
+ * A hysteresis band avoids flicker for a phone propped near the boundary;
+ * see [VastuArPolicy.resolveHeading]'s header for the exact thresholds, the
+ * on-device evidence that found this bug (Firebase Test Lab, Pixel 8 /
+ * Pixel 8 Pro, Android 14 -- heading off by ~90-180 degrees from the camera
+ * whenever the phone was held upright), and why the mode-selection and
+ * camera math live in the pure, JVM-testable [VastuArPolicy] while the
+ * top-edge remap stays here (it needs the real [SensorManager]). Axis
+ * selection and mode selection both have JVM coverage; physical sensor
+ * accuracy still requires the device checklist.
  *
  * ## Usage (from the host Android app)
  * ```kotlin
@@ -262,6 +285,16 @@ class VastuArView(private val context: Context, arUrl: String? = null) : SensorE
     private val rotationMatrix = FloatArray(9)
     private val displayRotationMatrix = FloatArray(9)
     private val orientationAngles = FloatArray(3)
+
+    /**
+     * Which vector [VastuArPolicy.resolveHeading] is currently trusting --
+     * top edge (flat) or back camera (upright, the AR case). See that
+     * function's header for the root cause and the hysteresis thresholds.
+     * Starts [VastuArPolicy.HeadingMode.TOP_EDGE]: most devices are face-up
+     * on a table before a user picks them up, and the first real sample
+     * re-decides the mode from the actual pose regardless.
+     */
+    private var headingMode = VastuArPolicy.HeadingMode.TOP_EDGE
 
     private var started = false
 
@@ -440,8 +473,30 @@ class VastuArView(private val context: Context, arUrl: String? = null) : SensorE
         if (!SensorManager.remapCoordinateSystem(rotationMatrix, axes.first, axes.second, displayRotationMatrix)) return
         SensorManager.getOrientation(displayRotationMatrix, orientationAngles)
         val azimuthRad = orientationAngles[0] // [-pi, pi], magnetic north from the displayed top edge
-        val magneticHeadingDeg = normalizeDeg(Math.toDegrees(azimuthRad.toDouble()))
+        val topEdgeHeadingDeg = normalizeDeg(Math.toDegrees(azimuthRad.toDouble()))
 
+        // Held flat, the top edge above IS the right answer. Held upright --
+        // how Vastu AR is actually used -- it is not: the top edge and the
+        // back camera are orthogonal device-local axes, so pick whichever
+        // one the current pose makes trustworthy. See
+        // VastuArPolicy.resolveHeading's header for the root cause, the
+        // on-device evidence, and the hysteresis thresholds.
+        val (resolvedHeadingDeg, newHeadingMode) = VastuArPolicy.resolveHeading(
+            screenNormalUp = rotationMatrix[8].toDouble(),
+            cameraEast = -rotationMatrix[2].toDouble(),
+            cameraNorth = -rotationMatrix[5].toDouble(),
+            topEdgeHeadingDeg = topEdgeHeadingDeg,
+            previousMode = headingMode,
+        )
+        headingMode = newHeadingMode
+
+        // null means WITHHELD: camera mode, but the camera vector is too
+        // close to vertical to trust this sample (see resolveHeading's
+        // @return doc -- falling back to the top-edge value here would
+        // reintroduce the same class of heading jump the 2026-09-24 P2 fix
+        // removed, since the two formulas are not continuous with each
+        // other away from the flat limit).
+        val magneticHeadingDeg = resolvedHeadingDeg ?: return
         if (!magneticHeadingDeg.isFinite()) return
         // Android reports a quality class, not a measured error in degrees.
         // The web engine uses this class to gate precision without inventing one.
