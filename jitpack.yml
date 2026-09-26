@@ -11,3 +11,6 @@
 # must already be running on JDK 17 or the build fails outright.
 jdk:
   - openjdk17
+install:
+  - ./gradlew debugAndroidEnv --console=plain || true
+  - ./gradlew publishToMavenLocal --console=plain
