@@ -182,19 +182,3 @@ publishing {
         }
     }
 }
-
-tasks.register("debugAndroidEnv") {
-    doLast {
-        println("ANDROID_HOME=" + (System.getenv("ANDROID_HOME") ?: "null"))
-        println("ANDROID_SDK_ROOT=" + (System.getenv("ANDROID_SDK_ROOT") ?: "null"))
-        listOf("ANDROID_HOME", "ANDROID_SDK_ROOT").forEach { key ->
-            System.getenv(key)?.let { home ->
-                val platformsDir = file("$home/platforms")
-                println("$key/platforms exists=${platformsDir.exists()} contents=${platformsDir.listFiles()?.map { it.name }}")
-            println("$key root contents=${file(home).listFiles()?.map { it.name }}")
-            println("$key cmdline-tools=${file("$home/cmdline-tools").listFiles()?.map { it.name }}")
-            println("$key tools/bin=${file("$home/tools/bin").listFiles()?.map { it.name }}")
-            }
-        }
-    }
-}
