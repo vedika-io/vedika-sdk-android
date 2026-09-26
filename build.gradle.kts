@@ -182,3 +182,16 @@ publishing {
         }
     }
 }
+
+tasks.register("debugAndroidEnv") {
+    doLast {
+        println("ANDROID_HOME=" + (System.getenv("ANDROID_HOME") ?: "null"))
+        println("ANDROID_SDK_ROOT=" + (System.getenv("ANDROID_SDK_ROOT") ?: "null"))
+        listOf("ANDROID_HOME", "ANDROID_SDK_ROOT").forEach { key ->
+            System.getenv(key)?.let { home ->
+                val platformsDir = file("$home/platforms")
+                println("$key/platforms exists=${platformsDir.exists()} contents=${platformsDir.listFiles()?.map { it.name }}")
+            }
+        }
+    }
+}
