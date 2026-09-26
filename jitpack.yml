@@ -11,6 +11,9 @@
 # must already be running on JDK 17 or the build fails outright.
 jdk:
   - openjdk17
+before_install:
+  - yes | "$ANDROID_HOME/tools/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+  - "$ANDROID_HOME/tools/bin/sdkmanager" "platforms;android-33" || true
 install:
   - ./gradlew debugAndroidEnv --console=plain || true
   - ./gradlew publishToMavenLocal --console=plain
