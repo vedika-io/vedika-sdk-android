@@ -9,7 +9,24 @@ monorepo.
 
 ## Install
 
-The published jar is `vedika-android-sdk-1.0.3.jar`, attached to each release. Build
+Via [JitPack](https://jitpack.io/#vedika-io/vedika-sdk-android) (Gradle):
+
+```kotlin
+repositories {
+    maven { url = uri("https://jitpack.io") }
+}
+
+dependencies {
+    implementation("com.github.vedika-io:vedika-sdk-android:1.0.4")
+}
+```
+
+The JitPack artifactId is `vedika-sdk-android` (this repo's name), which differs
+from the jar filename below (`vedika-android-sdk-*.jar`, from this module's
+Gradle project name) — both are correct, just two different naming schemes for
+the same build.
+
+The published jar is `vedika-android-sdk-1.0.4.jar`, attached to each release. Build
 it yourself with:
 
 ```sh

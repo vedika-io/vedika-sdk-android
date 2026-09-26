@@ -11,10 +11,19 @@
 // needed)".
 plugins {
     kotlin("jvm") version "2.0.20"
+    `maven-publish`
 }
 
-group = "io.vedika"
-version = "1.0.3"
+// JitPack builds this module by invoking Gradle with `-Pgroup=com.github.vedika-io
+// -Pversion=<tag or commit>` so it can publish under the coordinate a consumer
+// actually asks for (`com.github.vedika-io:vedika-sdk-android:<tag>`). A plain
+// `group = "..."` / `version = "..."` assignment runs AFTER Gradle applies those
+// `-P` values and would silently overwrite them back to the hardcoded default,
+// which is why JitPack's own coordinate would otherwise never take effect. Fall
+// back to the local defaults only when the property is absent (a bare `./gradlew
+// jar` on a dev machine) or still Gradle's own "unspecified" placeholder.
+group = (findProperty("group") as String?).takeUnless { it.isNullOrBlank() } ?: "io.vedika"
+version = (findProperty("version") as String?).takeUnless { it.isNullOrBlank() || it == "unspecified" } ?: "1.0.4"
 
 repositories {
     mavenCentral()
@@ -152,3 +161,24 @@ val verifyVastuRuntime = tasks.register<Exec>("verifyVastuRuntime") {
     }
 }
 tasks.named("jar") { dependsOn(verifyVastuRuntime) }
+
+// JitPack resolves `com.github.vedika-io:vedika-sdk-android:<tag>` by running
+// `gradle publishToMavenLocal` — that task only exists once a `maven-publish`
+// publication is registered. `from(components["java"])` publishes the main jar
+// plus a generated POM with this module's runtime dependencies.
+//
+// `artifactId` is pinned to "vedika-sdk-android" (this GitHub repo's name), NOT
+// left to default to `rootProject.name` ("vedika-android-sdk", set in
+// settings.gradle.kts for parity with the monorepo path `sdks/android`).
+// JitPack's Maven coordinate for a dependency is `com.github.<owner>:<repo>`,
+// so the artifactId must equal the repo name or `com.github.vedika-io:vedika-sdk-android`
+// never resolves — this mismatch would have broken every published version
+// (1.0.0-1.0.3) even after the Gradle/JDK build itself was fixed.
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "vedika-sdk-android"
+            from(components["java"])
+        }
+    }
+}
