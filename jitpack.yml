@@ -1,19 +1,7 @@
-# JitPack's build logs for 1.0.0-1.0.3 show it already installed JDK 17
-# (`sdk install java 17.0.12-oracle`) before the failure. The actual crash was
-# upstream of that: with no committed Gradle wrapper, JitPack falls back to
-# its own bootstrap Gradle (4.8.1) just to generate one, and that ancient
-# Gradle cannot even start under a modern JDK ("Could not create service of
-# type ScriptPluginFactory ..."). Committing `gradlew` (Gradle 8.10.2, see
-# gradle/wrapper/gradle-wrapper.properties) means JitPack uses that wrapper
-# directly and never touches its own bootstrap Gradle. Pinning `jdk` here is
-# still required, not just belt-and-suspenders: `kotlin { jvmToolchain(17) }`
-# in build.gradle.kts has no toolchain resolver configured, so Gradle itself
-# must already be running on JDK 17 or the build fails outright.
 jdk:
   - openjdk17
 before_install:
-  - yes | "$ANDROID_HOME/tools/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
-  - "$ANDROID_HOME/tools/bin/sdkmanager" "platforms;android-33" || true
-install:
-  - ./gradlew debugAndroidEnv --console=plain || true
-  - ./gradlew publishToMavenLocal --console=plain
+  - echo "BEFORE_INSTALL_MARKER_START"
+  - env | grep -i android
+  - ls -la "$ANDROID_HOME" || true
+  - echo "BEFORE_INSTALL_MARKER_END"
