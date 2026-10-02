@@ -23,7 +23,7 @@ plugins {
 // back to the local defaults only when the property is absent (a bare `./gradlew
 // jar` on a dev machine) or still Gradle's own "unspecified" placeholder.
 group = (findProperty("group") as String?).takeUnless { it.isNullOrBlank() } ?: "io.vedika"
-version = (findProperty("version") as String?).takeUnless { it.isNullOrBlank() || it == "unspecified" } ?: "1.0.4"
+version = (findProperty("version") as String?).takeUnless { it.isNullOrBlank() || it == "unspecified" } ?: "1.1.0"
 
 repositories {
     mavenCentral()
@@ -52,7 +52,7 @@ kotlin {
 // `compileOnly` means. With this jar on the classpath, `VastuArView.kt`
 // compiles as an ordinary part of this module's main source set and ships
 // inside the published artifact like every other class here. A consuming
-// Android app now gets it via a normal `implementation("io.vedika:vedika-android-sdk:1.0.0")`
+// Android app now gets it via a normal `implementation("io.vedika:vedika-android-sdk:1.1.0")`
 // dependency — no manual file copy.
 //
 // A bare-JDK host can still run the client tests without the AR class.

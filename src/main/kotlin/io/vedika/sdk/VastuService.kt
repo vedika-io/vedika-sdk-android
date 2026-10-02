@@ -105,6 +105,10 @@ enum class VastuOperation(val path: String) {
     ArTrueNorthCalibrate("ar/true-north-calibrate"),
     Assessments("assessments"),
     AssessmentsBatch("assessments/batch"),
+    Jobs("jobs"),
+    JobsId("jobs/{id}"),
+    JobsIdResults("jobs/{id}/results"),
+    JobsIdCancel("jobs/{id}/cancel"),
 }
 
 data class VastuPoint(val x: Double, val y: Double)
@@ -2793,6 +2797,15 @@ data class VastuCatalogReferenceDataRemediesItem(val raw: JSONObject) {
         get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getString("source")
 }
 
+data class VastuChatUploadDataBilling(val raw: JSONObject) {
+    val chargedCents: Int?
+        get() = if (!raw.has("chargedCents") || raw.isNull("chargedCents")) null else raw.getInt("chargedCents")
+    val balanceAfterCents: Int?
+        get() = if (!raw.has("balanceAfterCents") || raw.isNull("balanceAfterCents")) null else raw.getInt("balanceAfterCents")
+    val currency: String?
+        get() = if (!raw.has("currency") || raw.isNull("currency")) null else raw.getString("currency")
+}
+
 data class VastuComplianceIndexDataDrivingDefectsItem(val raw: JSONObject) {
     val room: String?
         get() = if (!raw.has("room") || raw.isNull("room")) null else raw.getString("room")
@@ -4063,6 +4076,31 @@ data class VastuCatalogReferenceData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("meta") || raw.isNull("meta")) null else raw.getJSONObject("meta")
     val referenceVersion: String
         get() = raw.getString("referenceVersion")
+}
+
+data class VastuChatUploadData(override val raw: JSONObject) : VastuData {
+    val success: Boolean
+        get() = raw.getBoolean("success")
+    val uploadId: String
+        get() = raw.getString("uploadId")
+    val pages: Int
+        get() = raw.getInt("pages")
+    val charsExtracted: Int
+        get() = raw.getInt("charsExtracted")
+    val expiresAt: String
+        get() = raw.getString("expiresAt")
+    val digestSha256: String
+        get() = raw.getString("digestSha256")
+    val pagesSkipped: Int?
+        get() = if (!raw.has("pagesSkipped") || raw.isNull("pagesSkipped")) null else raw.getInt("pagesSkipped")
+    val textTruncated: Boolean?
+        get() = if (!raw.has("textTruncated") || raw.isNull("textTruncated")) null else raw.getBoolean("textTruncated")
+    val replayed: Boolean?
+        get() = if (!raw.has("replayed") || raw.isNull("replayed")) null else raw.getBoolean("replayed")
+    val billing: VastuChatUploadDataBilling?
+        get() = if (!raw.has("billing") || raw.isNull("billing")) null else VastuChatUploadDataBilling(raw.getJSONObject("billing"))
+    val fileSha256: String
+        get() = raw.getString("fileSha256")
 }
 
 data class VastuComplianceIndexData(override val raw: JSONObject) : VastuData {
@@ -5637,7 +5675,7 @@ object VastuContracts {
 
 /**
  * Vastu Shastra: plot geometry, mandala projection, entrance/room/placement
- * rules, compliance audits, scoring, and floor-plan generation (94 logical backend
+ * rules, compliance audits, scoring, and floor-plan generation (98 logical backend
  * operations across the full domain — this first deliverable ships the 12
  * client methods that reach all of them, including the two escape hatches,
  * [vastu] and [vastuReference], for any op/table that doesn't have its own
@@ -5658,7 +5696,7 @@ class VastuService internal constructor(private val client: VedikaClient) {
         const val BASE = "/v2/astrology/vastu"
     }
 
-    /** Exact request and result types for one of the 94 mounted operations. */
+    /** Exact request and result types for one of the 98 mounted operations. */
     suspend fun <Request : VastuRequest, Data : VastuData> vastuOperation(
         contract: VastuContract<Request, Data>,
         request: Request,
@@ -5681,11 +5719,16 @@ class VastuService internal constructor(private val client: VedikaClient) {
      * `reference/gate-obstructions`) are GET-only (a POST returns 405) and
      * `direction/declination` is a GET+POST dual whose verified path is
      * GET-with-query, so both dispatch GET (params become query string);
-     * everything else is POST. Mirrors `VASTU_GET_REFERENCE_ROUTES` +
-     * `VASTU_DUAL_ROUTE` in `rust/vedika-api-rust/crates/vedika-v2/src/vastu.rs`.
+     * everything else is POST, matching the server's route table.
      */
     suspend fun vastu(op: String, params: Map<String, Any?> = emptyMap(), idempotencyKey: String? = null): JSONObject {
         val path = stripLeadingSlash(op)
+        if (path.startsWith("jobs/")) {
+            val job = requireNotNull(VASTU_JOB_PATH.matchEntire(path)) {
+                "Job paths are jobs/{jobId}, jobs/{jobId}/results and jobs/{jobId}/cancel"
+            }
+            requireVastuJobId(job.groupValues[1])
+        }
         return if (isGetOp(path)) {
             client.get("$BASE/$path", stringifyParams(params), idempotencyKey = idempotencyKey)
         } else {
@@ -5724,6 +5767,9 @@ class VastuService internal constructor(private val client: VedikaClient) {
         request: VastuOperationRequest = VastuOperationRequest(),
         idempotencyKey: String? = null,
     ): VastuOperationResult {
+        require(!operation.path.contains("{id}")) {
+            "${operation.path} carries a job id; use vastuJobStatus, vastuJobResults or vastuJobCancel"
+        }
         val body = request.toMap()
         val raw = if (isGetOp(operation.path)) {
             client.get("$BASE/${operation.path}", stringifyParams(body), idempotencyKey = idempotencyKey)
@@ -5806,6 +5852,56 @@ class VastuService internal constructor(private val client: VedikaClient) {
     }
 
     /**
+     * Queue 1 to 1,000 assessments and get a jobId back at once (HTTP 202).
+     *
+     * [idempotencyKey] is mandatory and must be retained by the caller. Save
+     * it with this exact request: after a lost response or a restart, submit
+     * the same body with the same key and the original job comes back
+     * (`data.replayed` is true) instead of a second paid job. Each item is
+     * charged only after it succeeds.
+     */
+    suspend fun vastuJobSubmit(request: VastuJobsRequest, idempotencyKey: String): VastuJobSubmitResponse {
+        val raw = client.post("$BASE/jobs", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuJobSubmitResponse(raw.getBoolean("success"), VastuJobSubmitData(raw.getJSONObject("data")), raw)
+    }
+
+    /** Status, per-state counts and billing of a job. Free. */
+    suspend fun vastuJobStatus(jobId: String): VastuJobStatusResponse {
+        val raw = client.get("$BASE/jobs/${requireVastuJobId(jobId)}")
+        return VastuJobStatusResponse(raw.getBoolean("success"), VastuJobStatusData(raw.getJSONObject("data")), raw)
+    }
+
+    /**
+     * One page (up to 50) of finished item results, in item order. Free.
+     * Cursor pagination only: pass the previous page's `data.nextCursor`; it
+     * is null on the last page. See [vastuJobResultItems] to walk them all.
+     */
+    suspend fun vastuJobResults(jobId: String, cursor: String? = null): VastuJobResultsResponse {
+        require(cursor == null || cursor.length in 1..32) { "cursor must be the nextCursor of the previous page (1 to 32 characters)" }
+        val query = if (cursor == null) emptyMap() else mapOf("cursor" to cursor)
+        val raw = client.get("$BASE/jobs/${requireVastuJobId(jobId)}/results", query)
+        return VastuJobResultsResponse(raw.getBoolean("success"), VastuJobResultsData(raw.getJSONObject("data")), raw)
+    }
+
+    /** Every finished item of a job, following `nextCursor` until it is null. */
+    fun vastuJobResultItems(jobId: String): kotlinx.coroutines.flow.Flow<VastuJobResultItem> = kotlinx.coroutines.flow.flow {
+        var cursor: String? = null
+        while (true) {
+            val page = vastuJobResults(jobId, cursor).data
+            page.items.forEach { emit(it) }
+            val next = page.nextCursor ?: break
+            check(next != cursor) { "The server returned the same results cursor twice" }
+            cursor = next
+        }
+    }
+
+    /** Stop a queued or running job. Items already charged stay charged; the rest are not run. Free. */
+    suspend fun vastuJobCancel(jobId: String): VastuJobStatusResponse {
+        val raw = client.post("$BASE/jobs/${requireVastuJobId(jobId)}/cancel", emptyMap())
+        return VastuJobStatusResponse(raw.getBoolean("success"), VastuJobStatusData(raw.getJSONObject("data")), raw)
+    }
+
+    /**
      * Single-room placement, e.g. `vastuRoom("kitchen", mapOf("zone" to "southeast"))`.
      * [roomType]: kitchen, bedroom, pooja, toilet, staircase, study, living,
      * dining, store, water-storage.
@@ -5851,8 +5947,11 @@ class VastuService internal constructor(private val client: VedikaClient) {
     ): VastuTypedResponse<VastuDirectionDeclinationData> =
         vastuOperation(VastuContracts.directionDeclination, VastuDirectionDeclinationRequest(lat, lon, date), idempotencyKey = idempotencyKey)
 
-    private fun isGetOp(path: String): Boolean =
-        path.startsWith("reference/") || path == "direction/declination"
+    private fun isGetOp(path: String): Boolean {
+        if (path.startsWith("reference/") || path == "direction/declination") return true
+        val job = VASTU_JOB_PATH.matchEntire(path) ?: return false
+        return job.groupValues[2] != "/cancel"
+    }
 
     /** Query params are stringified for GET; null values are dropped rather than sent as "null". */
     private fun stringifyParams(params: Map<String, Any?>): Map<String, String> =

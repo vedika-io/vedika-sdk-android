@@ -278,7 +278,7 @@ class VastuArPolicyTest {
         assertTrue(abs(preFixHeading - heading) >= 89.0)
     }
 
-    // ── continuous-rotation sweeps (2026-09-24 fix) ────────────
+    // ── continuous-rotation sweeps (2026-09-24 review fix, P2) ────────────
     //
     // The P2 finding: rotating continuously about device X from face-up
     // through upright toward face-down, the OLD abs()-based hysteresis

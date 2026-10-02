@@ -19,7 +19,7 @@ internal object VastuArPolicy {
     /**
      * See [resolveHeading]: below this SIGNED `screenNormalUp` (not its
      * absolute value), prefer [HeadingMode.CAMERA]. Signed on purpose
-     * (2026-09-24 fix): this threshold, and
+     * (2026-09-24 review fix): this threshold, and
      * [TOP_EDGE_MODE_ENTER_THRESHOLD], must NOT be symmetric around zero.
      * The top-edge formula is only trustworthy when the SCREEN FACES UP
      * (`screenNormalUp` strongly positive); using `abs(screenNormalUp)`
@@ -101,7 +101,7 @@ internal object VastuArPolicy {
      * responsibility (choosing which vector to trust, and computing the
      * camera one) pure and JVM-testable.
      *
-     * ## Hysteresis, and why it is SIGNED (2026-09-24 fix)
+     * ## Hysteresis, and why it is SIGNED (2026-09-24 review fix, P2)
      * [CAMERA_MODE_ENTER_THRESHOLD] (0.70) / [TOP_EDGE_MODE_ENTER_THRESHOLD]
      * (0.80) straddle the midpoint of the acceptance test's own two
      * unambiguous-pose bands (flat: `|screenNormalUp| > 0.87`, upright:

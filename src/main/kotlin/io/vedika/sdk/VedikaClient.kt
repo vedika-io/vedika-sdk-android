@@ -45,7 +45,7 @@ class VedikaClient @JvmOverloads constructor(
     allowInsecureHttp: Boolean = false,
 ) {
     companion object {
-        private const val SDK_VERSION = "vedika-android/1.0.3"
+        private const val SDK_VERSION = "vedika-android/1.1.0"
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
         /**
@@ -167,7 +167,7 @@ class VedikaClient @JvmOverloads constructor(
         body: Map<String, Any?>,
         idempotencyKey: String? = null,
     ): JSONObject = withContext(Dispatchers.IO) {
-        if (path.substringBefore("?") in setOf("/v2/vastu/assessments/batch", "/v2/astrology/vastu/assessments/batch")) {
+        if (path.substringBefore("?") in RETAINED_KEY_PATHS) {
             require(!idempotencyKey.isNullOrBlank()) { "A nonblank caller-retained Idempotency-Key is required" }
         }
         // Scan save/retrieve/list/timelapse identify a retry by scanId or the
@@ -220,7 +220,7 @@ class VedikaClient @JvmOverloads constructor(
         }
 
         return when (val code = response.code) {
-            200 -> body
+            in 200..299 -> body // job submit answers 202
             401 -> throw VedikaAuthError(
                 body.optString("error", "Invalid API key"),
                 body = body,
@@ -283,6 +283,12 @@ class VedikaClient @JvmOverloads constructor(
         else -> value
     }
 }
+
+/** Paths whose submit must carry a caller-retained key: a batch and an async job each charge per item. */
+private val RETAINED_KEY_PATHS = setOf(
+    "/v2/vastu/assessments/batch", "/v2/astrology/vastu/assessments/batch",
+    "/v2/vastu/jobs", "/v2/astrology/vastu/jobs",
+)
 
 private val SCAN_PREFIXES = listOf("/v2/vastu/scans/", "/v2/astrology/vastu/scans/")
 private val BODY_IDENTITY_SCAN_OPS = setOf("save", "retrieve", "list", "delete", "timelapse")
