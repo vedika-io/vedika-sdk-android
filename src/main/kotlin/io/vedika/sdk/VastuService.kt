@@ -11,12 +11,53 @@ private fun JSONObject.optionalNumber(name: String): Number? = when (val value =
 }
 
 enum class VastuOperation(val path: String) {
+    RemediationTasksUpsert("remediation/tasks/upsert"),
+    RemediationTasksList("remediation/tasks/list"),
+    RemediationTasksDelete("remediation/tasks/delete"),
+    RemediationReassess("remediation/reassess"),
+    MerchantCatalogUpload("merchant/catalog/upload"),
+    MerchantCatalogGet("merchant/catalog/get"),
+    MerchantCatalogDelete("merchant/catalog/delete"),
+    MerchantRemedies("merchant/remedies"),
+
+    PortfolioSearch("portfolio/search"),
+    PortfolioCompare("portfolio/compare"),
+    PortfolioAnalytics("portfolio/analytics"),
+    PortfolioUsage("portfolio/usage"),
+    PortfolioUsageExport("portfolio/usage/export"),
+    PortfolioBudgetsSet("portfolio/budgets/set"),
+    PortfolioBudgetsGet("portfolio/budgets/get"),
+    DrawingSheet("report/drawing-sheet"),
+    PropertiesCreate("properties/create"),
+    PropertiesUpdate("properties/update"),
+    PropertiesCollaborationGet("properties/collaboration/get"),
+    PropertiesCollaborationInvite("properties/collaboration/invite"),
+    PropertiesCollaborationRevoke("properties/collaboration/revoke"),
+    PropertiesCollaborationMembers("properties/collaboration/members"),
+    PropertiesCollaborationComment("properties/collaboration/comment"),
+    PropertiesCollaborationReview("properties/collaboration/review"),
+    PropertiesCollaborationUpdate("properties/collaboration/update"),
+    PropertiesActivityList("properties/activity/list"),
+    PropertiesActivityExport("properties/activity/export"),
+    PropertiesGet("properties/get"),
+    PropertiesList("properties/list"),
+    PropertiesDelete("properties/delete"),
+    PropertiesLinkScan("properties/link-scan"),
+    ArchiveTier("archive/tier"),
+    ArchiveExport("archive/export"),
+    ArchiveDelete("archive/delete"),
+    ArchiveSummary("archive/summary"),
+    FeedListings("feed/listings"),
+    QuoteCalculate("quote/calculate"),
+
     ScansTimelapse("scans/timelapse"),
     ScansDelete("scans/delete"),
     ScansList("scans/list"),
     ScansRetrieve("scans/retrieve"),
     ScansSave("scans/save"),
     ArDeityIcons("ar/deity-icons"),
+    ArCaptureMerge("ar/capture-merge"),
+    PlotFromSurvey("plot/from-survey"),
     ArRoomCapture("ar/room-capture"),
     ArAttestationChallenge("ar/attestation/challenge"),
     ArYantraMeshes("ar/yantra-meshes"),
@@ -92,7 +133,17 @@ enum class VastuOperation(val path: String) {
     TimingGrihapravesh("timing/grihapravesh"),
     TimingConstructionStart("timing/construction-start"),
     TimingVastuShanti("timing/vastu-shanti"),
+    PlanCompareVersions("plan/compare-versions"),
+    ReceiptVerify("receipt/verify"),
+    RulesVersions("rules/versions"),
     PlanAnalyze("plan/analyze"),
+    PlanImportDxf("plan/import-dxf"),
+    PlanExportDxf("plan/export-dxf"),
+    PlanExportIfc("plan/export-ifc"),
+    PlanConvertUnits("plan/convert-units"),
+    PlanImportIfc("plan/import-ifc"),
+    PlanImportImage("plan/import-image"),
+    PlanImportPdf("plan/import-pdf"),
     PlanUpload("plan/upload"),
     PlanReport("plan/report"),
     PlanGenerate("plan/generate"),
@@ -109,6 +160,712 @@ enum class VastuOperation(val path: String) {
     JobsId("jobs/{id}"),
     JobsIdResults("jobs/{id}/results"),
     JobsIdCancel("jobs/{id}/cancel"),
+}
+
+data class VastuDrawingSheetRequestTitleBlock(
+    val project: String,
+    val architect: String,
+    val drawingNumber: String? = null,
+    val revision: String? = null,
+    val date: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "project" to project,
+        "architect" to architect,
+        "drawingNumber" to drawingNumber,
+        "revision" to revision,
+        "date" to date
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuDrawingSheetRequestFieldEvidenceItem(
+    val label: String,
+    val note: String? = null,
+    val roomId: String? = null,
+    val imageDataUrl: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "label" to label,
+        "note" to note,
+        "roomId" to roomId,
+        "imageDataUrl" to imageDataUrl
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuDrawingSheetRequest(
+    val plan: JSONObject,
+    val titleBlock: VastuDrawingSheetRequestTitleBlock,
+    val paperSize: String? = null,
+    val scaleDenominator: Int? = null,
+    val format: String? = null,
+    val zoneOverlay: Boolean? = null,
+    val dimensions: Boolean? = null,
+    val fieldEvidence: List<VastuDrawingSheetRequestFieldEvidenceItem>? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "plan" to plan,
+        "titleBlock" to titleBlock,
+        "paperSize" to paperSize,
+        "scaleDenominator" to scaleDenominator,
+        "format" to format,
+        "zoneOverlay" to zoneOverlay,
+        "dimensions" to dimensions,
+        "fieldEvidence" to fieldEvidence
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuWorkspaceRequestDrawingTitleBlock(
+    val project: String,
+    val architect: String,
+    val drawingNumber: String? = null,
+    val revision: String? = null,
+    val date: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "project" to project,
+        "architect" to architect,
+        "drawingNumber" to drawingNumber,
+        "revision" to revision,
+        "date" to date
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuWorkspaceRequestDrawingFieldEvidenceItem(
+    val label: String,
+    val note: String? = null,
+    val roomId: String? = null,
+    val imageDataUrl: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "label" to label,
+        "note" to note,
+        "roomId" to roomId,
+        "imageDataUrl" to imageDataUrl
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuWorkspaceRequestDrawing(
+    val plan: JSONObject,
+    val titleBlock: VastuWorkspaceRequestDrawingTitleBlock,
+    val paperSize: String? = null,
+    val scaleDenominator: Int? = null,
+    val format: String? = null,
+    val zoneOverlay: Boolean? = null,
+    val dimensions: Boolean? = null,
+    val fieldEvidence: List<VastuWorkspaceRequestDrawingFieldEvidenceItem>? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "plan" to plan,
+        "titleBlock" to titleBlock,
+        "paperSize" to paperSize,
+        "scaleDenominator" to scaleDenominator,
+        "format" to format,
+        "zoneOverlay" to zoneOverlay,
+        "dimensions" to dimensions,
+        "fieldEvidence" to fieldEvidence
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuWorkspaceRequest(
+    val propertyId: String? = null,
+    val jobId: String? = null,
+    val idempotencyKey: String? = null,
+    val title: String? = null,
+    val input: JSONObject? = null,
+    val outcome: String? = null,
+    val webhookSecret: String? = null,
+    val drawing: VastuWorkspaceRequestDrawing? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "jobId" to jobId,
+        "idempotencyKey" to idempotencyKey,
+        "title" to title,
+        "input" to input,
+        "outcome" to outcome,
+        "webhookSecret" to webhookSecret,
+        "drawing" to drawing
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesCreateRequestIds(
+    val project: String,
+    val building: String,
+    val unit: String,
+    val floor: String,
+    val revision: String) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "project" to project,
+        "building" to building,
+        "unit" to unit,
+        "floor" to floor,
+        "revision" to revision
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesCreateRequest(
+    val propertyId: String? = null,
+    val ids: VastuPropertiesCreateRequestIds,
+    val title: String,
+    val data: JSONObject,
+    val retentionDays: Int,
+    val linkedScanIds: List<String>? = null,
+    val linkedAssessmentIds: List<String>? = null,
+    val externalId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "tenantRef" to tenantRef,
+
+        "propertyId" to propertyId,
+        "ids" to ids,
+        "title" to title,
+        "data" to data,
+        "retentionDays" to retentionDays,
+        "linkedScanIds" to linkedScanIds,
+        "linkedAssessmentIds" to linkedAssessmentIds,
+        "externalId" to externalId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesUpdateRequestIds(
+    val project: String,
+    val building: String,
+    val unit: String,
+    val floor: String,
+    val revision: String) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "project" to project,
+        "building" to building,
+        "unit" to unit,
+        "floor" to floor,
+        "revision" to revision
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesUpdateRequest(
+    val propertyId: String,
+    val ids: VastuPropertiesUpdateRequestIds,
+    val title: String,
+    val data: JSONObject,
+    val retentionDays: Int,
+    val linkedScanIds: List<String>? = null,
+    val linkedAssessmentIds: List<String>? = null,
+    val externalId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "tenantRef" to tenantRef,
+
+        "propertyId" to propertyId,
+        "ids" to ids,
+        "title" to title,
+        "data" to data,
+        "retentionDays" to retentionDays,
+        "linkedScanIds" to linkedScanIds,
+        "linkedAssessmentIds" to linkedAssessmentIds,
+        "externalId" to externalId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesCollaborationGetRequest(
+    val propertyId: String,
+    val ownerId: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "ownerId" to ownerId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesCollaborationInviteRequest(
+    val propertyId: String,
+    val ownerId: String? = null,
+    val accountId: String? = null,
+    val email: String? = null,
+    val role: String,
+    val accept: Boolean? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "ownerId" to ownerId,
+        "accountId" to accountId,
+        "email" to email,
+        "role" to role,
+        "accept" to accept
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesCollaborationRevokeRequest(
+    val propertyId: String,
+    val ownerId: String? = null,
+    val accountId: String? = null,
+    val invitationId: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "ownerId" to ownerId,
+        "accountId" to accountId,
+        "invitationId" to invitationId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesCollaborationMembersRequest(
+    val propertyId: String,
+    val ownerId: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "ownerId" to ownerId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesCollaborationCommentRequest(
+    val propertyId: String,
+    val ownerId: String? = null,
+    val assessmentId: String,
+    val revision: String,
+    val expectedContentHash: String,
+    val text: String) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "ownerId" to ownerId,
+        "assessmentId" to assessmentId,
+        "revision" to revision,
+        "expectedContentHash" to expectedContentHash,
+        "text" to text
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesCollaborationReviewRequest(
+    val propertyId: String,
+    val ownerId: String? = null,
+    val assessmentId: String,
+    val revision: String,
+    val expectedContentHash: String,
+    val decision: String) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "ownerId" to ownerId,
+        "assessmentId" to assessmentId,
+        "revision" to revision,
+        "expectedContentHash" to expectedContentHash,
+        "decision" to decision
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesCollaborationUpdateRequest(
+    val propertyId: String,
+    val ownerId: String? = null,
+    val revision: String,
+    val expectedContentHash: String,
+    val title: String,
+    val data: Map<String, Any?>) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "ownerId" to ownerId,
+        "revision" to revision,
+        "expectedContentHash" to expectedContentHash,
+        "title" to title,
+        "data" to data
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesActivityListRequest(
+    val propertyId: String,
+    val ownerId: String? = null,
+    val cursor: Int? = null,
+    val limit: Int? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "ownerId" to ownerId,
+        "cursor" to cursor,
+        "limit" to limit
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesActivityExportRequest(
+    val propertyId: String,
+    val ownerId: String? = null,
+    val cursor: Int? = null,
+    val limit: Int? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "ownerId" to ownerId,
+        "cursor" to cursor,
+        "limit" to limit
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesGetRequest(
+    val propertyId: String,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "tenantRef" to tenantRef,
+
+        "propertyId" to propertyId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesListRequest(
+    val limit: Int? = null,
+    val cursor: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "limit" to limit,
+        "cursor" to cursor
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesDeleteRequest(
+    val propertyId: String,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "tenantRef" to tenantRef,
+
+        "propertyId" to propertyId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPropertiesLinkScanRequest(
+    val propertyId: String,
+    val addScanIds: List<String>? = null,
+    val addAssessmentIds: List<String>? = null,
+    val replace: Boolean? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "tenantRef" to tenantRef,
+
+        "propertyId" to propertyId,
+        "addScanIds" to addScanIds,
+        "addAssessmentIds" to addAssessmentIds,
+        "replace" to replace
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArchiveTierRequest(
+    val propertyId: String,
+    val months: Int,
+    val preview: Boolean? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "tenantRef" to tenantRef,
+
+        "propertyId" to propertyId,
+        "months" to months,
+        "preview" to preview
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArchiveExportRequest(
+    val propertyId: String,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "tenantRef" to tenantRef,
+
+        "propertyId" to propertyId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArchiveDeleteRequest(
+    val propertyId: String,
+    val confirmPropertyId: String,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "tenantRef" to tenantRef,
+
+        "propertyId" to propertyId,
+        "confirmPropertyId" to confirmPropertyId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArchiveSummaryRequest(
+    val propertyId: String,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "tenantRef" to tenantRef,
+
+        "propertyId" to propertyId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuFeedListingsRequestRowsItemPlanAsset(
+    val kind: String,
+    val value: String) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "kind" to kind,
+        "value" to value
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuFeedListingsRequestRowsItem(
+    val externalId: String,
+    val revision: String,
+    val project: String,
+    val building: String,
+    val unit: String,
+    val floor: String,
+    val title: String,
+    val address: String? = null,
+    val city: String? = null,
+    val bearingDeg: Double? = null,
+    val planAsset: VastuFeedListingsRequestRowsItemPlanAsset? = null,
+    val retentionDays: Int? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "externalId" to externalId,
+        "revision" to revision,
+        "project" to project,
+        "building" to building,
+        "unit" to unit,
+        "floor" to floor,
+        "title" to title,
+        "address" to address,
+        "city" to city,
+        "bearingDeg" to bearingDeg,
+        "planAsset" to planAsset,
+        "retentionDays" to retentionDays
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuFeedListingsRequest(
+    val csv: String? = null,
+    val rows: List<VastuFeedListingsRequestRowsItem>? = null,
+    val dryRun: Boolean? = null,
+    val skipDuplicates: Boolean? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "csv" to csv,
+        "rows" to rows,
+        "dryRun" to dryRun,
+        "skipDuplicates" to skipDuplicates
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuQuoteCalculateRequestOperationsItem(
+    val op: String,
+    val quantity: Int? = null,
+    val label: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "op" to op,
+        "quantity" to quantity,
+        "label" to label
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuQuoteCalculateRequest(
+    val workflowId: String? = null,
+    val operations: List<VastuQuoteCalculateRequestOperationsItem>? = null,
+    val retentionMonths: Int? = null,
+    val retentionStoredBytes: Long? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "workflowId" to workflowId,
+        "operations" to operations,
+        "retentionMonths" to retentionMonths,
+        "retentionStoredBytes" to retentionStoredBytes
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuRemediationTasksUpsertRequestTaskEvidenceItem(
+    val reference: String,
+    val photoRef: String? = null,
+    val note: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "reference" to reference,
+        "photoRef" to photoRef,
+        "note" to note
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuRemediationTasksUpsertRequestTask(
+    val taskId: String,
+    val reportRef: String,
+    val findingRef: String,
+    val remedyKey: String,
+    val title: String,
+    val status: String,
+    val assignee: String? = null,
+    val dueDate: String? = null,
+    val evidence: List<VastuRemediationTasksUpsertRequestTaskEvidenceItem>? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "taskId" to taskId,
+        "reportRef" to reportRef,
+        "findingRef" to findingRef,
+        "remedyKey" to remedyKey,
+        "title" to title,
+        "status" to status,
+        "assignee" to assignee,
+        "dueDate" to dueDate,
+        "evidence" to evidence
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuRemediationTasksUpsertRequest(
+    val expectedRevision: Long,
+    val mutationId: String,
+    val propertyId: String,
+    val task: VastuRemediationTasksUpsertRequestTask) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "expectedRevision" to expectedRevision,
+        "mutationId" to mutationId,
+        "propertyId" to propertyId,
+        "task" to task
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuRemediationTasksListRequest(
+    val propertyId: String) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuRemediationTasksDeleteRequest(
+    val id: String,
+    val confirmId: String) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "confirmId" to confirmId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuRemediationReassessRequestPlanRoomsItem(
+    val name: String? = null,
+    val room: String? = null,
+    val roomType: String? = null,
+    val label: String? = null,
+    val zone: String? = null,
+    val direction: String? = null,
+    val x: Double? = null,
+    val y: Double? = null,
+    val w: Double? = null,
+    val h: Double? = null,
+    val width: Double? = null,
+    val height: Double? = null,
+    val polygon: List<Any?>? = null,
+    val outline: List<Any?>? = null,
+    val area: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "name" to name,
+        "room" to room,
+        "roomType" to roomType,
+        "label" to label,
+        "zone" to zone,
+        "direction" to direction,
+        "x" to x,
+        "y" to y,
+        "w" to w,
+        "h" to h,
+        "width" to width,
+        "height" to height,
+        "polygon" to polygon,
+        "outline" to outline,
+        "area" to area,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuRemediationReassessRequestPlanImportReview(
+    val northKnown: Boolean,
+    val scaleKnown: Boolean,
+    val analysisReady: Boolean,
+    val coordinateFrame: String,
+    val units: String) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "northKnown" to northKnown,
+        "scaleKnown" to scaleKnown,
+        "analysisReady" to analysisReady,
+        "coordinateFrame" to coordinateFrame,
+        "units" to units
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuRemediationReassessRequestPlan(
+    val rooms: List<VastuRemediationReassessRequestPlanRoomsItem>,
+    val plot: JSONObject? = null,
+    val zoneResolution: Int? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val importReview: VastuRemediationReassessRequestPlanImportReview? = null,
+    val merchantCatalogId: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "rooms" to rooms,
+        "plot" to plot,
+        "zoneResolution" to zoneResolution,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
+        "importReview" to importReview,
+        "merchantCatalogId" to merchantCatalogId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuRemediationReassessRequest(
+    val expectedRevision: Long,
+    val mutationId: String,
+    val propertyId: String,
+    val taskId: String,
+    val plan: VastuRemediationReassessRequestPlan) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "expectedRevision" to expectedRevision,
+        "mutationId" to mutationId,
+        "propertyId" to propertyId,
+        "taskId" to taskId,
+        "plan" to plan
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuMerchantCatalogUploadRequest(
+    val expectedRevision: Long,
+    val mutationId: String,
+    val catalogId: String,
+    val format: String,
+    val content: Any?) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "expectedRevision" to expectedRevision,
+        "mutationId" to mutationId,
+        "catalogId" to catalogId,
+        "format" to format,
+        "content" to content
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuMerchantCatalogGetRequest(
+    val catalogId: String) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "catalogId" to catalogId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuMerchantCatalogDeleteRequest(
+    val id: String,
+    val confirmId: String) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "confirmId" to confirmId
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuMerchantRemediesRequest(
+    val catalogId: String,
+    val remedyKeys: List<String>) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "catalogId" to catalogId,
+        "remedyKeys" to remedyKeys
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
 data class VastuPoint(val x: Double, val y: Double)
@@ -215,9 +972,14 @@ private fun vastuValues(value: org.json.JSONArray) = List(value.length()) { valu
 
 data class VastuArHeatmapRasterRequestRoomsItem(
     val roomType: String,
-    val zone: String
+    val zone: String,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
+
         "roomType" to roomType,
         "zone" to zone
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
@@ -226,9 +988,14 @@ data class VastuArHeatmapRasterRequestRoomsItem(
 data class VastuArHeatmapRasterRequest(
     val rooms: List<VastuArHeatmapRasterRequestRoomsItem>,
     val plotPolygon: List<List<Double>>? = null,
-    val bearingDeg: Double? = null
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "rooms" to rooms,
         "plotPolygon" to plotPolygon,
         "bearingDeg" to bearingDeg
@@ -252,9 +1019,14 @@ data class VastuArPlanToWorld(
 data class VastuArAnchorRecommendationsRequest(
     val plotPolygon: List<List<Double>>,
     val bearingDeg: Double,
-    val planToWorld: VastuArPlanToWorld
+    val planToWorld: VastuArPlanToWorld,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "plotPolygon" to plotPolygon,
         "bearingDeg" to bearingDeg,
         "planToWorld" to planToWorld
@@ -262,27 +1034,42 @@ data class VastuArAnchorRecommendationsRequest(
 }
 
 data class VastuArZoneTexturesRequest(
-    val zone: String? = null
+    val zone: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "zone" to zone
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
 data class VastuArYantraMeshesRequest(
     val model: String,
-    val format: String? = null
+    val format: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "model" to model,
         "format" to format
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
 data class VastuArDeityIconsRequest(
-    val zone: String? = null
+    val zone: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "zone" to zone
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -335,10 +1122,14 @@ data class VastuRoomCaptureFrame(
 
 data class VastuRoomCaptureOutline(
     val polygon: List<List<Double>>,
-    val source: String = "traced"
+    val source: String = "traced",
+    val holes: List<List<List<Double>>>? = null,
+    val multipolygons: List<JSONObject>? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
-        "polygon" to polygon,
+        "multipolygons" to multipolygons,
+        "holes" to holes,
+        "polygon" to if (multipolygons == null) polygon else null,
         "source" to source
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -367,13 +1158,22 @@ data class VastuRoomCaptureRoomsItem(
     val areaM2: Double,
     val floorIndex: Int,
     val heightM: Double? = null,
-    val openings: List<VastuRoomCaptureRoomsItemOpeningsItem>? = null
+    val openings: List<VastuRoomCaptureRoomsItemOpeningsItem>? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val holes: List<List<List<Double>>>? = null,
+    val multipolygons: List<JSONObject>? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "multipolygons" to multipolygons,
+        "holes" to holes,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
+
         "id" to id,
         "label" to label,
         "labelSource" to labelSource,
-        "polygon" to polygon,
+        "polygon" to if (multipolygons == null) polygon else null,
         "areaM2" to areaM2,
         "heightM" to heightM,
         "floorIndex" to floorIndex,
@@ -453,19 +1253,203 @@ data class VastuDeviceAttestation(
 }
 
 data class VastuArAttestationChallengeRequest(
-    val platform: String
+    val platform: String,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "platform" to platform
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArCaptureMergeRequestLinksItemControlPointsItem(
+    val fromXY: List<Double>,
+    val toXY: List<Double>) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "fromXY" to fromXY,
+        "toXY" to toXY
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArCaptureMergeRequestLinksItemSharedDoorsItem(
+    val fromXY: List<Double>,
+    val toXY: List<Double>) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "fromXY" to fromXY,
+        "toXY" to toXY
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArCaptureMergeRequestFloorsItem(
+    val floorIndex: Int,
+    val elevationM: Double,
+    val originXY: List<Double>,
+    val bearingDeg: Double) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "floorIndex" to floorIndex,
+        "elevationM" to elevationM,
+        "originXY" to originXY,
+        "bearingDeg" to bearingDeg
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArCaptureMergeRequestCapturesItem(
+    val id: String,
+    val floorIndex: Int,
+    val payload: VastuRoomCapture) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "floorIndex" to floorIndex,
+        "payload" to payload
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArCaptureMergeRequestLinksItem(
+    val fromCaptureId: String,
+    val toCaptureId: String,
+    val controlPoints: List<VastuArCaptureMergeRequestLinksItemControlPointsItem>? = null,
+    val sharedDoors: List<VastuArCaptureMergeRequestLinksItemSharedDoorsItem>? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "fromCaptureId" to fromCaptureId,
+        "toCaptureId" to toCaptureId,
+        "controlPoints" to controlPoints,
+        "sharedDoors" to sharedDoors
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPlotFromSurveyRequestControlPointsItem(
+    val id: String,
+    val xy: List<Double>) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "xy" to xy
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuArCaptureMergeRequest(
+    val captures: List<VastuArCaptureMergeRequestCapturesItem>,
+    val links: List<VastuArCaptureMergeRequestLinksItem>,
+    val floors: List<VastuArCaptureMergeRequestFloorsItem>,
+    val toleranceM: Double,
+    val maxChargeUsd: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "maxChargeUsd" to maxChargeUsd,
+        "captures" to captures,
+        "links" to links,
+        "floors" to floors,
+        "toleranceM" to toleranceM
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPlotFromSurveyRequest(
+    val crs: String,
+    val units: String,
+    val boundary: List<List<Double>>,
+    val controlPoints: List<VastuPlotFromSurveyRequestControlPointsItem>? = null,
+    val origin: List<Double>? = null,
+    val maxChargeUsd: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "maxChargeUsd" to maxChargeUsd,
+        "crs" to crs,
+        "units" to units,
+        "boundary" to boundary,
+        "controlPoints" to controlPoints,
+        "origin" to origin
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuOptimizationConstraintsWetShaftsItem(
+    val id: String,
+    val polygon: List<List<Double>>,
+    val roomIds: List<String>? = null,
+    val maxDistanceM: Double? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "polygon" to polygon,
+        "roomIds" to roomIds,
+        "maxDistanceM" to maxDistanceM
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuOptimizationConstraintsPlumbingStacksItem(
+    val id: String,
+    val polygon: List<List<Double>>,
+    val roomIds: List<String>? = null,
+    val maxDistanceM: Double? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "polygon" to polygon,
+        "roomIds" to roomIds,
+        "maxDistanceM" to maxDistanceM
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuOptimizationConstraintsColumnsItem(
+    val id: String? = null,
+    val polygon: List<List<Double>>) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "polygon" to polygon
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuOptimizationConstraintsLoadBearingWallsItem(
+    val id: String? = null,
+    val polygon: List<List<Double>>) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "polygon" to polygon
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuOptimizationConstraints(
+    val lockedRooms: List<String>? = null,
+    val wetShafts: List<VastuOptimizationConstraintsWetShaftsItem>? = null,
+    val plumbingStacks: List<VastuOptimizationConstraintsPlumbingStacksItem>? = null,
+    val loadBearingWalls: List<VastuOptimizationConstraintsLoadBearingWallsItem>? = null,
+    val columns: List<VastuOptimizationConstraintsColumnsItem>? = null,
+    val minSizes: JSONObject? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "lockedRooms" to lockedRooms,
+        "wetShafts" to wetShafts,
+        "plumbingStacks" to plumbingStacks,
+        "loadBearingWalls" to loadBearingWalls,
+        "columns" to columns,
+        "minSizes" to minSizes
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
 data class VastuArRoomCaptureRequest(
     val capture: VastuRoomCapture,
     val zoneResolution: Int? = null,
-    val deviceAttestation: VastuDeviceAttestation? = null
+    val deviceAttestation: VastuDeviceAttestation? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
+
         "capture" to capture,
         "zoneResolution" to zoneResolution,
         "deviceAttestation" to deviceAttestation
@@ -530,9 +1514,12 @@ data class VastuScansSaveRequest(
     val title: String,
     val retentionDays: Int,
     val snapshot: VastuScanSnapshot,
-    val deviceAttestation: VastuDeviceAttestation? = null
+    val deviceAttestation: VastuDeviceAttestation? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "tenantRef" to tenantRef,
+
         "scanId" to scanId,
         "propertyId" to propertyId,
         "title" to title,
@@ -544,9 +1531,14 @@ data class VastuScansSaveRequest(
 
 data class VastuScansRetrieveRequest(
     val requestId: String,
-    val scanId: String
+    val scanId: String,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "requestId" to requestId,
         "scanId" to scanId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
@@ -555,9 +1547,14 @@ data class VastuScansRetrieveRequest(
 data class VastuScansListRequest(
     val requestId: String,
     val limit: Int,
-    val cursor: String? = null
+    val cursor: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "requestId" to requestId,
         "limit" to limit,
         "cursor" to cursor
@@ -565,18 +1562,28 @@ data class VastuScansListRequest(
 }
 
 data class VastuScansDeleteRequest(
-    val scanId: String
+    val scanId: String,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "scanId" to scanId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
 data class VastuScansTimelapseRequest(
     val requestId: String,
-    val scanIds: List<String>
+    val scanIds: List<String>,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "requestId" to requestId,
         "scanIds" to scanIds
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
@@ -597,9 +1604,14 @@ data class VastuArScanQualityRequest(
     val polygonClosed: Boolean? = null,
     val coveragePercent: Double? = null,
     val pointCloudDensityBasis: String? = null,
-    val deviceAttestation: VastuDeviceAttestation? = null
+    val deviceAttestation: VastuDeviceAttestation? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "pointCloudDensity" to pointCloudDensity,
         "polygonClosure" to polygonClosure,
         "roomsTagged" to roomsTagged,
@@ -657,9 +1669,14 @@ data class VastuArTrueNorthCalibrateRequest(
     val datetime: String,
     val deviceHeadingAtSunDeg: Double,
     val deviceHeadingAccuracyDeg: Double? = null,
-    val headingSampleAgeMs: Double? = null
+    val headingSampleAgeMs: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "lat" to lat,
         "lon" to lon,
         "datetime" to datetime,
@@ -698,9 +1715,21 @@ data class VastuAssessmentsRequest(
     val compassConfidence: Double? = null,
     val gpsConfidence: Double? = null,
     val scanDurationSec: Double? = null,
-    val scannedAreaM2: Double? = null
+    val scannedAreaM2: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val rulesVersion: String? = null,
+    val receipt: Boolean? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "rulesVersion" to rulesVersion,
+        "receipt" to receipt,
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "inputSource" to inputSource,
         "rooms" to rooms,
         "plotPolygon" to plotPolygon,
@@ -727,8 +1756,14 @@ data class VastuAssessmentsBatchRequestItemsItem(
 /** One to twenty items with unique IDs. Retain the caller key for retries. */
 data class VastuAssessmentsBatchRequest(
     val items: List<VastuAssessmentsBatchRequestItemsItem>,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
-    override fun toMap(): Map<String, Any?> = mapOf("items" to items.map { it.toMap() })
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "items" to items.map { it.toMap() },
+    ).filterValues { it != null }
 }
 
 
@@ -753,12 +1788,23 @@ data class VastuAuditFloorPlanDetailedRequestRoomsItem(
 data class VastuAuditFloorPlanDetailedRequest(
     val rooms: List<VastuAuditFloorPlanDetailedRequestRoomsItem>,
     val plotPolygon: List<List<Double>>? = null,
-    val bearingDeg: Double? = null
+    val bearingDeg: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "plotPolygon" to plotPolygon,
-        "bearingDeg" to bearingDeg
+        "bearingDeg" to bearingDeg ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -782,21 +1828,43 @@ data class VastuAuditFloorPlanRequestRoomsItem(
 
 data class VastuAuditFloorPlanRequest(
     val rooms: List<VastuAuditFloorPlanRequestRoomsItem>? = null,
-    val text: String? = null
+    val text: String? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
-        "text" to text
+        "text" to text ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
 data class VastuAuditSingleRoomRequest(
     val roomType: String,
-    val zone: String
+    val zone: String,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "roomType" to roomType,
-        "zone" to zone
+        "zone" to zone ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -837,9 +1905,19 @@ data class VastuCompareBeforeAfterRemedyRequestRemediesItem(
 data class VastuCompareBeforeAfterRemedyRequest(
     val rooms: List<VastuCompareBeforeAfterRemedyRequestRoomsItem>? = null,
     val text: String? = null,
-    val remedies: List<VastuCompareBeforeAfterRemedyRequestRemediesItem>
+    val remedies: List<VastuCompareBeforeAfterRemedyRequestRemediesItem>,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
+
         "rooms" to rooms,
         "text" to text,
         "remedies" to remedies
@@ -847,18 +1925,32 @@ data class VastuCompareBeforeAfterRemedyRequest(
 }
 
 data class VastuCompoundWallAnalysisRequest(
-    val walls: VastuJsonObjectOrArray? = null
+    val walls: VastuJsonObjectOrArray? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "walls" to walls
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
 data class VastuDirectionAuspiciousFacingRequest(
     val purpose: String,
-    val occupant: String? = null
+    val occupant: String? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "purpose" to purpose,
         "occupant" to occupant
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
@@ -868,9 +1960,18 @@ data class VastuDirectionCorrectRequest(
     val direction: String,
     val lat: Double,
     val lon: Double,
-    val date: String? = null
+    val date: String? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "direction" to direction,
         "lat" to lat,
         "lon" to lon,
@@ -881,9 +1982,18 @@ data class VastuDirectionCorrectRequest(
 data class VastuDirectionDeclinationRequest(
     val lat: Double,
     val lon: Double,
-    val date: String? = null
+    val date: String? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "lat" to lat,
         "lon" to lon,
         "date" to date
@@ -893,9 +2003,18 @@ data class VastuDirectionDeclinationRequest(
 data class VastuDirectionSunPathRequest(
     val lat: Double,
     val lon: Double,
-    val date: String? = null
+    val date: String? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "lat" to lat,
         "lon" to lon,
         "date" to date
@@ -903,9 +2022,18 @@ data class VastuDirectionSunPathRequest(
 }
 
 data class VastuDirectionZoneFromBearingRequest(
-    val bearingDeg: Double
+    val bearingDeg: Double,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "bearingDeg" to bearingDeg
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -913,9 +2041,18 @@ data class VastuDirectionZoneFromBearingRequest(
 data class VastuElementsBalanceSuggestRequest(
     val distribution: JSONObject? = null,
     val deficient: List<String>? = null,
-    val excess: List<String>? = null
+    val excess: List<String>? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "distribution" to distribution,
         "deficient" to deficient,
         "excess" to excess
@@ -941,9 +2078,18 @@ data class VastuElementsDistributionRequestRoomsItem(
 }
 
 data class VastuElementsDistributionRequest(
-    val rooms: List<VastuElementsDistributionRequestRoomsItem>
+    val rooms: List<VastuElementsDistributionRequestRoomsItem>,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -951,9 +2097,18 @@ data class VastuElementsDistributionRequest(
 data class VastuEntranceObstructionCheckRequest(
     val feature: String,
     val houseHeightMeters: Double? = null,
-    val distanceMeters: Double? = null
+    val distanceMeters: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "feature" to feature,
         "houseHeightMeters" to houseHeightMeters,
         "distanceMeters" to distanceMeters
@@ -963,9 +2118,18 @@ data class VastuEntranceObstructionCheckRequest(
 data class VastuEntrancePadaRequest(
     val plotPolygon: List<List<Double>>,
     val doorXY: List<Double>,
-    val bearingDeg: Double? = null
+    val bearingDeg: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "plotPolygon" to plotPolygon,
         "doorXY" to doorXY,
         "bearingDeg" to bearingDeg
@@ -973,17 +2137,31 @@ data class VastuEntrancePadaRequest(
 }
 
 data class VastuEntranceRecommendRequest(
-    val facing: String
+    val facing: String,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "facing" to facing
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
 data class VastuFloorLevelAnalysisRequest(
-    val levels: VastuJsonObjectOrArray? = null
+    val levels: VastuJsonObjectOrArray? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "levels" to levels
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -993,9 +2171,14 @@ data class VastuFusionChartRequest(
     val latitude: Double,
     val longitude: Double,
     val timezone: String? = null,
-    val facing: String? = null
+    val facing: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "datetime" to datetime,
         "latitude" to latitude,
         "longitude" to longitude,
@@ -1007,9 +2190,18 @@ data class VastuFusionChartRequest(
 data class VastuMandalaProject81PadaRequest(
     val plotPolygon: List<List<Double>>,
     val bearingDeg: Double? = null,
-    val doorXY: List<Double>? = null
+    val doorXY: List<Double>? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "plotPolygon" to plotPolygon,
         "bearingDeg" to bearingDeg,
         "doorXY" to doorXY
@@ -1019,9 +2211,18 @@ data class VastuMandalaProject81PadaRequest(
 data class VastuMandalaProject9ZoneRequest(
     val plotPolygon: List<List<Double>>,
     val bearingDeg: Double? = null,
-    val doorXY: List<Double>? = null
+    val doorXY: List<Double>? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "plotPolygon" to plotPolygon,
         "bearingDeg" to bearingDeg,
         "doorXY" to doorXY
@@ -1031,9 +2232,18 @@ data class VastuMandalaProject9ZoneRequest(
 data class VastuMandalaProjectBrahmasthanRequest(
     val plotPolygon: List<List<Double>>,
     val bearingDeg: Double? = null,
-    val doorXY: List<Double>? = null
+    val doorXY: List<Double>? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "plotPolygon" to plotPolygon,
         "bearingDeg" to bearingDeg,
         "doorXY" to doorXY
@@ -1041,9 +2251,14 @@ data class VastuMandalaProjectBrahmasthanRequest(
 }
 
 data class VastuMultiStoreyFloorRulesRequest(
-    val floors: Int
+    val floors: Int,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "floors" to floors
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -1055,9 +2270,25 @@ data class VastuPlacementBalconyRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
@@ -1075,9 +2306,25 @@ data class VastuPlacementBorewellRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
@@ -1095,9 +2342,25 @@ data class VastuPlacementGardenRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
@@ -1115,9 +2378,25 @@ data class VastuPlacementGeneratorElectricalRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
@@ -1132,9 +2411,25 @@ data class VastuPlacementMainGateRequest(
     val facing: String,
     val direction: String? = null,
     val zone: String? = null,
-    val pada: Int? = null
+    val pada: Int? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "facing" to facing,
         "direction" to direction,
         "zone" to zone,
@@ -1149,9 +2444,25 @@ data class VastuPlacementOverheadTankRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
@@ -1169,9 +2480,25 @@ data class VastuPlacementSepticTankRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
@@ -1189,9 +2516,25 @@ data class VastuPlacementTreeRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
@@ -1209,9 +2552,25 @@ data class VastuPlacementWellRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
@@ -1229,9 +2588,25 @@ data class VastuPlacementWindowRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
@@ -1248,14 +2623,18 @@ data class VastuPlanAnalyzeRequestRoomsItem(
     val zone: String? = null,
     val direction: String? = null,
     val polygon: List<List<Double>>? = null,
-    val area: Double? = null
+    val area: Double? = null,
+    val holes: List<List<List<Double>>>? = null,
+    val multipolygons: List<JSONObject>? = null
 ) : VastuEncodable {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "multipolygons" to multipolygons,
+        "holes" to holes,
         "name" to name,
         "roomType" to roomType,
         "zone" to zone,
         "direction" to direction,
-        "polygon" to polygon,
+        "polygon" to if (multipolygons == null) polygon else null,
         "area" to area
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -1263,12 +2642,28 @@ data class VastuPlanAnalyzeRequestRoomsItem(
 data class VastuPlanAnalyzeRequest(
     val rooms: List<VastuPlanAnalyzeRequestRoomsItem>,
     val plot: JSONObject? = null,
-    val zoneResolution: Int? = null
+    val zoneResolution: Int? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val merchantCatalogId: String? = null,
+    val rulesVersion: String? = null,
+    val receipt: Boolean? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+    val units: String? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "rulesVersion" to rulesVersion,
+        "receipt" to receipt,
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "units" to units,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "plot" to plot,
-        "zoneResolution" to zoneResolution
+        "zoneResolution" to zoneResolution ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1291,13 +2686,17 @@ data class VastuPlanFromRequirementsRequestPlot(
     val length: Double? = null,
     val facing: String? = null,
     val polygon: List<List<Double>>? = null,
-    val setbacks: VastuPlanFromRequirementsRequestPlotSetbacks? = null
+    val setbacks: VastuPlanFromRequirementsRequestPlotSetbacks? = null,
+    val holes: List<List<List<Double>>>? = null,
+    val multipolygons: List<JSONObject>? = null
 ) : VastuEncodable {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "multipolygons" to multipolygons,
+        "holes" to holes,
         "width" to width,
         "length" to length,
         "facing" to facing,
-        "polygon" to polygon,
+        "polygon" to if (multipolygons == null) polygon else null,
         "setbacks" to setbacks
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -1308,14 +2707,18 @@ data class VastuPlanFromRequirementsRequestRoomsItem(
     val zone: String? = null,
     val direction: String? = null,
     val polygon: List<List<Double>>? = null,
-    val area: Double? = null
+    val area: Double? = null,
+    val holes: List<List<List<Double>>>? = null,
+    val multipolygons: List<JSONObject>? = null
 ) : VastuEncodable {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "multipolygons" to multipolygons,
+        "holes" to holes,
         "name" to name,
         "roomType" to roomType,
         "zone" to zone,
         "direction" to direction,
-        "polygon" to polygon,
+        "polygon" to if (multipolygons == null) polygon else null,
         "area" to area
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -1330,9 +2733,23 @@ data class VastuPlanFromRequirementsRequest(
     val lift: JSONObject? = null,
     val variants: Int? = null,
     val variantSvg: Boolean? = null,
-    val includeSvg: Boolean? = null
+    val includeSvg: Boolean? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val plotPolygon: List<Any>? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+    val units: String? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "units" to units,
+        "plotPolygon" to plotPolygon,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "plot" to plot,
         "entrance" to entrance,
         "rooms" to rooms,
@@ -1342,7 +2759,8 @@ data class VastuPlanFromRequirementsRequest(
         "lift" to lift,
         "variants" to variants,
         "variantSvg" to variantSvg,
-        "includeSvg" to includeSvg
+        "includeSvg" to includeSvg ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1365,13 +2783,17 @@ data class VastuPlanGenerateRequestPlot(
     val length: Double? = null,
     val facing: String? = null,
     val polygon: List<List<Double>>? = null,
-    val setbacks: VastuPlanGenerateRequestPlotSetbacks? = null
+    val setbacks: VastuPlanGenerateRequestPlotSetbacks? = null,
+    val holes: List<List<List<Double>>>? = null,
+    val multipolygons: List<JSONObject>? = null
 ) : VastuEncodable {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "multipolygons" to multipolygons,
+        "holes" to holes,
         "width" to width,
         "length" to length,
         "facing" to facing,
-        "polygon" to polygon,
+        "polygon" to if (multipolygons == null) polygon else null,
         "setbacks" to setbacks
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -1382,14 +2804,18 @@ data class VastuPlanGenerateRequestRoomsItem(
     val zone: String? = null,
     val direction: String? = null,
     val polygon: List<List<Double>>? = null,
-    val area: Double? = null
+    val area: Double? = null,
+    val holes: List<List<List<Double>>>? = null,
+    val multipolygons: List<JSONObject>? = null
 ) : VastuEncodable {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "multipolygons" to multipolygons,
+        "holes" to holes,
         "name" to name,
         "roomType" to roomType,
         "zone" to zone,
         "direction" to direction,
-        "polygon" to polygon,
+        "polygon" to if (multipolygons == null) polygon else null,
         "area" to area
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -1404,9 +2830,23 @@ data class VastuPlanGenerateRequest(
     val lift: JSONObject? = null,
     val variants: Int? = null,
     val variantSvg: Boolean? = null,
-    val includeSvg: Boolean? = null
+    val includeSvg: Boolean? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val plotPolygon: List<Any>? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+    val units: String? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "units" to units,
+        "plotPolygon" to plotPolygon,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "plot" to plot,
         "entrance" to entrance,
         "rooms" to rooms,
@@ -1416,7 +2856,8 @@ data class VastuPlanGenerateRequest(
         "lift" to lift,
         "variants" to variants,
         "variantSvg" to variantSvg,
-        "includeSvg" to includeSvg
+        "includeSvg" to includeSvg ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1426,14 +2867,18 @@ data class VastuPlanOptimizeRequestRoomsItem(
     val zone: String? = null,
     val direction: String? = null,
     val polygon: List<List<Double>>? = null,
-    val area: Double? = null
+    val area: Double? = null,
+    val holes: List<List<List<Double>>>? = null,
+    val multipolygons: List<JSONObject>? = null
 ) : VastuEncodable {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "multipolygons" to multipolygons,
+        "holes" to holes,
         "name" to name,
         "roomType" to roomType,
         "zone" to zone,
         "direction" to direction,
-        "polygon" to polygon,
+        "polygon" to if (multipolygons == null) polygon else null,
         "area" to area
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -1441,12 +2886,47 @@ data class VastuPlanOptimizeRequestRoomsItem(
 data class VastuPlanOptimizeRequest(
     val rooms: List<VastuPlanOptimizeRequestRoomsItem>,
     val plot: JSONObject? = null,
-    val includeSvg: Boolean? = null
+    val includeSvg: Boolean? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null
+,
+    val constraints: VastuOptimizationConstraints? = null,
+    val plotPolygon: List<Any>? = null,
+    val lockedRooms: List<String>? = null,
+    val wetShafts: List<JSONObject>? = null,
+    val plumbingStacks: List<JSONObject>? = null,
+    val loadBearingWalls: List<JSONObject>? = null,
+    val columns: List<JSONObject>? = null,
+    val minSizes: JSONObject? = null,
+    val id: String? = null,
+    val locked: Boolean? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+    val units: String? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "units" to units,
+        "id" to id,
+        "locked" to locked,
+
+        "plotPolygon" to plotPolygon,
+        "lockedRooms" to lockedRooms,
+        "wetShafts" to wetShafts,
+        "plumbingStacks" to plumbingStacks,
+        "loadBearingWalls" to loadBearingWalls,
+        "columns" to columns,
+        "minSizes" to minSizes,
+
+        "constraints" to constraints,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "plot" to plot,
-        "includeSvg" to includeSvg
+        "includeSvg" to includeSvg ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1456,14 +2936,18 @@ data class VastuPlanReportRequestRoomsItem(
     val zone: String? = null,
     val direction: String? = null,
     val polygon: List<List<Double>>? = null,
-    val area: Double? = null
+    val area: Double? = null,
+    val holes: List<List<List<Double>>>? = null,
+    val multipolygons: List<JSONObject>? = null
 ) : VastuEncodable {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "multipolygons" to multipolygons,
+        "holes" to holes,
         "name" to name,
         "roomType" to roomType,
         "zone" to zone,
         "direction" to direction,
-        "polygon" to polygon,
+        "polygon" to if (multipolygons == null) polygon else null,
         "area" to area
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
@@ -1477,6 +2961,30 @@ data class VastuPlanReportRequestBrand(
     ).filterValues { it != null }
 }
 
+data class VastuPlanReportRequestCompositionCtaBlocksItem(
+    val label: String,
+    val link: String,
+    val phone: String? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "label" to label,
+        "link" to link,
+        "phone" to phone
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPlanReportRequestComposition(
+    val sections: List<String>? = null,
+    val intro: String? = null,
+    val outro: String? = null,
+    val ctaBlocks: List<VastuPlanReportRequestCompositionCtaBlocksItem>? = null) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "sections" to sections,
+        "intro" to intro,
+        "outro" to outro,
+        "ctaBlocks" to ctaBlocks
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
 data class VastuPlanReportRequest(
     val rooms: List<VastuPlanReportRequestRoomsItem>,
     val plot: JSONObject? = null,
@@ -1484,16 +2992,32 @@ data class VastuPlanReportRequest(
     val brand: VastuPlanReportRequestBrand? = null,
     val reportTitle: String? = null,
     val generatedFor: String? = null,
-    val tenantName: String? = null
+    val tenantName: String? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val composition: VastuPlanReportRequestComposition? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+    val units: String? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "units" to units,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "plot" to plot,
         "format" to format,
         "brand" to brand,
         "reportTitle" to reportTitle,
         "generatedFor" to generatedFor,
-        "tenantName" to tenantName
+        "tenantName" to tenantName,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
+        "composition" to composition,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1503,38 +3027,98 @@ data class VastuPlanUploadRequestRoomsItem(
     val zone: String? = null,
     val direction: String? = null,
     val polygon: List<List<Double>>? = null,
-    val area: Double? = null
+    val area: Double? = null,
+    val holes: List<List<List<Double>>>? = null,
+    val multipolygons: List<JSONObject>? = null
 ) : VastuEncodable {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "multipolygons" to multipolygons,
+        "holes" to holes,
         "name" to name,
         "roomType" to roomType,
         "zone" to zone,
         "direction" to direction,
-        "polygon" to polygon,
+        "polygon" to if (multipolygons == null) polygon else null,
         "area" to area
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPlanImportImageRequest(val fileBase64: String, val northBearingDeg: Double? = null, val scaleMetersPerUnit: Double? = null, val units: String? = null, val inputUnits: String? = null, val scaleInputUnitsPerUnit: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "fileBase64" to fileBase64,
+        "units" to units,
+        "inputUnits" to inputUnits,
+        "scaleInputUnitsPerUnit" to scaleInputUnitsPerUnit,
+        "northBearingDeg" to northBearingDeg,
+        "scaleMetersPerUnit" to scaleMetersPerUnit,
+    ).filterValues { it != null }
+}
+
+data class VastuPlanImportPdfRequest(val fileBase64: String, val northBearingDeg: Double? = null, val scaleMetersPerUnit: Double? = null, val page: Int, val units: String? = null, val inputUnits: String? = null, val scaleInputUnitsPerUnit: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "fileBase64" to fileBase64,
+        "units" to units,
+        "inputUnits" to inputUnits,
+        "scaleInputUnitsPerUnit" to scaleInputUnitsPerUnit,
+        "northBearingDeg" to northBearingDeg,
+        "scaleMetersPerUnit" to scaleMetersPerUnit,
+        "page" to page,
+    ).filterValues { it != null }
 }
 
 data class VastuPlanUploadRequest(
     val rooms: List<VastuPlanUploadRequestRoomsItem>? = null,
     val layout: JSONObject? = null,
     val asciiGrid: String? = null,
-    val plot: JSONObject? = null
+    val plot: JSONObject? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+    val units: String? = null
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "units" to units,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "layout" to layout,
         "asciiGrid" to asciiGrid,
-        "plot" to plot
+        "plot" to plot ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
 data class VastuPlotExtensionsCutsRequest(
     val plotPolygon: List<List<Double>>? = null,
     val length: Double? = null,
-    val width: Double? = null
+    val width: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "plotPolygon" to plotPolygon,
         "length" to length,
         "width" to width
@@ -1543,9 +3127,18 @@ data class VastuPlotExtensionsCutsRequest(
 
 data class VastuPlotOrientationRequest(
     val facingBearingDeg: Double? = null,
-    val bearingDeg: Double? = null
+    val bearingDeg: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "facingBearingDeg" to facingBearingDeg,
         "bearingDeg" to bearingDeg
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
@@ -1554,9 +3147,18 @@ data class VastuPlotOrientationRequest(
 data class VastuPlotRatioRequest(
     val plotPolygon: List<List<Double>>,
     val bearingDeg: Double? = null,
-    val doorXY: List<Double>? = null
+    val doorXY: List<Double>? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "plotPolygon" to plotPolygon,
         "bearingDeg" to bearingDeg,
         "doorXY" to doorXY
@@ -1568,9 +3170,18 @@ data class VastuPlotRoadOrientationRequest(
     val roadSides: List<String>? = null,
     val veedhiShoola: String? = null,
     val tPointFrom: String? = null,
-    val roadThrustFrom: String? = null
+    val roadThrustFrom: String? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "roads" to roads,
         "roadSides" to roadSides,
         "veedhiShoola" to veedhiShoola,
@@ -1582,9 +3193,18 @@ data class VastuPlotRoadOrientationRequest(
 data class VastuPlotShapeRequest(
     val plotPolygon: List<List<Double>>,
     val bearingDeg: Double? = null,
-    val doorXY: List<Double>? = null
+    val doorXY: List<Double>? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "plotPolygon" to plotPolygon,
         "bearingDeg" to bearingDeg,
         "doorXY" to doorXY
@@ -1595,9 +3215,18 @@ data class VastuPlotSlopeRequest(
     val slopeDirection: String? = null,
     val lowSide: String? = null,
     val lowCorner: String? = null,
-    val slopeBearingDeg: Double? = null
+    val slopeBearingDeg: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "slopeDirection" to slopeDirection,
         "lowSide" to lowSide,
         "lowCorner" to lowCorner,
@@ -1612,16 +3241,34 @@ data class VastuRoomBedroomRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
         "proposedDirection" to proposedDirection,
         "placement" to placement,
         "latitude" to latitude,
-        "longitude" to longitude
+        "longitude" to longitude ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1632,16 +3279,34 @@ data class VastuRoomDiningRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
         "proposedDirection" to proposedDirection,
         "placement" to placement,
         "latitude" to latitude,
-        "longitude" to longitude
+        "longitude" to longitude ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1652,16 +3317,34 @@ data class VastuRoomKitchenRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
         "proposedDirection" to proposedDirection,
         "placement" to placement,
         "latitude" to latitude,
-        "longitude" to longitude
+        "longitude" to longitude ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1672,16 +3355,34 @@ data class VastuRoomLivingRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
         "proposedDirection" to proposedDirection,
         "placement" to placement,
         "latitude" to latitude,
-        "longitude" to longitude
+        "longitude" to longitude ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1692,16 +3393,34 @@ data class VastuRoomPoojaRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
         "proposedDirection" to proposedDirection,
         "placement" to placement,
         "latitude" to latitude,
-        "longitude" to longitude
+        "longitude" to longitude ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1712,16 +3431,34 @@ data class VastuRoomStaircaseRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
         "proposedDirection" to proposedDirection,
         "placement" to placement,
         "latitude" to latitude,
-        "longitude" to longitude
+        "longitude" to longitude ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1732,16 +3469,34 @@ data class VastuRoomStoreRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
         "proposedDirection" to proposedDirection,
         "placement" to placement,
         "latitude" to latitude,
-        "longitude" to longitude
+        "longitude" to longitude ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1752,16 +3507,34 @@ data class VastuRoomStudyRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
         "proposedDirection" to proposedDirection,
         "placement" to placement,
         "latitude" to latitude,
-        "longitude" to longitude
+        "longitude" to longitude ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1772,16 +3545,34 @@ data class VastuRoomToiletRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
         "proposedDirection" to proposedDirection,
         "placement" to placement,
         "latitude" to latitude,
-        "longitude" to longitude
+        "longitude" to longitude ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1792,16 +3583,34 @@ data class VastuRoomWaterStorageRequest(
     val proposedDirection: String? = null,
     val placement: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val pointXY: List<Double>? = null,
+    val plotPolygon: List<List<Double>>? = null,
+    val bearingDeg: Double? = null,
+    val merchantCatalogId: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "pointXY" to pointXY,
+        "plotPolygon" to plotPolygon,
+        "bearingDeg" to bearingDeg,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "zone" to zone,
         "direction" to direction,
         "proposedZone" to proposedZone,
         "proposedDirection" to proposedDirection,
         "placement" to placement,
         "latitude" to latitude,
-        "longitude" to longitude
+        "longitude" to longitude ,
+        "merchantCatalogId" to merchantCatalogId
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
 }
 
@@ -1825,9 +3634,21 @@ data class VastuScoreComplianceIndexRequestRoomsItem(
 
 data class VastuScoreComplianceIndexRequest(
     val rooms: List<VastuScoreComplianceIndexRequestRoomsItem>,
-    val plot: JSONObject? = null
+    val plot: JSONObject? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val rulesVersion: String? = null,
+    val receipt: Boolean? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "rulesVersion" to rulesVersion,
+        "receipt" to receipt,
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "plot" to plot
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
@@ -1853,9 +3674,21 @@ data class VastuScoreOverallRequestRoomsItem(
 
 data class VastuScoreOverallRequest(
     val rooms: List<VastuScoreOverallRequestRoomsItem>,
-    val plot: JSONObject? = null
+    val plot: JSONObject? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val rulesVersion: String? = null,
+    val receipt: Boolean? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "rulesVersion" to rulesVersion,
+        "receipt" to receipt,
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "plot" to plot
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
@@ -1881,9 +3714,21 @@ data class VastuScoreZoneWiseRequestRoomsItem(
 
 data class VastuScoreZoneWiseRequest(
     val rooms: List<VastuScoreZoneWiseRequestRoomsItem>,
-    val plot: JSONObject? = null
+    val plot: JSONObject? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val rulesVersion: String? = null,
+    val receipt: Boolean? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "rulesVersion" to rulesVersion,
+        "receipt" to receipt,
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "plot" to plot
     ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
@@ -1912,9 +3757,18 @@ data class VastuSpecializedCommercialRequest(
     val facing: String? = null,
     val buildingFacing: String? = null,
     val lat: Double? = null,
-    val lon: Double? = null
+    val lon: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "facing" to facing,
         "buildingFacing" to buildingFacing,
@@ -1946,9 +3800,18 @@ data class VastuSpecializedEducationalRequest(
     val facing: String? = null,
     val buildingFacing: String? = null,
     val lat: Double? = null,
-    val lon: Double? = null
+    val lon: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "facing" to facing,
         "buildingFacing" to buildingFacing,
@@ -1980,9 +3843,18 @@ data class VastuSpecializedFactoryRequest(
     val facing: String? = null,
     val buildingFacing: String? = null,
     val lat: Double? = null,
-    val lon: Double? = null
+    val lon: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "facing" to facing,
         "buildingFacing" to buildingFacing,
@@ -2014,9 +3886,18 @@ data class VastuSpecializedHospitalRequest(
     val facing: String? = null,
     val buildingFacing: String? = null,
     val lat: Double? = null,
-    val lon: Double? = null
+    val lon: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "facing" to facing,
         "buildingFacing" to buildingFacing,
@@ -2048,9 +3929,18 @@ data class VastuSpecializedResidentialRequest(
     val facing: String? = null,
     val buildingFacing: String? = null,
     val lat: Double? = null,
-    val lon: Double? = null
+    val lon: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "facing" to facing,
         "buildingFacing" to buildingFacing,
@@ -2082,9 +3972,18 @@ data class VastuSpecializedRestaurantRequest(
     val facing: String? = null,
     val buildingFacing: String? = null,
     val lat: Double? = null,
-    val lon: Double? = null
+    val lon: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "facing" to facing,
         "buildingFacing" to buildingFacing,
@@ -2116,9 +4015,18 @@ data class VastuSpecializedTempleRequest(
     val facing: String? = null,
     val buildingFacing: String? = null,
     val lat: Double? = null,
-    val lon: Double? = null
+    val lon: Double? = null,
+    val headingErrorDeg: Double? = null,
+    val positionErrorM: Double? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "headingErrorDeg" to headingErrorDeg,
+        "positionErrorM" to positionErrorM,
         "rooms" to rooms,
         "facing" to facing,
         "buildingFacing" to buildingFacing,
@@ -2134,9 +4042,14 @@ data class VastuTimingBhumiPujanRequest(
     val date: String? = null,
     val time: String? = null,
     val timezone: String? = null,
-    val windowDays: Int? = null
+    val windowDays: Int? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "latitude" to latitude,
         "longitude" to longitude,
         "datetime" to datetime,
@@ -2154,9 +4067,14 @@ data class VastuTimingConstructionStartRequest(
     val date: String? = null,
     val time: String? = null,
     val timezone: String? = null,
-    val windowDays: Int? = null
+    val windowDays: Int? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "latitude" to latitude,
         "longitude" to longitude,
         "datetime" to datetime,
@@ -2174,9 +4092,14 @@ data class VastuTimingGrihapraveshRequest(
     val date: String? = null,
     val time: String? = null,
     val timezone: String? = null,
-    val windowDays: Int? = null
+    val windowDays: Int? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "latitude" to latitude,
         "longitude" to longitude,
         "datetime" to datetime,
@@ -2194,9 +4117,14 @@ data class VastuTimingVastuShantiRequest(
     val date: String? = null,
     val time: String? = null,
     val timezone: String? = null,
-    val windowDays: Int? = null
+    val windowDays: Int? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
 ) : VastuRequest {
     override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
         "latitude" to latitude,
         "longitude" to longitude,
         "datetime" to datetime,
@@ -2236,6 +4164,32 @@ data class VastuArAttestationChallengeDataDeviceAttestation(val raw: JSONObject)
         get() = raw.getString("status")
     val platform: String
         get() = raw.getString("platform")
+}
+
+data class VastuArCaptureMergeDataPairResidualsItem(val raw: JSONObject) {
+    val controlCount: Int?
+        get() = if (!raw.has("controlCount") || raw.isNull("controlCount")) null else raw.getInt("controlCount")
+    val rmsResidualM: Double
+        get() = raw.getDouble("rmsResidualM")
+    val maxResidualM: Double
+        get() = raw.getDouble("maxResidualM")
+    val fromCaptureId: String
+        get() = raw.getString("fromCaptureId")
+    val toCaptureId: String
+        get() = raw.getString("toCaptureId")
+}
+
+data class VastuArCaptureMergeDataPricing(val raw: JSONObject) {
+    val attributableCostUsd: String
+        get() = raw.getString("attributableCostUsd")
+    val markupMultiplier: Int
+        get() = raw.getInt("markupMultiplier")
+    val computedPriceUsd: String
+        get() = raw.getString("computedPriceUsd")
+    val settledChargeUsd: String
+        get() = raw.getString("settledChargeUsd")
+    val settlement: String
+        get() = raw.getString("settlement")
 }
 
 data class VastuArDeityIconsDataIconsItem(val raw: JSONObject) {
@@ -2314,6 +4268,15 @@ data class VastuArHeatmapRasterDataLegend(val raw: JSONObject) {
         get() = raw.getString("observed")
 }
 
+data class VastuArRoomCaptureDataCaptureOutlineGeometry(val raw: JSONObject) {
+    val polygon: Any?
+        get() = if (!raw.has("polygon") || raw.isNull("polygon")) null else raw.get("polygon").takeUnless { it == JSONObject.NULL }
+    val holes: List<Any?>?
+        get() = if (!raw.has("holes") || raw.isNull("holes")) null else List(raw.getJSONArray("holes").length()) { index0 -> raw.getJSONArray("holes").get(index0).takeUnless { it == JSONObject.NULL } }
+    val multipolygons: List<Any?>?
+        get() = if (!raw.has("multipolygons") || raw.isNull("multipolygons")) null else List(raw.getJSONArray("multipolygons").length()) { index0 -> raw.getJSONArray("multipolygons").get(index0).takeUnless { it == JSONObject.NULL } }
+}
+
 data class VastuArRoomCaptureDataCaptureOutline(val raw: JSONObject) {
     val polygon: List<List<Double>>
         get() = List(raw.getJSONArray("polygon").length()) { index0 -> List((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
@@ -2325,6 +4288,8 @@ data class VastuArRoomCaptureDataCaptureOutline(val raw: JSONObject) {
         get() = raw.getDouble("length")
     val areaM2: Double
         get() = raw.getDouble("areaM2")
+    val geometry: VastuArRoomCaptureDataCaptureOutlineGeometry?
+        get() = if (!raw.has("geometry") || raw.isNull("geometry")) null else VastuArRoomCaptureDataCaptureOutlineGeometry(raw.getJSONObject("geometry"))
 }
 
 data class VastuArRoomCaptureDataCapture(val raw: JSONObject) {
@@ -2346,6 +4311,19 @@ data class VastuArRoomCaptureDataCapture(val raw: JSONObject) {
         get() = raw.getInt("roomCount")
     val openingCount: Int
         get() = raw.getInt("openingCount")
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+    val inputUnits: String?
+        get() = if (!raw.has("inputUnits") || raw.isNull("inputUnits")) null else raw.getString("inputUnits")
+}
+
+data class VastuArRoomCaptureDataRoomsItemGeometry(val raw: JSONObject) {
+    val polygon: Any?
+        get() = if (!raw.has("polygon") || raw.isNull("polygon")) null else raw.get("polygon").takeUnless { it == JSONObject.NULL }
+    val holes: List<Any?>?
+        get() = if (!raw.has("holes") || raw.isNull("holes")) null else List(raw.getJSONArray("holes").length()) { index0 -> raw.getJSONArray("holes").get(index0).takeUnless { it == JSONObject.NULL } }
+    val multipolygons: List<Any?>?
+        get() = if (!raw.has("multipolygons") || raw.isNull("multipolygons")) null else List(raw.getJSONArray("multipolygons").length()) { index0 -> raw.getJSONArray("multipolygons").get(index0).takeUnless { it == JSONObject.NULL } }
 }
 
 data class VastuArRoomCaptureDataRoomsItem(val raw: JSONObject) {
@@ -2369,6 +4347,8 @@ data class VastuArRoomCaptureDataRoomsItem(val raw: JSONObject) {
         get() = raw.getInt("openingCount")
     val polygon: List<List<Double>>
         get() = List(raw.getJSONArray("polygon").length()) { index0 -> List((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val geometry: VastuArRoomCaptureDataRoomsItemGeometry?
+        get() = if (!raw.has("geometry") || raw.isNull("geometry")) null else VastuArRoomCaptureDataRoomsItemGeometry(raw.getJSONObject("geometry"))
 }
 
 data class VastuArRoomCaptureDataDerivedRequests(val raw: JSONObject) {
@@ -2479,6 +4459,17 @@ data class VastuArScanQualityDataRoomCoverage(val raw: JSONObject) {
         get() = raw.getString("scope")
 }
 
+data class VastuArScanQualityDataReceipt(val raw: JSONObject) {
+    val format: String
+        get() = raw.getString("format")
+    val token: String
+        get() = raw.getString("token")
+    val verifyUrl: String
+        get() = raw.getString("verifyUrl")
+    val keyUrl: String
+        get() = raw.getString("keyUrl")
+}
+
 data class VastuArTrueNorthDataInput(val raw: JSONObject) {
     val lat: Double
         get() = raw.getDouble("lat")
@@ -2535,6 +4526,108 @@ data class VastuArZoneTexturesDataCellsItem(val raw: JSONObject) {
         get() = List(raw.getJSONArray("usdUvBoundsBottomLeft").length()) { index0 -> (raw.getJSONArray("usdUvBoundsBottomLeft").get(index0) as Number).toDouble() }
     val zone: String
         get() = raw.getString("zone")
+}
+
+data class VastuArchiveDeleteDataErasureReceiptRemovedItem(val raw: JSONObject) {
+    val kind: String
+        get() = raw.getString("kind")
+    val recordId: String?
+        get() = if (!raw.has("recordId") || raw.isNull("recordId")) null else raw.getString("recordId")
+    val artifactId: String?
+        get() = if (!raw.has("artifactId") || raw.isNull("artifactId")) null else raw.getString("artifactId")
+    val artifactHash: String?
+        get() = if (!raw.has("artifactHash") || raw.isNull("artifactHash")) null else raw.getString("artifactHash")
+    val versionHash: String?
+        get() = if (!raw.has("versionHash") || raw.isNull("versionHash")) null else raw.getString("versionHash")
+    val deleteMarker: Boolean?
+        get() = if (!raw.has("deleteMarker") || raw.isNull("deleteMarker")) null else raw.getBoolean("deleteMarker")
+    val versionCount: Int?
+        get() = if (!raw.has("versionCount") || raw.isNull("versionCount")) null else raw.getInt("versionCount")
+    val deleteMarkerCount: Int?
+        get() = if (!raw.has("deleteMarkerCount") || raw.isNull("deleteMarkerCount")) null else raw.getInt("deleteMarkerCount")
+    val versionsSha256: String?
+        get() = if (!raw.has("versionsSha256") || raw.isNull("versionsSha256")) null else raw.getString("versionsSha256")
+}
+
+data class VastuArchiveDeleteDataErasureReceiptRetainedItem(val raw: JSONObject) {
+    val kind: String
+        get() = raw.getString("kind")
+    val purpose: String
+        get() = raw.getString("purpose")
+}
+
+data class VastuArchiveDeleteDataErasureReceipt(val raw: JSONObject) {
+    val schemaVersion: Int
+        get() = raw.getInt("schemaVersion")
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val status: String
+        get() = raw.getString("status")
+    val scope: String
+        get() = raw.getString("scope")
+    val completedAt: String
+        get() = raw.getString("completedAt")
+    val removed: List<VastuArchiveDeleteDataErasureReceiptRemovedItem>
+        get() = List(raw.getJSONArray("removed").length()) { index0 -> VastuArchiveDeleteDataErasureReceiptRemovedItem((raw.getJSONArray("removed").get(index0) as JSONObject)) }
+    val retained: List<VastuArchiveDeleteDataErasureReceiptRetainedItem>
+        get() = List(raw.getJSONArray("retained").length()) { index0 -> VastuArchiveDeleteDataErasureReceiptRetainedItem((raw.getJSONArray("retained").get(index0) as JSONObject)) }
+    val backupRetentionDays: Int
+        get() = raw.getInt("backupRetentionDays")
+    val backupPolicy: String
+        get() = raw.getString("backupPolicy")
+    val hashAlgorithm: String
+        get() = raw.getString("hashAlgorithm")
+    val receiptHash: String
+        get() = raw.getString("receiptHash")
+    val linkedScanIds: List<String>?
+        get() = if (!raw.has("linkedScanIds") || raw.isNull("linkedScanIds")) null else List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>?
+        get() = if (!raw.has("linkedAssessmentIds") || raw.isNull("linkedAssessmentIds")) null else List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val deletedByAccountHash: String
+        get() = raw.getString("deletedByAccountHash")
+    val deletedAtEpoch: Long
+        get() = raw.getLong("deletedAtEpoch")
+    val revisionId: String?
+        get() = if (!raw.has("revisionId") || raw.isNull("revisionId")) null else raw.getString("revisionId")
+}
+
+data class VastuArchiveSummaryDataArchiveTier(val raw: JSONObject) {
+    val months: Int
+        get() = raw.getInt("months")
+    val storedBytes: Long
+        get() = raw.getLong("storedBytes")
+    val priceCents: Int
+        get() = raw.getInt("priceCents")
+    val setAtEpoch: Long
+        get() = raw.getLong("setAtEpoch")
+    val retainUntilEpoch: Long
+        get() = raw.getLong("retainUntilEpoch")
+}
+
+data class VastuArchiveTierDataIds(val raw: JSONObject) {
+    val project: String
+        get() = raw.getString("project")
+    val building: String
+        get() = raw.getString("building")
+    val unit: String
+        get() = raw.getString("unit")
+    val floor: String
+        get() = raw.getString("floor")
+    val revision: String
+        get() = raw.getString("revision")
+}
+
+data class VastuArchiveTierDataArchiveTier(val raw: JSONObject) {
+    val months: Int
+        get() = raw.getInt("months")
+    val storedBytes: Long
+        get() = raw.getLong("storedBytes")
+    val priceCents: Int
+        get() = raw.getInt("priceCents")
+    val setAtEpoch: Long
+        get() = raw.getLong("setAtEpoch")
+    val retainUntilEpoch: Long
+        get() = raw.getLong("retainUntilEpoch")
 }
 
 data class VastuAssessmentBatchDataResultsItemResponseDataBadgeEligibility(val raw: JSONObject) {
@@ -2763,6 +4856,32 @@ data class VastuAssessmentDataNotAssessedItem(val raw: JSONObject) {
         get() = raw.getBoolean("graded")
 }
 
+data class VastuAssessmentDataReceipt(val raw: JSONObject) {
+    val format: String
+        get() = raw.getString("format")
+    val token: String
+        get() = raw.getString("token")
+    val verifyUrl: String
+        get() = raw.getString("verifyUrl")
+    val keyUrl: String
+        get() = raw.getString("keyUrl")
+}
+
+data class VastuBrahmasthanProjectionDataGridFrame(val raw: JSONObject) {
+    val orientation: String?
+        get() = if (!raw.has("orientation") || raw.isNull("orientation")) null else raw.getString("orientation")
+    val fittedTo: String?
+        get() = if (!raw.has("fittedTo") || raw.isNull("fittedTo")) null else raw.getString("fittedTo")
+    val rotationDeg: Double?
+        get() = if (!raw.has("rotationDeg") || raw.isNull("rotationDeg")) null else raw.getDouble("rotationDeg")
+    val gridBoxArea: Double?
+        get() = if (!raw.has("gridBoxArea") || raw.isNull("gridBoxArea")) null else raw.getDouble("gridBoxArea")
+    val plotAreaShareOfGridBox: Double?
+        get() = if (!raw.has("plotAreaShareOfGridBox") || raw.isNull("plotAreaShareOfGridBox")) null else raw.getDouble("plotAreaShareOfGridBox")
+    val note: String?
+        get() = if (!raw.has("note") || raw.isNull("note")) null else raw.getString("note")
+}
+
 data class VastuCatalogReferenceDataDefectsItem(val raw: JSONObject) {
     val labelKey: String?
         get() = if (!raw.has("labelKey") || raw.isNull("labelKey")) null else raw.getString("labelKey")
@@ -2797,6 +4916,21 @@ data class VastuCatalogReferenceDataRemediesItem(val raw: JSONObject) {
         get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getString("source")
 }
 
+data class VastuCatalogReferenceDataZoneRemediesItem(val raw: JSONObject) {
+    val zone: String?
+        get() = if (!raw.has("zone") || raw.isNull("zone")) null else raw.getString("zone")
+    val remedy: String?
+        get() = if (!raw.has("remedy") || raw.isNull("remedy")) null else raw.getString("remedy")
+    val remedyKey: String?
+        get() = if (!raw.has("remedyKey") || raw.isNull("remedyKey")) null else raw.getString("remedyKey")
+    val remedyParams: JSONObject?
+        get() = if (!raw.has("remedyParams") || raw.isNull("remedyParams")) null else raw.getJSONObject("remedyParams")
+    val classification: String?
+        get() = if (!raw.has("classification") || raw.isNull("classification")) null else raw.getString("classification")
+    val source: String?
+        get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getString("source")
+}
+
 data class VastuChatUploadDataBilling(val raw: JSONObject) {
     val chargedCents: Int?
         get() = if (!raw.has("chargedCents") || raw.isNull("chargedCents")) null else raw.getInt("chargedCents")
@@ -2804,6 +4938,21 @@ data class VastuChatUploadDataBilling(val raw: JSONObject) {
         get() = if (!raw.has("balanceAfterCents") || raw.isNull("balanceAfterCents")) null else raw.getInt("balanceAfterCents")
     val currency: String?
         get() = if (!raw.has("currency") || raw.isNull("currency")) null else raw.getString("currency")
+}
+
+data class VastuCompareVersionsDataChangesItem(val raw: JSONObject) {
+    val ruleId: String
+        get() = raw.getString("ruleId")
+    val before: Any?
+        get() = raw.get("before").takeUnless { it == JSONObject.NULL }
+    val after: Any?
+        get() = raw.get("after").takeUnless { it == JSONObject.NULL }
+    val reason: String
+        get() = raw.getString("reason")
+    val fromReason: JSONObject?
+        get() = if (!raw.has("fromReason") || raw.isNull("fromReason")) null else raw.getJSONObject("fromReason")
+    val toReason: JSONObject?
+        get() = if (!raw.has("toReason") || raw.isNull("toReason")) null else raw.getJSONObject("toReason")
 }
 
 data class VastuComplianceIndexDataDrivingDefectsItem(val raw: JSONObject) {
@@ -2875,6 +5024,17 @@ data class VastuComplianceIndexDataNotAssessedItem(val raw: JSONObject) {
         get() = raw.getString("reason")
     val graded: Boolean
         get() = raw.getBoolean("graded")
+}
+
+data class VastuComplianceIndexDataReceipt(val raw: JSONObject) {
+    val format: String
+        get() = raw.getString("format")
+    val token: String
+        get() = raw.getString("token")
+    val verifyUrl: String
+        get() = raw.getString("verifyUrl")
+    val keyUrl: String
+        get() = raw.getString("keyUrl")
 }
 
 data class VastuDetailedFloorPlanAuditDataDefectsItemIssueParams(val raw: JSONObject) {
@@ -3008,6 +5168,17 @@ data class VastuDetailedFloorPlanAuditDataNotAssessedItem(val raw: JSONObject) {
         get() = raw.getString("reason")
     val graded: Boolean
         get() = raw.getBoolean("graded")
+}
+
+data class VastuDetailedFloorPlanAuditDataReceipt(val raw: JSONObject) {
+    val format: String
+        get() = raw.getString("format")
+    val token: String
+        get() = raw.getString("token")
+    val verifyUrl: String
+        get() = raw.getString("verifyUrl")
+    val keyUrl: String
+        get() = raw.getString("keyUrl")
 }
 
 data class VastuDirectionsReferenceDataDirectionsItem(val raw: JSONObject) {
@@ -3161,6 +5332,34 @@ data class VastuFloorPlanAuditDataNotAssessedItem(val raw: JSONObject) {
         get() = raw.getBoolean("graded")
 }
 
+data class VastuFloorPlanAuditDataReceipt(val raw: JSONObject) {
+    val format: String
+        get() = raw.getString("format")
+    val token: String
+        get() = raw.getString("token")
+    val verifyUrl: String
+        get() = raw.getString("verifyUrl")
+    val keyUrl: String
+        get() = raw.getString("keyUrl")
+}
+
+data class VastuFusionChartDataCautionDirectionsItem(val raw: JSONObject) {
+    val direction: String
+        get() = raw.getString("direction")
+    val deity: String?
+        get() = if (!raw.has("deity") || raw.isNull("deity")) null else raw.getString("deity")
+    val element: String?
+        get() = if (!raw.has("element") || raw.isNull("element")) null else raw.getString("element")
+    val ruledBy: String?
+        get() = if (!raw.has("ruledBy") || raw.isNull("ruledBy")) null else raw.getString("ruledBy")
+    val strengthPct: Double?
+        get() = if (!raw.has("strengthPct") || raw.isNull("strengthPct")) null else raw.getDouble("strengthPct")
+    val rationale: String
+        get() = raw.getString("rationale")
+    val avoidUse: List<String>?
+        get() = if (!raw.has("avoidUse") || raw.isNull("avoidUse")) null else List(raw.getJSONArray("avoidUse").length()) { index0 -> (raw.getJSONArray("avoidUse").get(index0) as String) }
+}
+
 data class VastuJobStatusDataCounts(val raw: JSONObject) {
     val succeeded: Int
         get() = raw.getInt("succeeded")
@@ -3183,6 +5382,21 @@ data class VastuJobStatusDataBilling(val raw: JSONObject) {
         get() = raw.getDouble("charged")
     val basis: String
         get() = raw.getString("basis")
+}
+
+data class VastuMandalaProjectionDataGridFrame(val raw: JSONObject) {
+    val orientation: String?
+        get() = if (!raw.has("orientation") || raw.isNull("orientation")) null else raw.getString("orientation")
+    val fittedTo: String?
+        get() = if (!raw.has("fittedTo") || raw.isNull("fittedTo")) null else raw.getString("fittedTo")
+    val rotationDeg: Double?
+        get() = if (!raw.has("rotationDeg") || raw.isNull("rotationDeg")) null else raw.getDouble("rotationDeg")
+    val gridBoxArea: Double?
+        get() = if (!raw.has("gridBoxArea") || raw.isNull("gridBoxArea")) null else raw.getDouble("gridBoxArea")
+    val plotAreaShareOfGridBox: Double?
+        get() = if (!raw.has("plotAreaShareOfGridBox") || raw.isNull("plotAreaShareOfGridBox")) null else raw.getDouble("plotAreaShareOfGridBox")
+    val note: String?
+        get() = if (!raw.has("note") || raw.isNull("note")) null else raw.getString("note")
 }
 
 data class VastuMandalaReferenceDataZonesItem(val raw: JSONObject) {
@@ -3257,6 +5471,34 @@ data class VastuMandalaReferenceDataCellsItem(val raw: JSONObject) {
         get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
     val insidePlot: Boolean?
         get() = if (!raw.has("insidePlot") || raw.isNull("insidePlot")) null else raw.getBoolean("insidePlot")
+}
+
+data class VastuMeasurementUncertaintyResultsItem(val raw: JSONObject) {
+    val id: Any?
+        get() = if (!raw.has("id") || raw.isNull("id")) null else raw.get("id").takeUnless { it == JSONObject.NULL }
+    val pointResult: JSONObject
+        get() = raw.getJSONObject("pointResult")
+    val possibleZones: List<String>
+        get() = List(raw.getJSONArray("possibleZones").length()) { index0 -> (raw.getJSONArray("possibleZones").get(index0) as String) }
+    val possiblePadas: List<JSONObject>
+        get() = List(raw.getJSONArray("possiblePadas").length()) { index0 -> (raw.getJSONArray("possiblePadas").get(index0) as JSONObject) }
+    val stable: Boolean
+        get() = raw.getBoolean("stable")
+    val bearingMarginDeg: Double?
+        get() = if (!raw.has("bearingMarginDeg") || raw.isNull("bearingMarginDeg")) null else raw.getDouble("bearingMarginDeg")
+    val headingErrorDeg: Double?
+        get() = if (!raw.has("headingErrorDeg") || raw.isNull("headingErrorDeg")) null else raw.getDouble("headingErrorDeg")
+    val positionErrorM: Double?
+        get() = if (!raw.has("positionErrorM") || raw.isNull("positionErrorM")) null else raw.getDouble("positionErrorM")
+    val method: String?
+        get() = if (!raw.has("method") || raw.isNull("method")) null else raw.getString("method")
+}
+
+data class VastuMeasurementUncertaintyBounds(val raw: JSONObject) {
+    val headingErrorDeg: Double
+        get() = raw.getDouble("headingErrorDeg")
+    val positionErrorM: Double
+        get() = raw.getDouble("positionErrorM")
 }
 
 data class VastuOverallScoreDataPlacementsItem(val raw: JSONObject) {
@@ -3334,6 +5576,34 @@ data class VastuOverallScoreDataNotAssessedItem(val raw: JSONObject) {
         get() = raw.getBoolean("graded")
 }
 
+data class VastuOverallScoreDataReceipt(val raw: JSONObject) {
+    val format: String
+        get() = raw.getString("format")
+    val token: String
+        get() = raw.getString("token")
+    val verifyUrl: String
+        get() = raw.getString("verifyUrl")
+    val keyUrl: String
+        get() = raw.getString("keyUrl")
+}
+
+data class VastuPlanAuditDataRoomByRoomItemMappedItemsItem(val raw: JSONObject) {
+    val remedyKey: String
+        get() = raw.getString("remedyKey")
+    val itemId: String
+        get() = raw.getString("itemId")
+    val kind: String
+        get() = raw.getString("kind")
+    val label: String
+        get() = raw.getString("label")
+    val availability: String
+        get() = raw.getString("availability")
+    val link: String?
+        get() = if (!raw.has("link") || raw.isNull("link")) null else raw.getString("link")
+    val referralRef: String?
+        get() = if (!raw.has("referralRef") || raw.isNull("referralRef")) null else raw.getString("referralRef")
+}
+
 data class VastuPlanAuditDataRoomByRoomItem(val raw: JSONObject) {
     val room: String?
         get() = if (!raw.has("room") || raw.isNull("room")) null else raw.getString("room")
@@ -3367,6 +5637,29 @@ data class VastuPlanAuditDataRoomByRoomItem(val raw: JSONObject) {
         get() = if (!raw.has("ruleProvenance") || raw.isNull("ruleProvenance")) null else raw.getJSONObject("ruleProvenance")
     val tradition: String?
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
+    val statedZone: String?
+        get() = if (!raw.has("statedZone") || raw.isNull("statedZone")) null else raw.getString("statedZone")
+    val zoneConflict: Boolean?
+        get() = if (!raw.has("zoneConflict") || raw.isNull("zoneConflict")) null else raw.getBoolean("zoneConflict")
+    val mappedItems: List<VastuPlanAuditDataRoomByRoomItemMappedItemsItem>?
+        get() = if (!raw.has("mappedItems") || raw.isNull("mappedItems")) null else List(raw.getJSONArray("mappedItems").length()) { index0 -> VastuPlanAuditDataRoomByRoomItemMappedItemsItem((raw.getJSONArray("mappedItems").get(index0) as JSONObject)) }
+}
+
+data class VastuPlanAuditDataDefectsItemMappedItemsItem(val raw: JSONObject) {
+    val remedyKey: String
+        get() = raw.getString("remedyKey")
+    val itemId: String
+        get() = raw.getString("itemId")
+    val kind: String
+        get() = raw.getString("kind")
+    val label: String
+        get() = raw.getString("label")
+    val availability: String
+        get() = raw.getString("availability")
+    val link: String?
+        get() = if (!raw.has("link") || raw.isNull("link")) null else raw.getString("link")
+    val referralRef: String?
+        get() = if (!raw.has("referralRef") || raw.isNull("referralRef")) null else raw.getString("referralRef")
 }
 
 data class VastuPlanAuditDataDefectsItem(val raw: JSONObject) {
@@ -3392,6 +5685,25 @@ data class VastuPlanAuditDataDefectsItem(val raw: JSONObject) {
         get() = if (!raw.has("remedyClassification") || raw.isNull("remedyClassification")) null else raw.getString("remedyClassification")
     val remedySource: String?
         get() = if (!raw.has("remedySource") || raw.isNull("remedySource")) null else raw.getString("remedySource")
+    val mappedItems: List<VastuPlanAuditDataDefectsItemMappedItemsItem>?
+        get() = if (!raw.has("mappedItems") || raw.isNull("mappedItems")) null else List(raw.getJSONArray("mappedItems").length()) { index0 -> VastuPlanAuditDataDefectsItemMappedItemsItem((raw.getJSONArray("mappedItems").get(index0) as JSONObject)) }
+}
+
+data class VastuPlanAuditDataRemediesItemMappedItemsItem(val raw: JSONObject) {
+    val remedyKey: String
+        get() = raw.getString("remedyKey")
+    val itemId: String
+        get() = raw.getString("itemId")
+    val kind: String
+        get() = raw.getString("kind")
+    val label: String
+        get() = raw.getString("label")
+    val availability: String
+        get() = raw.getString("availability")
+    val link: String?
+        get() = if (!raw.has("link") || raw.isNull("link")) null else raw.getString("link")
+    val referralRef: String?
+        get() = if (!raw.has("referralRef") || raw.isNull("referralRef")) null else raw.getString("referralRef")
 }
 
 data class VastuPlanAuditDataRemediesItem(val raw: JSONObject) {
@@ -3417,6 +5729,68 @@ data class VastuPlanAuditDataRemediesItem(val raw: JSONObject) {
         get() = if (!raw.has("remedyClassification") || raw.isNull("remedyClassification")) null else raw.getString("remedyClassification")
     val remedySource: String?
         get() = if (!raw.has("remedySource") || raw.isNull("remedySource")) null else raw.getString("remedySource")
+    val remedyKey: String?
+        get() = if (!raw.has("remedyKey") || raw.isNull("remedyKey")) null else raw.getString("remedyKey")
+    val remedyParams: JSONObject?
+        get() = if (!raw.has("remedyParams") || raw.isNull("remedyParams")) null else raw.getJSONObject("remedyParams")
+    val mappedItems: List<VastuPlanAuditDataRemediesItemMappedItemsItem>?
+        get() = if (!raw.has("mappedItems") || raw.isNull("mappedItems")) null else List(raw.getJSONArray("mappedItems").length()) { index0 -> VastuPlanAuditDataRemediesItemMappedItemsItem((raw.getJSONArray("mappedItems").get(index0) as JSONObject)) }
+}
+
+data class VastuPlanAuditDataTracedGeometryRegionGeometry(val raw: JSONObject) {
+    val polygon: Any?
+        get() = if (!raw.has("polygon") || raw.isNull("polygon")) null else raw.get("polygon").takeUnless { it == JSONObject.NULL }
+    val holes: List<Any?>?
+        get() = if (!raw.has("holes") || raw.isNull("holes")) null else List(raw.getJSONArray("holes").length()) { index0 -> raw.getJSONArray("holes").get(index0).takeUnless { it == JSONObject.NULL } }
+    val multipolygons: List<Any?>?
+        get() = if (!raw.has("multipolygons") || raw.isNull("multipolygons")) null else List(raw.getJSONArray("multipolygons").length()) { index0 -> raw.getJSONArray("multipolygons").get(index0).takeUnless { it == JSONObject.NULL } }
+}
+
+data class VastuPlanAuditDataTracedGeometryRegionBrahmasthan(val raw: JSONObject) {
+    val pole: List<Double>?
+        get() = if (!raw.has("pole") || raw.isNull("pole")) null else List(raw.getJSONArray("pole").length()) { index0 -> (raw.getJSONArray("pole").get(index0) as Number).toDouble() }
+    val poleInside: Boolean?
+        get() = if (!raw.has("poleInside") || raw.isNull("poleInside")) null else raw.getBoolean("poleInside")
+    val basis: String?
+        get() = if (!raw.has("basis") || raw.isNull("basis")) null else raw.getString("basis")
+    val netArea: Double?
+        get() = if (!raw.has("netArea") || raw.isNull("netArea")) null else raw.getDouble("netArea")
+}
+
+data class VastuPlanAuditDataTracedGeometryRegionGridZonesItem(val raw: JSONObject) {
+    val zone: String?
+        get() = if (!raw.has("zone") || raw.isNull("zone")) null else raw.getString("zone")
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+}
+
+data class VastuPlanAuditDataTracedGeometryRegionSectorsItem(val raw: JSONObject) {
+    val zone: String?
+        get() = if (!raw.has("zone") || raw.isNull("zone")) null else raw.getString("zone")
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+}
+
+data class VastuPlanAuditDataTracedGeometryRegion(val raw: JSONObject) {
+    val geometry: VastuPlanAuditDataTracedGeometryRegionGeometry?
+        get() = if (!raw.has("geometry") || raw.isNull("geometry")) null else VastuPlanAuditDataTracedGeometryRegionGeometry(raw.getJSONObject("geometry"))
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+    val centroid: List<Double>?
+        get() = if (!raw.has("centroid") || raw.isNull("centroid")) null else List(raw.getJSONArray("centroid").length()) { index0 -> (raw.getJSONArray("centroid").get(index0) as Number).toDouble() }
+    val centroidInside: Boolean?
+        get() = if (!raw.has("centroidInside") || raw.isNull("centroidInside")) null else raw.getBoolean("centroidInside")
+    val brahmasthan: VastuPlanAuditDataTracedGeometryRegionBrahmasthan?
+        get() = if (!raw.has("brahmasthan") || raw.isNull("brahmasthan")) null else VastuPlanAuditDataTracedGeometryRegionBrahmasthan(raw.getJSONObject("brahmasthan"))
+    val gridZones: List<VastuPlanAuditDataTracedGeometryRegionGridZonesItem>?
+        get() = if (!raw.has("gridZones") || raw.isNull("gridZones")) null else List(raw.getJSONArray("gridZones").length()) { index0 -> VastuPlanAuditDataTracedGeometryRegionGridZonesItem((raw.getJSONArray("gridZones").get(index0) as JSONObject)) }
+    val sectors: List<VastuPlanAuditDataTracedGeometryRegionSectorsItem>?
+        get() = if (!raw.has("sectors") || raw.isNull("sectors")) null else List(raw.getJSONArray("sectors").length()) { index0 -> VastuPlanAuditDataTracedGeometryRegionSectorsItem((raw.getJSONArray("sectors").get(index0) as JSONObject)) }
+}
+
+data class VastuPlanAuditDataTracedGeometry(val raw: JSONObject) {
+    val region: VastuPlanAuditDataTracedGeometryRegion?
+        get() = if (!raw.has("region") || raw.isNull("region")) null else VastuPlanAuditDataTracedGeometryRegion(raw.getJSONObject("region"))
 }
 
 data class VastuPlanAuditDataArtifact(val raw: JSONObject) {
@@ -3426,6 +5800,8 @@ data class VastuPlanAuditDataArtifact(val raw: JSONObject) {
         get() = raw.getString("filename")
     val content: String
         get() = raw.getString("content")
+    val encoding: String?
+        get() = if (!raw.has("encoding") || raw.isNull("encoding")) null else raw.getString("encoding")
 }
 
 data class VastuPlanAuditDataNotAssessedItem(val raw: JSONObject) {
@@ -3437,6 +5813,1197 @@ data class VastuPlanAuditDataNotAssessedItem(val raw: JSONObject) {
         get() = raw.getString("reason")
     val graded: Boolean
         get() = raw.getBoolean("graded")
+}
+
+data class VastuPlanAuditDataReceipt(val raw: JSONObject) {
+    val format: String
+        get() = raw.getString("format")
+    val token: String
+        get() = raw.getString("token")
+    val verifyUrl: String
+        get() = raw.getString("verifyUrl")
+    val keyUrl: String
+        get() = raw.getString("keyUrl")
+}
+
+data class VastuPlanGenerateDataPlotRegionGeometry(val raw: JSONObject) {
+    val polygon: Any?
+        get() = if (!raw.has("polygon") || raw.isNull("polygon")) null else raw.get("polygon").takeUnless { it == JSONObject.NULL }
+    val holes: List<Any?>?
+        get() = if (!raw.has("holes") || raw.isNull("holes")) null else List(raw.getJSONArray("holes").length()) { index0 -> raw.getJSONArray("holes").get(index0).takeUnless { it == JSONObject.NULL } }
+    val multipolygons: List<Any?>?
+        get() = if (!raw.has("multipolygons") || raw.isNull("multipolygons")) null else List(raw.getJSONArray("multipolygons").length()) { index0 -> raw.getJSONArray("multipolygons").get(index0).takeUnless { it == JSONObject.NULL } }
+}
+
+data class VastuPlanGenerateDataPlotRegionBrahmasthan(val raw: JSONObject) {
+    val pole: List<Double>?
+        get() = if (!raw.has("pole") || raw.isNull("pole")) null else List(raw.getJSONArray("pole").length()) { index0 -> (raw.getJSONArray("pole").get(index0) as Number).toDouble() }
+    val poleInside: Boolean?
+        get() = if (!raw.has("poleInside") || raw.isNull("poleInside")) null else raw.getBoolean("poleInside")
+    val basis: String?
+        get() = if (!raw.has("basis") || raw.isNull("basis")) null else raw.getString("basis")
+    val netArea: Double?
+        get() = if (!raw.has("netArea") || raw.isNull("netArea")) null else raw.getDouble("netArea")
+}
+
+data class VastuPlanGenerateDataPlotRegionGridZonesItem(val raw: JSONObject) {
+    val zone: String?
+        get() = if (!raw.has("zone") || raw.isNull("zone")) null else raw.getString("zone")
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+}
+
+data class VastuPlanGenerateDataPlotRegionSectorsItem(val raw: JSONObject) {
+    val zone: String?
+        get() = if (!raw.has("zone") || raw.isNull("zone")) null else raw.getString("zone")
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+}
+
+data class VastuPlanGenerateDataPlotRegion(val raw: JSONObject) {
+    val geometry: VastuPlanGenerateDataPlotRegionGeometry?
+        get() = if (!raw.has("geometry") || raw.isNull("geometry")) null else VastuPlanGenerateDataPlotRegionGeometry(raw.getJSONObject("geometry"))
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+    val centroid: List<Double>?
+        get() = if (!raw.has("centroid") || raw.isNull("centroid")) null else List(raw.getJSONArray("centroid").length()) { index0 -> (raw.getJSONArray("centroid").get(index0) as Number).toDouble() }
+    val centroidInside: Boolean?
+        get() = if (!raw.has("centroidInside") || raw.isNull("centroidInside")) null else raw.getBoolean("centroidInside")
+    val brahmasthan: VastuPlanGenerateDataPlotRegionBrahmasthan?
+        get() = if (!raw.has("brahmasthan") || raw.isNull("brahmasthan")) null else VastuPlanGenerateDataPlotRegionBrahmasthan(raw.getJSONObject("brahmasthan"))
+    val gridZones: List<VastuPlanGenerateDataPlotRegionGridZonesItem>?
+        get() = if (!raw.has("gridZones") || raw.isNull("gridZones")) null else List(raw.getJSONArray("gridZones").length()) { index0 -> VastuPlanGenerateDataPlotRegionGridZonesItem((raw.getJSONArray("gridZones").get(index0) as JSONObject)) }
+    val sectors: List<VastuPlanGenerateDataPlotRegionSectorsItem>?
+        get() = if (!raw.has("sectors") || raw.isNull("sectors")) null else List(raw.getJSONArray("sectors").length()) { index0 -> VastuPlanGenerateDataPlotRegionSectorsItem((raw.getJSONArray("sectors").get(index0) as JSONObject)) }
+}
+
+data class VastuPlanImportDataPlanPlot(val raw: JSONObject) {
+    val polygon: List<List<Double>>
+        get() = List(raw.getJSONArray("polygon").length()) { index0 -> List((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val width: Double?
+        get() = if (!raw.has("width") || raw.isNull("width")) null else raw.getDouble("width")
+    val length: Double?
+        get() = if (!raw.has("length") || raw.isNull("length")) null else raw.getDouble("length")
+}
+
+data class VastuPlanImportDataPlanRoomsItem(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val name: String
+        get() = raw.getString("name")
+    val roomType: String
+        get() = raw.getString("roomType")
+    val label: String
+        get() = raw.getString("label")
+    val polygon: List<List<Double>>
+        get() = List(raw.getJSONArray("polygon").length()) { index0 -> List((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+}
+
+data class VastuPlanImportDataPlanOpeningsItem(val raw: JSONObject) {
+    val start: List<Double>
+        get() = List(raw.getJSONArray("start").length()) { index0 -> (raw.getJSONArray("start").get(index0) as Number).toDouble() }
+    val end: List<Double>
+        get() = List(raw.getJSONArray("end").length()) { index0 -> (raw.getJSONArray("end").get(index0) as Number).toDouble() }
+    val kind: String
+        get() = raw.getString("kind")
+}
+
+data class VastuPlanImportDataPlanEntrance(val raw: JSONObject) {
+    val start: List<Double>
+        get() = List(raw.getJSONArray("start").length()) { index0 -> (raw.getJSONArray("start").get(index0) as Number).toDouble() }
+    val end: List<Double>
+        get() = List(raw.getJSONArray("end").length()) { index0 -> (raw.getJSONArray("end").get(index0) as Number).toDouble() }
+    val kind: String
+        get() = raw.getString("kind")
+}
+
+data class VastuPlanImportDataPlanImportReview(val raw: JSONObject) {
+    val northKnown: Boolean
+        get() = raw.getBoolean("northKnown")
+    val scaleKnown: Boolean
+        get() = raw.getBoolean("scaleKnown")
+    val analysisReady: Boolean
+        get() = raw.getBoolean("analysisReady")
+    val coordinateFrame: String
+        get() = raw.getString("coordinateFrame")
+    val units: String
+        get() = raw.getString("units")
+}
+
+data class VastuPlanImportDataPlan(val raw: JSONObject) {
+    val plot: VastuPlanImportDataPlanPlot
+        get() = VastuPlanImportDataPlanPlot(raw.getJSONObject("plot"))
+    val rooms: List<VastuPlanImportDataPlanRoomsItem>
+        get() = List(raw.getJSONArray("rooms").length()) { index0 -> VastuPlanImportDataPlanRoomsItem((raw.getJSONArray("rooms").get(index0) as JSONObject)) }
+    val openings: List<VastuPlanImportDataPlanOpeningsItem>
+        get() = List(raw.getJSONArray("openings").length()) { index0 -> VastuPlanImportDataPlanOpeningsItem((raw.getJSONArray("openings").get(index0) as JSONObject)) }
+    val entrance: VastuPlanImportDataPlanEntrance?
+        get() = if (!raw.has("entrance") || raw.isNull("entrance")) null else VastuPlanImportDataPlanEntrance(raw.getJSONObject("entrance"))
+    val importReview: VastuPlanImportDataPlanImportReview
+        get() = VastuPlanImportDataPlanImportReview(raw.getJSONObject("importReview"))
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+}
+
+data class VastuPlanImportDataNorth(val raw: JSONObject) {
+    val bearingDeg: Double?
+        get() = if (!raw.has("bearingDeg") || raw.isNull("bearingDeg")) null else raw.getDouble("bearingDeg")
+    val confidence: Double
+        get() = raw.getDouble("confidence")
+    val source: String
+        get() = raw.getString("source")
+}
+
+data class VastuPlanImportDataScale(val raw: JSONObject) {
+    val metersPerUnit: Double?
+        get() = if (!raw.has("metersPerUnit") || raw.isNull("metersPerUnit")) null else raw.getDouble("metersPerUnit")
+    val source: String
+        get() = raw.getString("source")
+}
+
+data class VastuPlanImportDataDimensionsItem(val raw: JSONObject) {
+    val text: String
+        get() = raw.getString("text")
+    val start: List<Double>
+        get() = List(raw.getJSONArray("start").length()) { index0 -> (raw.getJSONArray("start").get(index0) as Number).toDouble() }
+    val end: List<Double>
+        get() = List(raw.getJSONArray("end").length()) { index0 -> (raw.getJSONArray("end").get(index0) as Number).toDouble() }
+    val confidence: Double
+        get() = raw.getDouble("confidence")
+}
+
+data class VastuPlanImportDataNeedsReviewItem(val raw: JSONObject) {
+    val field: String
+        get() = raw.getString("field")
+    val reason: String
+        get() = raw.getString("reason")
+}
+
+data class VastuPlanImportDataSourceDocument(val raw: JSONObject) {
+    val page: Int
+        get() = raw.getInt("page")
+    val pageCount: Int
+        get() = raw.getInt("pageCount")
+}
+
+data class VastuPlanImportDataSource(val raw: JSONObject) {
+    val method: String
+        get() = raw.getString("method")
+    val document: VastuPlanImportDataSourceDocument?
+        get() = if (!raw.has("document") || raw.isNull("document")) null else VastuPlanImportDataSourceDocument(raw.getJSONObject("document"))
+}
+
+data class VastuPlanImportDataUsage(val raw: JSONObject) {
+    val inputTokens: Long
+        get() = raw.getLong("inputTokens")
+    val outputTokens: Long
+        get() = raw.getLong("outputTokens")
+    val computeMicros: Long
+        get() = raw.getLong("computeMicros")
+    val cpuMicros: Long
+        get() = raw.getLong("cpuMicros")
+    val deliveryBytes: Long
+        get() = raw.getLong("deliveryBytes")
+}
+
+data class VastuPlanImportDataPricing(val raw: JSONObject) {
+    val currency: String
+        get() = raw.getString("currency")
+    val attributableCost: String
+        get() = raw.getString("attributableCost")
+    val modelCost: String
+        get() = raw.getString("modelCost")
+    val computeCost: String
+        get() = raw.getString("computeCost")
+    val markup: Int
+        get() = raw.getInt("markup")
+    val price: String
+        get() = raw.getString("price")
+    val unit: String
+        get() = raw.getString("unit")
+    val walletRounding: String
+        get() = raw.getString("walletRounding")
+    val computedPrice: String
+        get() = raw.getString("computedPrice")
+    val deliveryCost: String
+        get() = raw.getString("deliveryCost")
+}
+
+data class VastuPlanImportDxfDataPlanPlot(val raw: JSONObject) {
+    val width: Double
+        get() = raw.getDouble("width")
+    val length: Double
+        get() = raw.getDouble("length")
+    val polygon: List<List<Double>>?
+        get() = if (!raw.has("polygon") || raw.isNull("polygon")) null else List(raw.getJSONArray("polygon").length()) { index0 -> List((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+}
+
+data class VastuPlanImportDxfDataPlanRoomsItem(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val name: String
+        get() = raw.getString("name")
+    val polygon: List<List<Double>>
+        get() = List(raw.getJSONArray("polygon").length()) { index0 -> List((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val x: Double?
+        get() = if (!raw.has("x") || raw.isNull("x")) null else raw.getDouble("x")
+    val y: Double?
+        get() = if (!raw.has("y") || raw.isNull("y")) null else raw.getDouble("y")
+    val w: Double?
+        get() = if (!raw.has("w") || raw.isNull("w")) null else raw.getDouble("w")
+    val h: Double?
+        get() = if (!raw.has("h") || raw.isNull("h")) null else raw.getDouble("h")
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+    val centre: List<Double>?
+        get() = if (!raw.has("centre") || raw.isNull("centre")) null else List(raw.getJSONArray("centre").length()) { index0 -> (raw.getJSONArray("centre").get(index0) as Number).toDouble() }
+    val holes: List<List<List<Double>>>?
+        get() = if (!raw.has("holes") || raw.isNull("holes")) null else List(raw.getJSONArray("holes").length()) { index0 -> List((raw.getJSONArray("holes").get(index0) as org.json.JSONArray).length()) { index1 -> List(((raw.getJSONArray("holes").get(index0) as org.json.JSONArray).get(index1) as org.json.JSONArray).length()) { index2 -> (((raw.getJSONArray("holes").get(index0) as org.json.JSONArray).get(index1) as org.json.JSONArray).get(index2) as Number).toDouble() } } }
+    val source: JSONObject?
+        get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getJSONObject("source")
+    val labelEntityId: String?
+        get() = if (!raw.has("labelEntityId") || raw.isNull("labelEntityId")) null else raw.getString("labelEntityId")
+}
+
+data class VastuPlanImportDxfDataPlanOpeningsDoorsItem(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val type: String
+        get() = raw.getString("type")
+    val line: List<List<Double>>
+        get() = List(raw.getJSONArray("line").length()) { index0 -> List((raw.getJSONArray("line").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("line").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val width: Double
+        get() = raw.getDouble("width")
+    val centre: List<Double>?
+        get() = if (!raw.has("centre") || raw.isNull("centre")) null else List(raw.getJSONArray("centre").length()) { index0 -> (raw.getJSONArray("centre").get(index0) as Number).toDouble() }
+    val source: JSONObject?
+        get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getJSONObject("source")
+}
+
+data class VastuPlanImportDxfDataPlanOpeningsWindowsItem(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val type: String
+        get() = raw.getString("type")
+    val line: List<List<Double>>
+        get() = List(raw.getJSONArray("line").length()) { index0 -> List((raw.getJSONArray("line").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("line").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val width: Double
+        get() = raw.getDouble("width")
+    val centre: List<Double>?
+        get() = if (!raw.has("centre") || raw.isNull("centre")) null else List(raw.getJSONArray("centre").length()) { index0 -> (raw.getJSONArray("centre").get(index0) as Number).toDouble() }
+    val source: JSONObject?
+        get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getJSONObject("source")
+}
+
+data class VastuPlanImportDxfDataPlanOpenings(val raw: JSONObject) {
+    val doors: List<VastuPlanImportDxfDataPlanOpeningsDoorsItem>?
+        get() = if (!raw.has("doors") || raw.isNull("doors")) null else List(raw.getJSONArray("doors").length()) { index0 -> VastuPlanImportDxfDataPlanOpeningsDoorsItem((raw.getJSONArray("doors").get(index0) as JSONObject)) }
+    val windows: List<VastuPlanImportDxfDataPlanOpeningsWindowsItem>?
+        get() = if (!raw.has("windows") || raw.isNull("windows")) null else List(raw.getJSONArray("windows").length()) { index0 -> VastuPlanImportDxfDataPlanOpeningsWindowsItem((raw.getJSONArray("windows").get(index0) as JSONObject)) }
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+}
+
+data class VastuPlanImportDxfDataPlan(val raw: JSONObject) {
+    val plot: VastuPlanImportDxfDataPlanPlot
+        get() = VastuPlanImportDxfDataPlanPlot(raw.getJSONObject("plot"))
+    val rooms: List<VastuPlanImportDxfDataPlanRoomsItem>
+        get() = List(raw.getJSONArray("rooms").length()) { index0 -> VastuPlanImportDxfDataPlanRoomsItem((raw.getJSONArray("rooms").get(index0) as JSONObject)) }
+    val openings: VastuPlanImportDxfDataPlanOpenings?
+        get() = if (!raw.has("openings") || raw.isNull("openings")) null else VastuPlanImportDxfDataPlanOpenings(raw.getJSONObject("openings"))
+    val trueNorthDeg: Double
+        get() = raw.getDouble("trueNorthDeg")
+    val orientationDeg: Double?
+        get() = if (!raw.has("orientationDeg") || raw.isNull("orientationDeg")) null else raw.getDouble("orientationDeg")
+    val units: String
+        get() = raw.getString("units")
+    val cadMetadata: JSONObject?
+        get() = if (!raw.has("cadMetadata") || raw.isNull("cadMetadata")) null else raw.getJSONObject("cadMetadata")
+}
+
+data class VastuPlanImportDxfDataMappingReportItem(val raw: JSONObject) {
+    val entityId: String
+        get() = raw.getString("entityId")
+    val handle: String?
+        get() = if (!raw.has("handle") || raw.isNull("handle")) null else raw.getString("handle")
+    val stepId: Int?
+        get() = if (!raw.has("stepId") || raw.isNull("stepId")) null else raw.getInt("stepId")
+    val entityType: String
+        get() = raw.getString("entityType")
+    val layer: String?
+        get() = if (!raw.has("layer") || raw.isNull("layer")) null else raw.getString("layer")
+    val role: String?
+        get() = if (!raw.has("role") || raw.isNull("role")) null else raw.getString("role")
+    val status: String
+        get() = raw.getString("status")
+    val planIds: List<String>?
+        get() = if (!raw.has("planIds") || raw.isNull("planIds")) null else List(raw.getJSONArray("planIds").length()) { index0 -> (raw.getJSONArray("planIds").get(index0) as String) }
+    val reason: String?
+        get() = if (!raw.has("reason") || raw.isNull("reason")) null else raw.getString("reason")
+    val parentId: String?
+        get() = if (!raw.has("parentId") || raw.isNull("parentId")) null else raw.getString("parentId")
+}
+
+data class VastuPlanImportDxfDataReviewReasonsItem(val raw: JSONObject) {
+    val id: String?
+        get() = if (!raw.has("id") || raw.isNull("id")) null else raw.getString("id")
+    val reason: String
+        get() = raw.getString("reason")
+}
+
+data class VastuPlanImportIfcDataBuildingsItem(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val name: String
+        get() = raw.getString("name")
+}
+
+data class VastuPlanImportIfcDataStoreysItemPlanPlot(val raw: JSONObject) {
+    val width: Double
+        get() = raw.getDouble("width")
+    val length: Double
+        get() = raw.getDouble("length")
+    val polygon: List<List<Double>>?
+        get() = if (!raw.has("polygon") || raw.isNull("polygon")) null else List(raw.getJSONArray("polygon").length()) { index0 -> List((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+}
+
+data class VastuPlanImportIfcDataStoreysItemPlanRoomsItem(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val name: String
+        get() = raw.getString("name")
+    val polygon: List<List<Double>>
+        get() = List(raw.getJSONArray("polygon").length()) { index0 -> List((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("polygon").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val x: Double?
+        get() = if (!raw.has("x") || raw.isNull("x")) null else raw.getDouble("x")
+    val y: Double?
+        get() = if (!raw.has("y") || raw.isNull("y")) null else raw.getDouble("y")
+    val w: Double?
+        get() = if (!raw.has("w") || raw.isNull("w")) null else raw.getDouble("w")
+    val h: Double?
+        get() = if (!raw.has("h") || raw.isNull("h")) null else raw.getDouble("h")
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+    val centre: List<Double>?
+        get() = if (!raw.has("centre") || raw.isNull("centre")) null else List(raw.getJSONArray("centre").length()) { index0 -> (raw.getJSONArray("centre").get(index0) as Number).toDouble() }
+    val holes: List<List<List<Double>>>?
+        get() = if (!raw.has("holes") || raw.isNull("holes")) null else List(raw.getJSONArray("holes").length()) { index0 -> List((raw.getJSONArray("holes").get(index0) as org.json.JSONArray).length()) { index1 -> List(((raw.getJSONArray("holes").get(index0) as org.json.JSONArray).get(index1) as org.json.JSONArray).length()) { index2 -> (((raw.getJSONArray("holes").get(index0) as org.json.JSONArray).get(index1) as org.json.JSONArray).get(index2) as Number).toDouble() } } }
+    val source: JSONObject?
+        get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getJSONObject("source")
+}
+
+data class VastuPlanImportIfcDataStoreysItemPlanOpeningsDoorsItem(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val type: String
+        get() = raw.getString("type")
+    val line: List<List<Double>>
+        get() = List(raw.getJSONArray("line").length()) { index0 -> List((raw.getJSONArray("line").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("line").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val width: Double
+        get() = raw.getDouble("width")
+    val centre: List<Double>?
+        get() = if (!raw.has("centre") || raw.isNull("centre")) null else List(raw.getJSONArray("centre").length()) { index0 -> (raw.getJSONArray("centre").get(index0) as Number).toDouble() }
+    val source: JSONObject?
+        get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getJSONObject("source")
+    val name: String?
+        get() = if (!raw.has("name") || raw.isNull("name")) null else raw.getString("name")
+    val openingHeight: Double?
+        get() = if (!raw.has("openingHeight") || raw.isNull("openingHeight")) null else raw.getDouble("openingHeight")
+}
+
+data class VastuPlanImportIfcDataStoreysItemPlanOpeningsWindowsItem(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val type: String
+        get() = raw.getString("type")
+    val line: List<List<Double>>
+        get() = List(raw.getJSONArray("line").length()) { index0 -> List((raw.getJSONArray("line").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("line").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val width: Double
+        get() = raw.getDouble("width")
+    val centre: List<Double>?
+        get() = if (!raw.has("centre") || raw.isNull("centre")) null else List(raw.getJSONArray("centre").length()) { index0 -> (raw.getJSONArray("centre").get(index0) as Number).toDouble() }
+    val source: JSONObject?
+        get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getJSONObject("source")
+    val name: String?
+        get() = if (!raw.has("name") || raw.isNull("name")) null else raw.getString("name")
+    val openingHeight: Double?
+        get() = if (!raw.has("openingHeight") || raw.isNull("openingHeight")) null else raw.getDouble("openingHeight")
+}
+
+data class VastuPlanImportIfcDataStoreysItemPlanOpenings(val raw: JSONObject) {
+    val doors: List<VastuPlanImportIfcDataStoreysItemPlanOpeningsDoorsItem>?
+        get() = if (!raw.has("doors") || raw.isNull("doors")) null else List(raw.getJSONArray("doors").length()) { index0 -> VastuPlanImportIfcDataStoreysItemPlanOpeningsDoorsItem((raw.getJSONArray("doors").get(index0) as JSONObject)) }
+    val windows: List<VastuPlanImportIfcDataStoreysItemPlanOpeningsWindowsItem>?
+        get() = if (!raw.has("windows") || raw.isNull("windows")) null else List(raw.getJSONArray("windows").length()) { index0 -> VastuPlanImportIfcDataStoreysItemPlanOpeningsWindowsItem((raw.getJSONArray("windows").get(index0) as JSONObject)) }
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+}
+
+data class VastuPlanImportIfcDataStoreysItemPlan(val raw: JSONObject) {
+    val plot: VastuPlanImportIfcDataStoreysItemPlanPlot
+        get() = VastuPlanImportIfcDataStoreysItemPlanPlot(raw.getJSONObject("plot"))
+    val rooms: List<VastuPlanImportIfcDataStoreysItemPlanRoomsItem>
+        get() = List(raw.getJSONArray("rooms").length()) { index0 -> VastuPlanImportIfcDataStoreysItemPlanRoomsItem((raw.getJSONArray("rooms").get(index0) as JSONObject)) }
+    val openings: VastuPlanImportIfcDataStoreysItemPlanOpenings?
+        get() = if (!raw.has("openings") || raw.isNull("openings")) null else VastuPlanImportIfcDataStoreysItemPlanOpenings(raw.getJSONObject("openings"))
+    val trueNorthDeg: Double
+        get() = raw.getDouble("trueNorthDeg")
+    val orientationDeg: Double?
+        get() = if (!raw.has("orientationDeg") || raw.isNull("orientationDeg")) null else raw.getDouble("orientationDeg")
+    val units: String
+        get() = raw.getString("units")
+    val cadMetadata: JSONObject?
+        get() = if (!raw.has("cadMetadata") || raw.isNull("cadMetadata")) null else raw.getJSONObject("cadMetadata")
+}
+
+data class VastuPlanImportIfcDataStoreysItem(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val name: String
+        get() = raw.getString("name")
+    val buildingId: String?
+        get() = if (!raw.has("buildingId") || raw.isNull("buildingId")) null else raw.getString("buildingId")
+    val elevationMetres: Double?
+        get() = if (!raw.has("elevationMetres") || raw.isNull("elevationMetres")) null else raw.getDouble("elevationMetres")
+    val plan: VastuPlanImportIfcDataStoreysItemPlan
+        get() = VastuPlanImportIfcDataStoreysItemPlan(raw.getJSONObject("plan"))
+}
+
+data class VastuPlanImportIfcDataMappingReportItem(val raw: JSONObject) {
+    val entityId: String
+        get() = raw.getString("entityId")
+    val handle: String?
+        get() = if (!raw.has("handle") || raw.isNull("handle")) null else raw.getString("handle")
+    val stepId: Int?
+        get() = if (!raw.has("stepId") || raw.isNull("stepId")) null else raw.getInt("stepId")
+    val entityType: String
+        get() = raw.getString("entityType")
+    val layer: String?
+        get() = if (!raw.has("layer") || raw.isNull("layer")) null else raw.getString("layer")
+    val role: String?
+        get() = if (!raw.has("role") || raw.isNull("role")) null else raw.getString("role")
+    val status: String
+        get() = raw.getString("status")
+    val planIds: List<String>?
+        get() = if (!raw.has("planIds") || raw.isNull("planIds")) null else List(raw.getJSONArray("planIds").length()) { index0 -> (raw.getJSONArray("planIds").get(index0) as String) }
+    val reason: String?
+        get() = if (!raw.has("reason") || raw.isNull("reason")) null else raw.getString("reason")
+    val storeyId: String?
+        get() = if (!raw.has("storeyId") || raw.isNull("storeyId")) null else raw.getString("storeyId")
+}
+
+data class VastuPlanImportIfcDataReviewReasonsItem(val raw: JSONObject) {
+    val id: String?
+        get() = if (!raw.has("id") || raw.isNull("id")) null else raw.getString("id")
+    val reason: String
+        get() = raw.getString("reason")
+}
+
+data class VastuPlanOptimizeDataPlotRegionGeometry(val raw: JSONObject) {
+    val polygon: Any?
+        get() = if (!raw.has("polygon") || raw.isNull("polygon")) null else raw.get("polygon").takeUnless { it == JSONObject.NULL }
+    val holes: List<Any?>?
+        get() = if (!raw.has("holes") || raw.isNull("holes")) null else List(raw.getJSONArray("holes").length()) { index0 -> raw.getJSONArray("holes").get(index0).takeUnless { it == JSONObject.NULL } }
+    val multipolygons: List<Any?>?
+        get() = if (!raw.has("multipolygons") || raw.isNull("multipolygons")) null else List(raw.getJSONArray("multipolygons").length()) { index0 -> raw.getJSONArray("multipolygons").get(index0).takeUnless { it == JSONObject.NULL } }
+}
+
+data class VastuPlanOptimizeDataPlotRegionBrahmasthan(val raw: JSONObject) {
+    val pole: List<Double>?
+        get() = if (!raw.has("pole") || raw.isNull("pole")) null else List(raw.getJSONArray("pole").length()) { index0 -> (raw.getJSONArray("pole").get(index0) as Number).toDouble() }
+    val poleInside: Boolean?
+        get() = if (!raw.has("poleInside") || raw.isNull("poleInside")) null else raw.getBoolean("poleInside")
+    val basis: String?
+        get() = if (!raw.has("basis") || raw.isNull("basis")) null else raw.getString("basis")
+    val netArea: Double?
+        get() = if (!raw.has("netArea") || raw.isNull("netArea")) null else raw.getDouble("netArea")
+}
+
+data class VastuPlanOptimizeDataPlotRegionGridZonesItem(val raw: JSONObject) {
+    val zone: String?
+        get() = if (!raw.has("zone") || raw.isNull("zone")) null else raw.getString("zone")
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+}
+
+data class VastuPlanOptimizeDataPlotRegionSectorsItem(val raw: JSONObject) {
+    val zone: String?
+        get() = if (!raw.has("zone") || raw.isNull("zone")) null else raw.getString("zone")
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+}
+
+data class VastuPlanOptimizeDataPlotRegion(val raw: JSONObject) {
+    val geometry: VastuPlanOptimizeDataPlotRegionGeometry?
+        get() = if (!raw.has("geometry") || raw.isNull("geometry")) null else VastuPlanOptimizeDataPlotRegionGeometry(raw.getJSONObject("geometry"))
+    val area: Double?
+        get() = if (!raw.has("area") || raw.isNull("area")) null else raw.getDouble("area")
+    val centroid: List<Double>?
+        get() = if (!raw.has("centroid") || raw.isNull("centroid")) null else List(raw.getJSONArray("centroid").length()) { index0 -> (raw.getJSONArray("centroid").get(index0) as Number).toDouble() }
+    val centroidInside: Boolean?
+        get() = if (!raw.has("centroidInside") || raw.isNull("centroidInside")) null else raw.getBoolean("centroidInside")
+    val brahmasthan: VastuPlanOptimizeDataPlotRegionBrahmasthan?
+        get() = if (!raw.has("brahmasthan") || raw.isNull("brahmasthan")) null else VastuPlanOptimizeDataPlotRegionBrahmasthan(raw.getJSONObject("brahmasthan"))
+    val gridZones: List<VastuPlanOptimizeDataPlotRegionGridZonesItem>?
+        get() = if (!raw.has("gridZones") || raw.isNull("gridZones")) null else List(raw.getJSONArray("gridZones").length()) { index0 -> VastuPlanOptimizeDataPlotRegionGridZonesItem((raw.getJSONArray("gridZones").get(index0) as JSONObject)) }
+    val sectors: List<VastuPlanOptimizeDataPlotRegionSectorsItem>?
+        get() = if (!raw.has("sectors") || raw.isNull("sectors")) null else List(raw.getJSONArray("sectors").length()) { index0 -> VastuPlanOptimizeDataPlotRegionSectorsItem((raw.getJSONArray("sectors").get(index0) as JSONObject)) }
+}
+
+data class VastuPlotFromSurveyDataPricing(val raw: JSONObject) {
+    val attributableCostUsd: String
+        get() = raw.getString("attributableCostUsd")
+    val markupMultiplier: Int
+        get() = raw.getInt("markupMultiplier")
+    val computedPriceUsd: String
+        get() = raw.getString("computedPriceUsd")
+    val settledChargeUsd: String
+        get() = raw.getString("settledChargeUsd")
+    val settlement: String
+        get() = raw.getString("settlement")
+}
+
+data class VastuPortfolioAnalyticsDataAccountCounts(val raw: JSONObject) {
+    val propertiesCreated: Int
+        get() = raw.getInt("propertiesCreated")
+    val propertiesAssessed: Int
+        get() = raw.getInt("propertiesAssessed")
+    val reportsDelivered: Int
+        get() = raw.getInt("reportsDelivered")
+    val returningProperties: Int
+        get() = raw.getInt("returningProperties")
+}
+
+data class VastuPortfolioAnalyticsDataAccountDailyItemCounts(val raw: JSONObject) {
+    val propertiesCreated: Int
+        get() = raw.getInt("propertiesCreated")
+    val propertiesAssessed: Int
+        get() = raw.getInt("propertiesAssessed")
+    val reportsDelivered: Int
+        get() = raw.getInt("reportsDelivered")
+    val returningProperties: Int
+        get() = raw.getInt("returningProperties")
+}
+
+data class VastuPortfolioAnalyticsDataAccountDailyItem(val raw: JSONObject) {
+    val date: String
+        get() = raw.getString("date")
+    val counts: VastuPortfolioAnalyticsDataAccountDailyItemCounts
+        get() = VastuPortfolioAnalyticsDataAccountDailyItemCounts(raw.getJSONObject("counts"))
+}
+
+data class VastuPortfolioAnalyticsDataAccount(val raw: JSONObject) {
+    val counts: VastuPortfolioAnalyticsDataAccountCounts
+        get() = VastuPortfolioAnalyticsDataAccountCounts(raw.getJSONObject("counts"))
+    val daily: List<VastuPortfolioAnalyticsDataAccountDailyItem>
+        get() = List(raw.getJSONArray("daily").length()) { index0 -> VastuPortfolioAnalyticsDataAccountDailyItem((raw.getJSONArray("daily").get(index0) as JSONObject)) }
+    val returningDefinition: String
+        get() = raw.getString("returningDefinition")
+    val deliveryDefinition: String
+        get() = raw.getString("deliveryDefinition")
+    val coverage: String
+        get() = raw.getString("coverage")
+}
+
+data class VastuPortfolioBudgetsSetDataScope(val raw: JSONObject) {
+    val propertyId: String?
+        get() = if (!raw.has("propertyId") || raw.isNull("propertyId")) null else raw.getString("propertyId")
+    val tenantRef: String?
+        get() = if (!raw.has("tenantRef") || raw.isNull("tenantRef")) null else raw.getString("tenantRef")
+}
+
+data class VastuPortfolioCompareDataPropertiesItemAssessment(val raw: JSONObject) {
+    val score: Int?
+        get() = if (!raw.has("score") || raw.isNull("score")) null else raw.getInt("score")
+    val grade: String?
+        get() = if (!raw.has("grade") || raw.isNull("grade")) null else raw.getString("grade")
+    val inputSource: String?
+        get() = if (!raw.has("inputSource") || raw.isNull("inputSource")) null else raw.getString("inputSource")
+    val ruleset: String?
+        get() = if (!raw.has("ruleset") || raw.isNull("ruleset")) null else raw.getString("ruleset")
+    val zoneDefects: List<String>?
+        get() = if (!raw.has("zoneDefects") || raw.isNull("zoneDefects")) null else List(raw.getJSONArray("zoneDefects").length()) { index0 -> (raw.getJSONArray("zoneDefects").get(index0) as String) }
+    val kind: String?
+        get() = if (!raw.has("kind") || raw.isNull("kind")) null else raw.getString("kind")
+}
+
+data class VastuPortfolioCompareDataPropertiesItem(val raw: JSONObject) {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val title: String
+        get() = raw.getString("title")
+    val city: String
+        get() = raw.getString("city")
+    val tags: List<String>
+        get() = List(raw.getJSONArray("tags").length()) { index0 -> (raw.getJSONArray("tags").get(index0) as String) }
+    val createdAtEpoch: Long
+        get() = raw.getLong("createdAtEpoch")
+    val assessment: VastuPortfolioCompareDataPropertiesItemAssessment?
+        get() = if (!raw.has("assessment") || raw.isNull("assessment")) null else VastuPortfolioCompareDataPropertiesItemAssessment(raw.getJSONObject("assessment"))
+    val assessedAtEpoch: Long?
+        get() = if (!raw.has("assessedAtEpoch") || raw.isNull("assessedAtEpoch")) null else raw.getLong("assessedAtEpoch")
+}
+
+data class VastuPortfolioSearchDataPropertiesItemAssessment(val raw: JSONObject) {
+    val score: Int?
+        get() = if (!raw.has("score") || raw.isNull("score")) null else raw.getInt("score")
+    val grade: String?
+        get() = if (!raw.has("grade") || raw.isNull("grade")) null else raw.getString("grade")
+    val inputSource: String?
+        get() = if (!raw.has("inputSource") || raw.isNull("inputSource")) null else raw.getString("inputSource")
+    val ruleset: String?
+        get() = if (!raw.has("ruleset") || raw.isNull("ruleset")) null else raw.getString("ruleset")
+    val zoneDefects: List<String>?
+        get() = if (!raw.has("zoneDefects") || raw.isNull("zoneDefects")) null else List(raw.getJSONArray("zoneDefects").length()) { index0 -> (raw.getJSONArray("zoneDefects").get(index0) as String) }
+    val kind: String?
+        get() = if (!raw.has("kind") || raw.isNull("kind")) null else raw.getString("kind")
+}
+
+data class VastuPortfolioSearchDataPropertiesItem(val raw: JSONObject) {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val title: String
+        get() = raw.getString("title")
+    val city: String
+        get() = raw.getString("city")
+    val tags: List<String>
+        get() = List(raw.getJSONArray("tags").length()) { index0 -> (raw.getJSONArray("tags").get(index0) as String) }
+    val createdAtEpoch: Long
+        get() = raw.getLong("createdAtEpoch")
+    val assessment: VastuPortfolioSearchDataPropertiesItemAssessment?
+        get() = if (!raw.has("assessment") || raw.isNull("assessment")) null else VastuPortfolioSearchDataPropertiesItemAssessment(raw.getJSONObject("assessment"))
+    val assessedAtEpoch: Long?
+        get() = if (!raw.has("assessedAtEpoch") || raw.isNull("assessedAtEpoch")) null else raw.getLong("assessedAtEpoch")
+}
+
+data class VastuPortfolioUsageDataGroupsItem(val raw: JSONObject) {
+    val propertyId: String?
+        get() = if (!raw.has("propertyId") || raw.isNull("propertyId")) null else raw.getString("propertyId")
+    val tenantRef: String?
+        get() = if (!raw.has("tenantRef") || raw.isNull("tenantRef")) null else raw.getString("tenantRef")
+    val calls: Int
+        get() = raw.getInt("calls")
+    val chargedUsd: String
+        get() = raw.getString("chargedUsd")
+    val pending: Int
+        get() = raw.getInt("pending")
+}
+
+data class VastuPropertiesActivityExportDataEventsItem(val raw: JSONObject) {
+    val sequence: Long
+        get() = raw.getLong("sequence")
+    val actorId: String
+        get() = raw.getString("actorId")
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val revision: String
+        get() = raw.getString("revision")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+    val action: String
+        get() = raw.getString("action")
+    val at: Long
+        get() = raw.getLong("at")
+    val previousHash: String
+        get() = raw.getString("previousHash")
+    val hash: String
+        get() = raw.getString("hash")
+    val details: JSONObject
+        get() = raw.getJSONObject("details")
+}
+
+data class VastuPropertiesActivityListDataEventsItem(val raw: JSONObject) {
+    val sequence: Long
+        get() = raw.getLong("sequence")
+    val actorId: String
+        get() = raw.getString("actorId")
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val revision: String
+        get() = raw.getString("revision")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+    val action: String
+        get() = raw.getString("action")
+    val at: Long
+        get() = raw.getLong("at")
+    val previousHash: String
+        get() = raw.getString("previousHash")
+    val hash: String
+        get() = raw.getString("hash")
+    val details: JSONObject
+        get() = raw.getJSONObject("details")
+}
+
+data class VastuPropertiesCollaborationCommentDataComment(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val actorId: String
+        get() = raw.getString("actorId")
+    val assessmentId: String
+        get() = raw.getString("assessmentId")
+    val revision: String
+        get() = raw.getString("revision")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+    val at: Long
+        get() = raw.getLong("at")
+    val text: String
+        get() = raw.getString("text")
+}
+
+data class VastuPropertiesCollaborationGetDataPropertyIds(val raw: JSONObject) {
+    val project: String
+        get() = raw.getString("project")
+    val building: String
+        get() = raw.getString("building")
+    val unit: String
+        get() = raw.getString("unit")
+    val floor: String
+        get() = raw.getString("floor")
+    val revision: String
+        get() = raw.getString("revision")
+}
+
+data class VastuPropertiesCollaborationGetDataPropertyArchiveTier(val raw: JSONObject) {
+    val months: Int
+        get() = raw.getInt("months")
+    val storedBytes: Long
+        get() = raw.getLong("storedBytes")
+    val priceCents: Int
+        get() = raw.getInt("priceCents")
+    val setAtEpoch: Long
+        get() = raw.getLong("setAtEpoch")
+    val retainUntilEpoch: Long
+        get() = raw.getLong("retainUntilEpoch")
+}
+
+data class VastuPropertiesCollaborationGetDataProperty(val raw: JSONObject) {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val ownerId: String
+        get() = raw.getString("ownerId")
+    val ids: VastuPropertiesCollaborationGetDataPropertyIds
+        get() = VastuPropertiesCollaborationGetDataPropertyIds(raw.getJSONObject("ids"))
+    val title: String
+        get() = raw.getString("title")
+    val data: JSONObject
+        get() = raw.getJSONObject("data")
+    val retentionDays: Int
+        get() = raw.getInt("retentionDays")
+    val expiresAtEpoch: Long
+        get() = raw.getLong("expiresAtEpoch")
+    val linkedScanIds: List<String>
+        get() = List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>
+        get() = List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val archiveTier: VastuPropertiesCollaborationGetDataPropertyArchiveTier?
+        get() = if (!raw.has("archiveTier") || raw.isNull("archiveTier")) null else VastuPropertiesCollaborationGetDataPropertyArchiveTier(raw.getJSONObject("archiveTier"))
+    val externalId: String?
+        get() = if (!raw.has("externalId") || raw.isNull("externalId")) null else raw.getString("externalId")
+    val createdAtEpoch: Long
+        get() = raw.getLong("createdAtEpoch")
+    val updatedAtEpoch: Long
+        get() = raw.getLong("updatedAtEpoch")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+}
+
+data class VastuPropertiesCollaborationGetDataCommentsItem(val raw: JSONObject) {
+    val id: String
+        get() = raw.getString("id")
+    val actorId: String
+        get() = raw.getString("actorId")
+    val assessmentId: String
+        get() = raw.getString("assessmentId")
+    val revision: String
+        get() = raw.getString("revision")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+    val at: Long
+        get() = raw.getLong("at")
+    val text: String
+        get() = raw.getString("text")
+}
+
+data class VastuPropertiesCollaborationGetDataReviewsItem(val raw: JSONObject) {
+    val actorId: String
+        get() = raw.getString("actorId")
+    val assessmentId: String
+        get() = raw.getString("assessmentId")
+    val revision: String
+        get() = raw.getString("revision")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+    val at: Long
+        get() = raw.getLong("at")
+    val decision: String
+        get() = raw.getString("decision")
+}
+
+data class VastuPropertiesCollaborationReviewDataReview(val raw: JSONObject) {
+    val actorId: String
+        get() = raw.getString("actorId")
+    val assessmentId: String
+        get() = raw.getString("assessmentId")
+    val revision: String
+        get() = raw.getString("revision")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+    val at: Long
+        get() = raw.getLong("at")
+    val decision: String
+        get() = raw.getString("decision")
+}
+
+data class VastuPropertiesCollaborationUpdateDataPropertyIds(val raw: JSONObject) {
+    val project: String
+        get() = raw.getString("project")
+    val building: String
+        get() = raw.getString("building")
+    val unit: String
+        get() = raw.getString("unit")
+    val floor: String
+        get() = raw.getString("floor")
+    val revision: String
+        get() = raw.getString("revision")
+}
+
+data class VastuPropertiesCollaborationUpdateDataPropertyArchiveTier(val raw: JSONObject) {
+    val months: Int
+        get() = raw.getInt("months")
+    val storedBytes: Long
+        get() = raw.getLong("storedBytes")
+    val priceCents: Int
+        get() = raw.getInt("priceCents")
+    val setAtEpoch: Long
+        get() = raw.getLong("setAtEpoch")
+    val retainUntilEpoch: Long
+        get() = raw.getLong("retainUntilEpoch")
+}
+
+data class VastuPropertiesCollaborationUpdateDataProperty(val raw: JSONObject) {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val ownerId: String
+        get() = raw.getString("ownerId")
+    val ids: VastuPropertiesCollaborationUpdateDataPropertyIds
+        get() = VastuPropertiesCollaborationUpdateDataPropertyIds(raw.getJSONObject("ids"))
+    val title: String
+        get() = raw.getString("title")
+    val data: JSONObject
+        get() = raw.getJSONObject("data")
+    val retentionDays: Int
+        get() = raw.getInt("retentionDays")
+    val expiresAtEpoch: Long
+        get() = raw.getLong("expiresAtEpoch")
+    val linkedScanIds: List<String>
+        get() = List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>
+        get() = List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val archiveTier: VastuPropertiesCollaborationUpdateDataPropertyArchiveTier?
+        get() = if (!raw.has("archiveTier") || raw.isNull("archiveTier")) null else VastuPropertiesCollaborationUpdateDataPropertyArchiveTier(raw.getJSONObject("archiveTier"))
+    val externalId: String?
+        get() = if (!raw.has("externalId") || raw.isNull("externalId")) null else raw.getString("externalId")
+    val createdAtEpoch: Long
+        get() = raw.getLong("createdAtEpoch")
+    val updatedAtEpoch: Long
+        get() = raw.getLong("updatedAtEpoch")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+}
+
+data class VastuPropertiesCreateDataIds(val raw: JSONObject) {
+    val project: String
+        get() = raw.getString("project")
+    val building: String
+        get() = raw.getString("building")
+    val unit: String
+        get() = raw.getString("unit")
+    val floor: String
+        get() = raw.getString("floor")
+    val revision: String
+        get() = raw.getString("revision")
+}
+
+data class VastuPropertiesCreateDataArchiveTier(val raw: JSONObject) {
+    val months: Int
+        get() = raw.getInt("months")
+    val storedBytes: Long
+        get() = raw.getLong("storedBytes")
+    val priceCents: Int
+        get() = raw.getInt("priceCents")
+    val setAtEpoch: Long
+        get() = raw.getLong("setAtEpoch")
+    val retainUntilEpoch: Long
+        get() = raw.getLong("retainUntilEpoch")
+}
+
+data class VastuPropertiesDeleteDataErasureReceiptRemovedItem(val raw: JSONObject) {
+    val kind: String
+        get() = raw.getString("kind")
+    val recordId: String?
+        get() = if (!raw.has("recordId") || raw.isNull("recordId")) null else raw.getString("recordId")
+    val artifactId: String?
+        get() = if (!raw.has("artifactId") || raw.isNull("artifactId")) null else raw.getString("artifactId")
+    val artifactHash: String?
+        get() = if (!raw.has("artifactHash") || raw.isNull("artifactHash")) null else raw.getString("artifactHash")
+    val versionHash: String?
+        get() = if (!raw.has("versionHash") || raw.isNull("versionHash")) null else raw.getString("versionHash")
+    val deleteMarker: Boolean?
+        get() = if (!raw.has("deleteMarker") || raw.isNull("deleteMarker")) null else raw.getBoolean("deleteMarker")
+    val versionCount: Int?
+        get() = if (!raw.has("versionCount") || raw.isNull("versionCount")) null else raw.getInt("versionCount")
+    val deleteMarkerCount: Int?
+        get() = if (!raw.has("deleteMarkerCount") || raw.isNull("deleteMarkerCount")) null else raw.getInt("deleteMarkerCount")
+    val versionsSha256: String?
+        get() = if (!raw.has("versionsSha256") || raw.isNull("versionsSha256")) null else raw.getString("versionsSha256")
+}
+
+data class VastuPropertiesDeleteDataErasureReceiptRetainedItem(val raw: JSONObject) {
+    val kind: String
+        get() = raw.getString("kind")
+    val purpose: String
+        get() = raw.getString("purpose")
+}
+
+data class VastuPropertiesDeleteDataErasureReceipt(val raw: JSONObject) {
+    val schemaVersion: Int
+        get() = raw.getInt("schemaVersion")
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val status: String
+        get() = raw.getString("status")
+    val scope: String
+        get() = raw.getString("scope")
+    val completedAt: String
+        get() = raw.getString("completedAt")
+    val removed: List<VastuPropertiesDeleteDataErasureReceiptRemovedItem>
+        get() = List(raw.getJSONArray("removed").length()) { index0 -> VastuPropertiesDeleteDataErasureReceiptRemovedItem((raw.getJSONArray("removed").get(index0) as JSONObject)) }
+    val retained: List<VastuPropertiesDeleteDataErasureReceiptRetainedItem>
+        get() = List(raw.getJSONArray("retained").length()) { index0 -> VastuPropertiesDeleteDataErasureReceiptRetainedItem((raw.getJSONArray("retained").get(index0) as JSONObject)) }
+    val backupRetentionDays: Int
+        get() = raw.getInt("backupRetentionDays")
+    val backupPolicy: String
+        get() = raw.getString("backupPolicy")
+    val hashAlgorithm: String
+        get() = raw.getString("hashAlgorithm")
+    val receiptHash: String
+        get() = raw.getString("receiptHash")
+    val linkedScanIds: List<String>?
+        get() = if (!raw.has("linkedScanIds") || raw.isNull("linkedScanIds")) null else List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>?
+        get() = if (!raw.has("linkedAssessmentIds") || raw.isNull("linkedAssessmentIds")) null else List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val deletedByAccountHash: String
+        get() = raw.getString("deletedByAccountHash")
+    val deletedAtEpoch: Long
+        get() = raw.getLong("deletedAtEpoch")
+    val revisionId: String?
+        get() = if (!raw.has("revisionId") || raw.isNull("revisionId")) null else raw.getString("revisionId")
+}
+
+data class VastuPropertiesGetDataIds(val raw: JSONObject) {
+    val project: String
+        get() = raw.getString("project")
+    val building: String
+        get() = raw.getString("building")
+    val unit: String
+        get() = raw.getString("unit")
+    val floor: String
+        get() = raw.getString("floor")
+    val revision: String
+        get() = raw.getString("revision")
+}
+
+data class VastuPropertiesGetDataArchiveTier(val raw: JSONObject) {
+    val months: Int
+        get() = raw.getInt("months")
+    val storedBytes: Long
+        get() = raw.getLong("storedBytes")
+    val priceCents: Int
+        get() = raw.getInt("priceCents")
+    val setAtEpoch: Long
+        get() = raw.getLong("setAtEpoch")
+    val retainUntilEpoch: Long
+        get() = raw.getLong("retainUntilEpoch")
+}
+
+data class VastuPropertiesLinkScanDataIds(val raw: JSONObject) {
+    val project: String
+        get() = raw.getString("project")
+    val building: String
+        get() = raw.getString("building")
+    val unit: String
+        get() = raw.getString("unit")
+    val floor: String
+        get() = raw.getString("floor")
+    val revision: String
+        get() = raw.getString("revision")
+}
+
+data class VastuPropertiesLinkScanDataArchiveTier(val raw: JSONObject) {
+    val months: Int
+        get() = raw.getInt("months")
+    val storedBytes: Long
+        get() = raw.getLong("storedBytes")
+    val priceCents: Int
+        get() = raw.getInt("priceCents")
+    val setAtEpoch: Long
+        get() = raw.getLong("setAtEpoch")
+    val retainUntilEpoch: Long
+        get() = raw.getLong("retainUntilEpoch")
+}
+
+data class VastuPropertiesListDataPropertiesItemIds(val raw: JSONObject) {
+    val project: String
+        get() = raw.getString("project")
+    val building: String
+        get() = raw.getString("building")
+    val unit: String
+        get() = raw.getString("unit")
+    val floor: String
+        get() = raw.getString("floor")
+    val revision: String
+        get() = raw.getString("revision")
+}
+
+data class VastuPropertiesListDataPropertiesItemArchiveTier(val raw: JSONObject) {
+    val months: Int
+        get() = raw.getInt("months")
+    val storedBytes: Long
+        get() = raw.getLong("storedBytes")
+    val priceCents: Int
+        get() = raw.getInt("priceCents")
+    val setAtEpoch: Long
+        get() = raw.getLong("setAtEpoch")
+    val retainUntilEpoch: Long
+        get() = raw.getLong("retainUntilEpoch")
+}
+
+data class VastuPropertiesListDataPropertiesItem(val raw: JSONObject) {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val ownerId: String
+        get() = raw.getString("ownerId")
+    val ids: VastuPropertiesListDataPropertiesItemIds
+        get() = VastuPropertiesListDataPropertiesItemIds(raw.getJSONObject("ids"))
+    val title: String
+        get() = raw.getString("title")
+    val data: JSONObject
+        get() = raw.getJSONObject("data")
+    val retentionDays: Int
+        get() = raw.getInt("retentionDays")
+    val expiresAtEpoch: Long
+        get() = raw.getLong("expiresAtEpoch")
+    val linkedScanIds: List<String>
+        get() = List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>
+        get() = List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val archiveTier: VastuPropertiesListDataPropertiesItemArchiveTier?
+        get() = if (!raw.has("archiveTier") || raw.isNull("archiveTier")) null else VastuPropertiesListDataPropertiesItemArchiveTier(raw.getJSONObject("archiveTier"))
+    val externalId: String?
+        get() = if (!raw.has("externalId") || raw.isNull("externalId")) null else raw.getString("externalId")
+    val createdAtEpoch: Long
+        get() = raw.getLong("createdAtEpoch")
+    val updatedAtEpoch: Long
+        get() = raw.getLong("updatedAtEpoch")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+}
+
+data class VastuPropertiesUpdateDataIds(val raw: JSONObject) {
+    val project: String
+        get() = raw.getString("project")
+    val building: String
+        get() = raw.getString("building")
+    val unit: String
+        get() = raw.getString("unit")
+    val floor: String
+        get() = raw.getString("floor")
+    val revision: String
+        get() = raw.getString("revision")
+}
+
+data class VastuPropertiesUpdateDataArchiveTier(val raw: JSONObject) {
+    val months: Int
+        get() = raw.getInt("months")
+    val storedBytes: Long
+        get() = raw.getLong("storedBytes")
+    val priceCents: Int
+        get() = raw.getInt("priceCents")
+    val setAtEpoch: Long
+        get() = raw.getLong("setAtEpoch")
+    val retainUntilEpoch: Long
+        get() = raw.getLong("retainUntilEpoch")
+}
+
+data class VastuQuoteCalculateDataLineItemsItem(val raw: JSONObject) {
+    val slug: String?
+        get() = if (!raw.has("slug") || raw.isNull("slug")) null else raw.getString("slug")
+    val label: String?
+        get() = if (!raw.has("label") || raw.isNull("label")) null else raw.getString("label")
+    val quantity: Int?
+        get() = if (!raw.has("quantity") || raw.isNull("quantity")) null else raw.getInt("quantity")
+    val baseCostUsd: String?
+        get() = if (!raw.has("baseCostUsd") || raw.isNull("baseCostUsd")) null else raw.getString("baseCostUsd")
+    val totalPriceUsd: String?
+        get() = if (!raw.has("totalPriceUsd") || raw.isNull("totalPriceUsd")) null else raw.getString("totalPriceUsd")
+    val category: String?
+        get() = if (!raw.has("category") || raw.isNull("category")) null else raw.getString("category")
+}
+
+data class VastuReceiptVerifyDataReceipt(val raw: JSONObject) {
+    val assessmentId: String
+        get() = raw.getString("assessmentId")
+    val inputHash: String
+        get() = raw.getString("inputHash")
+    val resultHash: String
+        get() = raw.getString("resultHash")
+    val rulesVersion: String
+        get() = raw.getString("rulesVersion")
+    val score: Int
+        get() = raw.getInt("score")
+    val grade: String?
+        get() = if (!raw.has("grade") || raw.isNull("grade")) null else raw.getString("grade")
+    val sourceLabels: List<String>
+        get() = List(raw.getJSONArray("sourceLabels").length()) { index0 -> (raw.getJSONArray("sourceLabels").get(index0) as String) }
+    val timestamp: Long
+        get() = raw.getLong("timestamp")
+}
+
+data class VastuRemediationTaskDataEvidenceItem(val raw: JSONObject) {
+    val reference: String
+        get() = raw.getString("reference")
+    val photoRef: String?
+        get() = if (!raw.has("photoRef") || raw.isNull("photoRef")) null else raw.getString("photoRef")
+    val note: String?
+        get() = if (!raw.has("note") || raw.isNull("note")) null else raw.getString("note")
+}
+
+data class VastuRemediationTaskDataReassessmentLinkRequest(val raw: JSONObject) {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+}
+
+data class VastuRemediationTaskDataReassessmentLink(val raw: JSONObject) {
+    val operation: String
+        get() = raw.getString("operation")
+    val method: String
+        get() = raw.getString("method")
+    val request: VastuRemediationTaskDataReassessmentLinkRequest
+        get() = VastuRemediationTaskDataReassessmentLinkRequest(raw.getJSONObject("request"))
+    val resultPointer: String
+        get() = raw.getString("resultPointer")
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val taskId: String
+        get() = raw.getString("taskId")
+    val assessmentId: String
+        get() = raw.getString("assessmentId")
 }
 
 data class VastuRemedyComparisonDataBeforeDefectsItem(val raw: JSONObject) {
@@ -3572,6 +7139,17 @@ data class VastuSpecializedAuditDataNotAssessedItem(val raw: JSONObject) {
         get() = raw.getBoolean("graded")
 }
 
+data class VastuSpecializedAuditDataReceipt(val raw: JSONObject) {
+    val format: String
+        get() = raw.getString("format")
+    val token: String
+        get() = raw.getString("token")
+    val verifyUrl: String
+        get() = raw.getString("verifyUrl")
+    val keyUrl: String
+        get() = raw.getString("keyUrl")
+}
+
 data class VastuSunPathDataInput(val raw: JSONObject) {
     val lat: Double
         get() = raw.getDouble("lat")
@@ -3579,6 +7157,64 @@ data class VastuSunPathDataInput(val raw: JSONObject) {
         get() = raw.getDouble("lon")
     val date: String
         get() = raw.getString("date")
+}
+
+data class VastuWorkflowDataDataItemsItem(val raw: JSONObject) {
+    val remedyKey: String
+        get() = raw.getString("remedyKey")
+    val itemId: String
+        get() = raw.getString("itemId")
+    val kind: String
+        get() = raw.getString("kind")
+    val label: String
+        get() = raw.getString("label")
+    val availability: String
+        get() = raw.getString("availability")
+    val link: String?
+        get() = if (!raw.has("link") || raw.isNull("link")) null else raw.getString("link")
+    val referralRef: String?
+        get() = if (!raw.has("referralRef") || raw.isNull("referralRef")) null else raw.getString("referralRef")
+}
+
+data class VastuWorkflowDataData(val raw: JSONObject) {
+    val propertyId: String?
+        get() = if (!raw.has("propertyId") || raw.isNull("propertyId")) null else raw.getString("propertyId")
+    val catalogId: String?
+        get() = if (!raw.has("catalogId") || raw.isNull("catalogId")) null else raw.getString("catalogId")
+    val tasks: Map<String, VastuRemediationTaskData>?
+        get() = if (!raw.has("tasks") || raw.isNull("tasks")) null else raw.getJSONObject("tasks").keys().asSequence().associateWith { key -> VastuRemediationTaskData(raw.getJSONObject("tasks").getJSONObject(key)) }
+    val items: List<VastuWorkflowDataDataItemsItem>?
+        get() = if (!raw.has("items") || raw.isNull("items")) null else List(raw.getJSONArray("items").length()) { index0 -> VastuWorkflowDataDataItemsItem((raw.getJSONArray("items").get(index0) as JSONObject)) }
+}
+
+data class VastuWorkflowDataRemediesItemMappedItemsItem(val raw: JSONObject) {
+    val remedyKey: String
+        get() = raw.getString("remedyKey")
+    val itemId: String
+        get() = raw.getString("itemId")
+    val kind: String
+        get() = raw.getString("kind")
+    val label: String
+        get() = raw.getString("label")
+    val availability: String
+        get() = raw.getString("availability")
+    val link: String?
+        get() = if (!raw.has("link") || raw.isNull("link")) null else raw.getString("link")
+    val referralRef: String?
+        get() = if (!raw.has("referralRef") || raw.isNull("referralRef")) null else raw.getString("referralRef")
+}
+
+data class VastuWorkflowDataRemediesItem(val raw: JSONObject) {
+    val remedyKey: String?
+        get() = if (!raw.has("remedyKey") || raw.isNull("remedyKey")) null else raw.getString("remedyKey")
+    val remedy: String?
+        get() = if (!raw.has("remedy") || raw.isNull("remedy")) null else raw.getString("remedy")
+    val classification: String?
+        get() = if (!raw.has("classification") || raw.isNull("classification")) null else raw.getString("classification")
+    val source: String?
+        get() = if (!raw.has("source") || raw.isNull("source")) null else raw.getString("source")
+    val mappedItems: List<VastuWorkflowDataRemediesItemMappedItemsItem>?
+        get() = if (!raw.has("mappedItems") || raw.isNull("mappedItems")) null else List(raw.getJSONArray("mappedItems").length()) { index0 -> VastuWorkflowDataRemediesItemMappedItemsItem((raw.getJSONArray("mappedItems").get(index0) as JSONObject)) }
 }
 
 data class VastuZoneWiseScoreDataZonesItemRoomsItem(val raw: JSONObject) {
@@ -3659,6 +7295,17 @@ data class VastuZoneWiseScoreDataNotAssessedItem(val raw: JSONObject) {
         get() = raw.getBoolean("graded")
 }
 
+data class VastuZoneWiseScoreDataReceipt(val raw: JSONObject) {
+    val format: String
+        get() = raw.getString("format")
+    val token: String
+        get() = raw.getString("token")
+    val verifyUrl: String
+        get() = raw.getString("verifyUrl")
+    val keyUrl: String
+        get() = raw.getString("keyUrl")
+}
+
 data class VastuArAnchorRecommendationsData(override val raw: JSONObject) : VastuData {
     val anchors: List<VastuArAnchorRecommendationsDataAnchorsItem>
         get() = List(raw.getJSONArray("anchors").length()) { index0 -> VastuArAnchorRecommendationsDataAnchorsItem((raw.getJSONArray("anchors").get(index0) as JSONObject)) }
@@ -3688,6 +7335,8 @@ data class VastuArAnchorRecommendationsData(override val raw: JSONObject) : Vast
         get() = raw.getString("coordinateNote")
     val omissionNote: String
         get() = raw.getString("omissionNote")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuArAttestationChallengeData(override val raw: JSONObject) : VastuData {
@@ -3701,6 +7350,35 @@ data class VastuArAttestationChallengeData(override val raw: JSONObject) : Vastu
         get() = raw.getBoolean("singleUse")
     val deviceAttestation: VastuArAttestationChallengeDataDeviceAttestation
         get() = VastuArAttestationChallengeDataDeviceAttestation(raw.getJSONObject("deviceAttestation"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuArCaptureMergeData(override val raw: JSONObject) : VastuData {
+    val method: String
+        get() = raw.getString("method")
+    val frame: JSONObject
+        get() = raw.getJSONObject("frame")
+    val rooms: List<JSONObject>
+        get() = List(raw.getJSONArray("rooms").length()) { index0 -> (raw.getJSONArray("rooms").get(index0) as JSONObject) }
+    val outlines: List<JSONObject>
+        get() = List(raw.getJSONArray("outlines").length()) { index0 -> (raw.getJSONArray("outlines").get(index0) as JSONObject) }
+    val registrations: List<JSONObject>
+        get() = List(raw.getJSONArray("registrations").length()) { index0 -> (raw.getJSONArray("registrations").get(index0) as JSONObject) }
+    val pairResiduals: List<VastuArCaptureMergeDataPairResidualsItem>
+        get() = List(raw.getJSONArray("pairResiduals").length()) { index0 -> VastuArCaptureMergeDataPairResidualsItem((raw.getJSONArray("pairResiduals").get(index0) as JSONObject)) }
+    val unresolvedAlignmentErrors: List<String>
+        get() = List(raw.getJSONArray("unresolvedAlignmentErrors").length()) { index0 -> (raw.getJSONArray("unresolvedAlignmentErrors").get(index0) as String) }
+    val floorStack: List<JSONObject>
+        get() = List(raw.getJSONArray("floorStack").length()) { index0 -> (raw.getJSONArray("floorStack").get(index0) as JSONObject) }
+    val toleranceM: Double
+        get() = raw.getDouble("toleranceM")
+    val alignmentMethod: String
+        get() = raw.getString("alignmentMethod")
+    val pricing: VastuArCaptureMergeDataPricing?
+        get() = if (!raw.has("pricing") || raw.isNull("pricing")) null else VastuArCaptureMergeDataPricing(raw.getJSONObject("pricing"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuArDeityIconsData(override val raw: JSONObject) : VastuData {
@@ -3710,6 +7388,8 @@ data class VastuArDeityIconsData(override val raw: JSONObject) : VastuData {
         get() = raw.getBoolean("verified")
     val provenance: Any?
         get() = raw.get("provenance").takeUnless { it == JSONObject.NULL }
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuArHeatmapRasterData(override val raw: JSONObject) : VastuData {
@@ -3743,6 +7423,8 @@ data class VastuArHeatmapRasterData(override val raw: JSONObject) : VastuData {
         get() = VastuArHeatmapRasterDataLegend(raw.getJSONObject("legend"))
     val computed: Boolean
         get() = raw.getBoolean("computed")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuArRoomCaptureData(override val raw: JSONObject) : VastuData {
@@ -3778,6 +7460,10 @@ data class VastuArRoomCaptureData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("note")
     val deviceAttestation: Any?
         get() = raw.get("deviceAttestation").takeUnless { it == JSONObject.NULL }
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuArScanQualityData(override val raw: JSONObject) : VastuData {
@@ -3819,6 +7505,10 @@ data class VastuArScanQualityData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("deviceAttestation") || raw.isNull("deviceAttestation")) null else raw.get("deviceAttestation").takeUnless { it == JSONObject.NULL }
     val deviceAttested: Boolean?
         get() = if (!raw.has("deviceAttested") || raw.isNull("deviceAttested")) null else raw.getBoolean("deviceAttested")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val receipt: VastuArScanQualityDataReceipt?
+        get() = if (!raw.has("receipt") || raw.isNull("receipt")) null else VastuArScanQualityDataReceipt(raw.getJSONObject("receipt"))
 }
 
 data class VastuArTrueNorthData(override val raw: JSONObject) : VastuData {
@@ -3844,6 +7534,8 @@ data class VastuArTrueNorthData(override val raw: JSONObject) : VastuData {
         get() = raw.getBoolean("solarGeometryReliable")
     val headingQuality: VastuArTrueNorthDataHeadingQuality
         get() = VastuArTrueNorthDataHeadingQuality(raw.getJSONObject("headingQuality"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuArYantraMeshesData(override val raw: JSONObject) : VastuData {
@@ -3867,6 +7559,8 @@ data class VastuArYantraMeshesData(override val raw: JSONObject) : VastuData {
         get() = raw.get("provenance").takeUnless { it == JSONObject.NULL }
     val assetId: String
         get() = raw.getString("assetId")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuArZoneTexturesData(override val raw: JSONObject) : VastuData {
@@ -3890,6 +7584,110 @@ data class VastuArZoneTexturesData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("gltfUvOrigin")
     val usdUvOrigin: String
         get() = raw.getString("usdUvOrigin")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuArchiveDeleteData(override val raw: JSONObject) : VastuData {
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val deleted: Boolean
+        get() = raw.getBoolean("deleted")
+    val exportDeleted: Boolean
+        get() = raw.getBoolean("exportDeleted")
+    val linkedScanIds: List<String>
+        get() = List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>
+        get() = List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val erasureStatus: String?
+        get() = if (!raw.has("erasureStatus") || raw.isNull("erasureStatus")) null else raw.getString("erasureStatus")
+    val erasureReceipt: VastuArchiveDeleteDataErasureReceipt?
+        get() = if (!raw.has("erasureReceipt") || raw.isNull("erasureReceipt")) null else VastuArchiveDeleteDataErasureReceipt(raw.getJSONObject("erasureReceipt"))
+    val retryAfterEpoch: Long?
+        get() = if (!raw.has("retryAfterEpoch") || raw.isNull("retryAfterEpoch")) null else raw.getLong("retryAfterEpoch")
+    val revisionId: String?
+        get() = if (!raw.has("revisionId") || raw.isNull("revisionId")) null else raw.getString("revisionId")
+    val replayed: Boolean?
+        get() = if (!raw.has("replayed") || raw.isNull("replayed")) null else raw.getBoolean("replayed")
+}
+
+data class VastuArchiveExportData(override val raw: JSONObject) : VastuData {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val downloadUrl: String
+        get() = raw.getString("downloadUrl")
+    val expiresInSeconds: Int
+        get() = raw.getInt("expiresInSeconds")
+    val expiresAtEpoch: Long
+        get() = raw.getLong("expiresAtEpoch")
+    val sizeBytes: Long
+        get() = raw.getLong("sizeBytes")
+    val linkedScanIds: List<String>
+        get() = List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>
+        get() = List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuArchiveSummaryData(override val raw: JSONObject) : VastuData {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val archiveTier: VastuArchiveSummaryDataArchiveTier?
+        get() = if (!raw.has("archiveTier") || raw.isNull("archiveTier")) null else VastuArchiveSummaryDataArchiveTier(raw.getJSONObject("archiveTier"))
+    val linkedScanCount: Int
+        get() = raw.getInt("linkedScanCount")
+    val linkedAssessmentCount: Int
+        get() = raw.getInt("linkedAssessmentCount")
+    val expiresAtEpoch: Long
+        get() = raw.getLong("expiresAtEpoch")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuArchiveTierData(override val raw: JSONObject) : VastuData {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val ownerId: String?
+        get() = if (!raw.has("ownerId") || raw.isNull("ownerId")) null else raw.getString("ownerId")
+    val ids: VastuArchiveTierDataIds?
+        get() = if (!raw.has("ids") || raw.isNull("ids")) null else VastuArchiveTierDataIds(raw.getJSONObject("ids"))
+    val title: String?
+        get() = if (!raw.has("title") || raw.isNull("title")) null else raw.getString("title")
+    val data: JSONObject?
+        get() = if (!raw.has("data") || raw.isNull("data")) null else raw.getJSONObject("data")
+    val retentionDays: Int?
+        get() = if (!raw.has("retentionDays") || raw.isNull("retentionDays")) null else raw.getInt("retentionDays")
+    val expiresAtEpoch: Long?
+        get() = if (!raw.has("expiresAtEpoch") || raw.isNull("expiresAtEpoch")) null else raw.getLong("expiresAtEpoch")
+    val linkedScanIds: List<String>?
+        get() = if (!raw.has("linkedScanIds") || raw.isNull("linkedScanIds")) null else List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>?
+        get() = if (!raw.has("linkedAssessmentIds") || raw.isNull("linkedAssessmentIds")) null else List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val archiveTier: VastuArchiveTierDataArchiveTier?
+        get() = if (!raw.has("archiveTier") || raw.isNull("archiveTier")) null else VastuArchiveTierDataArchiveTier(raw.getJSONObject("archiveTier"))
+    val externalId: String?
+        get() = if (!raw.has("externalId") || raw.isNull("externalId")) null else raw.getString("externalId")
+    val createdAtEpoch: Long?
+        get() = if (!raw.has("createdAtEpoch") || raw.isNull("createdAtEpoch")) null else raw.getLong("createdAtEpoch")
+    val updatedAtEpoch: Long?
+        get() = if (!raw.has("updatedAtEpoch") || raw.isNull("updatedAtEpoch")) null else raw.getLong("updatedAtEpoch")
+    val contentHash: String?
+        get() = if (!raw.has("contentHash") || raw.isNull("contentHash")) null else raw.getString("contentHash")
+    val months: Int?
+        get() = if (!raw.has("months") || raw.isNull("months")) null else raw.getInt("months")
+    val storedBytes: Long?
+        get() = if (!raw.has("storedBytes") || raw.isNull("storedBytes")) null else raw.getLong("storedBytes")
+    val meterCents: Int?
+        get() = if (!raw.has("meterCents") || raw.isNull("meterCents")) null else raw.getInt("meterCents")
+    val actionCents: Int?
+        get() = if (!raw.has("actionCents") || raw.isNull("actionCents")) null else raw.getInt("actionCents")
+    val totalCents: Int?
+        get() = if (!raw.has("totalCents") || raw.isNull("totalCents")) null else raw.getInt("totalCents")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuAssessmentBatchData(override val raw: JSONObject) : VastuData {
@@ -3901,6 +7699,10 @@ data class VastuAssessmentBatchData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("billingBasis")
     val execution: String
         get() = raw.getString("execution")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuAssessmentData(override val raw: JSONObject) : VastuData {
@@ -3956,6 +7758,16 @@ data class VastuAssessmentData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("listingId") || raw.isNull("listingId")) null else raw.get("listingId").takeUnless { it == JSONObject.NULL }
     val notAssessed: List<VastuAssessmentDataNotAssessedItem>?
         get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuAssessmentDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
+    val warnings: List<JSONObject>?
+        get() = if (!raw.has("warnings") || raw.isNull("warnings")) null else List(raw.getJSONArray("warnings").length()) { index0 -> (raw.getJSONArray("warnings").get(index0) as JSONObject) }
+    val zoneCheck: JSONObject?
+        get() = if (!raw.has("zoneCheck") || raw.isNull("zoneCheck")) null else raw.getJSONObject("zoneCheck")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val receipt: VastuAssessmentDataReceipt?
+        get() = if (!raw.has("receipt") || raw.isNull("receipt")) null else VastuAssessmentDataReceipt(raw.getJSONObject("receipt"))
 }
 
 data class VastuAuspiciousFacingData(override val raw: JSONObject) : VastuData {
@@ -3985,6 +7797,8 @@ data class VastuAuspiciousFacingData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
     val tradition: String?
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuBearingZoneData(override val raw: JSONObject) : VastuData {
@@ -4016,6 +7830,8 @@ data class VastuBearingZoneData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("verseBackedRooms") || raw.isNull("verseBackedRooms")) null else List(raw.getJSONArray("verseBackedRooms").length()) { index0 -> (raw.getJSONArray("verseBackedRooms").get(index0) as String) }
     val roomRulesClassification: String?
         get() = if (!raw.has("roomRulesClassification") || raw.isNull("roomRulesClassification")) null else raw.getString("roomRulesClassification")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuBrahmasthanProjectionData(override val raw: JSONObject) : VastuData {
@@ -4047,6 +7863,26 @@ data class VastuBrahmasthanProjectionData(override val raw: JSONObject) : VastuD
         get() = if (!raw.has("forbiddenActionsSource") || raw.isNull("forbiddenActionsSource")) null else raw.getString("forbiddenActionsSource")
     val classicalSourceScope: String?
         get() = if (!raw.has("classicalSourceScope") || raw.isNull("classicalSourceScope")) null else raw.getString("classicalSourceScope")
+    val centroidBasis: String?
+        get() = if (!raw.has("centroidBasis") || raw.isNull("centroidBasis")) null else raw.getString("centroidBasis")
+    val centerPolygonCentre: List<Double>?
+        get() = if (!raw.has("centerPolygonCentre") || raw.isNull("centerPolygonCentre")) null else List(raw.getJSONArray("centerPolygonCentre").length()) { index0 -> (raw.getJSONArray("centerPolygonCentre").get(index0) as Number).toDouble() }
+    val centreBasis: String?
+        get() = if (!raw.has("centreBasis") || raw.isNull("centreBasis")) null else raw.getString("centreBasis")
+    val centreOffset: Double?
+        get() = if (!raw.has("centreOffset") || raw.isNull("centreOffset")) null else raw.getDouble("centreOffset")
+    val centreNote: String?
+        get() = if (!raw.has("centreNote") || raw.isNull("centreNote")) null else raw.getString("centreNote")
+    val gridFrame: VastuBrahmasthanProjectionDataGridFrame?
+        get() = if (!raw.has("gridFrame") || raw.isNull("gridFrame")) null else VastuBrahmasthanProjectionDataGridFrame(raw.getJSONObject("gridFrame"))
+    val inPlotArea: Double?
+        get() = if (!raw.has("inPlotArea") || raw.isNull("inPlotArea")) null else raw.getDouble("inPlotArea")
+    val inPlotFraction: Double?
+        get() = if (!raw.has("inPlotFraction") || raw.isNull("inPlotFraction")) null else raw.getDouble("inPlotFraction")
+    val shareOfPlotArea: Double?
+        get() = if (!raw.has("shareOfPlotArea") || raw.isNull("shareOfPlotArea")) null else raw.getDouble("shareOfPlotArea")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuCatalogReferenceData(override val raw: JSONObject) : VastuData {
@@ -4076,6 +7912,10 @@ data class VastuCatalogReferenceData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("meta") || raw.isNull("meta")) null else raw.getJSONObject("meta")
     val referenceVersion: String
         get() = raw.getString("referenceVersion")
+    val zoneRemedies: List<VastuCatalogReferenceDataZoneRemediesItem>?
+        get() = if (!raw.has("zoneRemedies") || raw.isNull("zoneRemedies")) null else List(raw.getJSONArray("zoneRemedies").length()) { index0 -> VastuCatalogReferenceDataZoneRemediesItem((raw.getJSONArray("zoneRemedies").get(index0) as JSONObject)) }
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuChatUploadData(override val raw: JSONObject) : VastuData {
@@ -4101,6 +7941,33 @@ data class VastuChatUploadData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("billing") || raw.isNull("billing")) null else VastuChatUploadDataBilling(raw.getJSONObject("billing"))
     val fileSha256: String
         get() = raw.getString("fileSha256")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuCompareVersionsData(override val raw: JSONObject) : VastuData {
+    val inputHash: String
+        get() = raw.getString("inputHash")
+    val operation: String
+        get() = raw.getString("operation")
+    val fromVersion: String
+        get() = raw.getString("fromVersion")
+    val toVersion: String
+        get() = raw.getString("toVersion")
+    val fromAssessment: JSONObject
+        get() = raw.getJSONObject("fromAssessment")
+    val toAssessment: JSONObject
+        get() = raw.getJSONObject("toAssessment")
+    val changed: Boolean
+        get() = raw.getBoolean("changed")
+    val changes: List<VastuCompareVersionsDataChangesItem>
+        get() = List(raw.getJSONArray("changes").length()) { index0 -> VastuCompareVersionsDataChangesItem((raw.getJSONArray("changes").get(index0) as JSONObject)) }
+    val retainedVersions: Int
+        get() = raw.getInt("retainedVersions")
+    val scope: String
+        get() = raw.getString("scope")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuComplianceIndexData(override val raw: JSONObject) : VastuData {
@@ -4144,6 +8011,10 @@ data class VastuComplianceIndexData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuComplianceIndexDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
     val scoreNote: String?
         get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val receipt: VastuComplianceIndexDataReceipt?
+        get() = if (!raw.has("receipt") || raw.isNull("receipt")) null else VastuComplianceIndexDataReceipt(raw.getJSONObject("receipt"))
 }
 
 data class VastuDetailedFloorPlanAuditData(override val raw: JSONObject) : VastuData {
@@ -4183,6 +8054,14 @@ data class VastuDetailedFloorPlanAuditData(override val raw: JSONObject) : Vastu
         get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuDetailedFloorPlanAuditDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
     val scoreNote: String?
         get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
+    val merchantCatalogId: String?
+        get() = if (!raw.has("merchantCatalogId") || raw.isNull("merchantCatalogId")) null else raw.getString("merchantCatalogId")
+    val merchantCatalogRevision: Long?
+        get() = if (!raw.has("merchantCatalogRevision") || raw.isNull("merchantCatalogRevision")) null else raw.getLong("merchantCatalogRevision")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val receipt: VastuDetailedFloorPlanAuditDataReceipt?
+        get() = if (!raw.has("receipt") || raw.isNull("receipt")) null else VastuDetailedFloorPlanAuditDataReceipt(raw.getJSONObject("receipt"))
 }
 
 data class VastuDirectionCorrectData(override val raw: JSONObject) : VastuData {
@@ -4204,6 +8083,10 @@ data class VastuDirectionCorrectData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("correctedZoneIsMagnetic") || raw.isNull("correctedZoneIsMagnetic")) null else raw.getBoolean("correctedZoneIsMagnetic")
     val declinationCoverage: String?
         get() = if (!raw.has("declinationCoverage") || raw.isNull("declinationCoverage")) null else raw.getString("declinationCoverage")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuDirectionDeclinationData(override val raw: JSONObject) : VastuData {
@@ -4229,6 +8112,10 @@ data class VastuDirectionDeclinationData(override val raw: JSONObject) : VastuDa
         get() = raw.getString("classification")
     val declinationCoverage: String?
         get() = if (!raw.has("declinationCoverage") || raw.isNull("declinationCoverage")) null else raw.getString("declinationCoverage")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuDirections32ReferenceData(override val raw: JSONObject) : VastuData {
@@ -4258,6 +8145,10 @@ data class VastuDirections32ReferenceData(override val raw: JSONObject) : VastuD
         get() = if (!raw.has("meta") || raw.isNull("meta")) null else raw.getJSONObject("meta")
     val referenceVersion: String
         get() = raw.getString("referenceVersion")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuDirectionsReferenceData(override val raw: JSONObject) : VastuData {
@@ -4283,6 +8174,45 @@ data class VastuDirectionsReferenceData(override val raw: JSONObject) : VastuDat
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
     val referenceVersion: String
         get() = raw.getString("referenceVersion")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuDrawingSheetData(override val raw: JSONObject) : VastuData {
+    val html: String
+        get() = raw.getString("html")
+    val svg: String
+        get() = raw.getString("svg")
+    val paperSize: String
+        get() = raw.getString("paperSize")
+    val paperWidthMm: Double
+        get() = raw.getDouble("paperWidthMm")
+    val paperHeightMm: Double
+        get() = raw.getDouble("paperHeightMm")
+    val scaleDenominator: Int
+        get() = raw.getInt("scaleDenominator")
+    val metresToPaperMm: Double
+        get() = raw.getDouble("metresToPaperMm")
+    val planWidthMm: Double
+        get() = raw.getDouble("planWidthMm")
+    val planHeightMm: Double
+        get() = raw.getDouble("planHeightMm")
+    val trueNorthDeg: Double
+        get() = raw.getDouble("trueNorthDeg")
+    val fieldEvidenceCount: Int
+        get() = raw.getInt("fieldEvidenceCount")
+    val contentType: String?
+        get() = if (!raw.has("contentType") || raw.isNull("contentType")) null else raw.getString("contentType")
+    val pdfBase64: String?
+        get() = if (!raw.has("pdfBase64") || raw.isNull("pdfBase64")) null else raw.getString("pdfBase64")
+    val inputUnits: String
+        get() = raw.getString("inputUnits")
+    val units: String
+        get() = raw.getString("units")
+    val metresPerInputUnit: Double
+        get() = raw.getDouble("metresPerInputUnit")
 }
 
 data class VastuElementBalanceData(override val raw: JSONObject) : VastuData {
@@ -4304,6 +8234,8 @@ data class VastuElementBalanceData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("summary") || raw.isNull("summary")) null else raw.getString("summary")
     val system: String?
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuElementDistributionData(override val raw: JSONObject) : VastuData {
@@ -4329,6 +8261,8 @@ data class VastuElementDistributionData(override val raw: JSONObject) : VastuDat
         get() = if (!raw.has("totalRooms") || raw.isNull("totalRooms")) null else raw.getDouble("totalRooms")
     val weightingBasis: String?
         get() = if (!raw.has("weightingBasis") || raw.isNull("weightingBasis")) null else raw.getString("weightingBasis")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuEntrancePadaData(override val raw: JSONObject) : VastuData {
@@ -4348,6 +8282,10 @@ data class VastuEntrancePadaData(override val raw: JSONObject) : VastuData {
         get() = List(raw.getJSONArray("sources").length()) { index0 -> (raw.getJSONArray("sources").get(index0) as String) }
     val verified: Boolean
         get() = raw.getBoolean("verified")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuEntranceRecommendData(override val raw: JSONObject) : VastuData {
@@ -4355,6 +8293,10 @@ data class VastuEntranceRecommendData(override val raw: JSONObject) : VastuData 
         get() = raw.getJSONObject("facing")
     val bestEntrancePada: JSONObject
         get() = raw.getJSONObject("bestEntrancePada")
+    val bestEntranceIsUnfavourable: Boolean?
+        get() = if (!raw.has("bestEntranceIsUnfavourable") || raw.isNull("bestEntranceIsUnfavourable")) null else raw.getBoolean("bestEntranceIsUnfavourable")
+    val bestEntranceNote: String?
+        get() = if (!raw.has("bestEntranceNote") || raw.isNull("bestEntranceNote")) null else raw.getString("bestEntranceNote")
     val recommendedPadas: List<JSONObject>
         get() = List(raw.getJSONArray("recommendedPadas").length()) { index0 -> (raw.getJSONArray("recommendedPadas").get(index0) as JSONObject) }
     val avoidPadas: List<JSONObject>
@@ -4371,6 +8313,25 @@ data class VastuEntranceRecommendData(override val raw: JSONObject) : VastuData 
         get() = if (!raw.has("prescribedRoomsAtFacing") || raw.isNull("prescribedRoomsAtFacing")) null else List(raw.getJSONArray("prescribedRoomsAtFacing").length()) { index0 -> (raw.getJSONArray("prescribedRoomsAtFacing").get(index0) as String) }
     val system: String?
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuFeedListingsData(override val raw: JSONObject) : VastuData {
+    val accepted: Int
+        get() = raw.getInt("accepted")
+    val rejected: Int
+        get() = raw.getInt("rejected")
+    val skipped: Int
+        get() = raw.getInt("skipped")
+    val results: List<JSONObject>
+        get() = List(raw.getJSONArray("results").length()) { index0 -> (raw.getJSONArray("results").get(index0) as JSONObject) }
+    val dryRun: Boolean?
+        get() = if (!raw.has("dryRun") || raw.isNull("dryRun")) null else raw.getBoolean("dryRun")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuFloorPlanAuditData(override val raw: JSONObject) : VastuData {
@@ -4402,6 +8363,14 @@ data class VastuFloorPlanAuditData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuFloorPlanAuditDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
     val scoreNote: String?
         get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
+    val merchantCatalogId: String?
+        get() = if (!raw.has("merchantCatalogId") || raw.isNull("merchantCatalogId")) null else raw.getString("merchantCatalogId")
+    val merchantCatalogRevision: Long?
+        get() = if (!raw.has("merchantCatalogRevision") || raw.isNull("merchantCatalogRevision")) null else raw.getLong("merchantCatalogRevision")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val receipt: VastuFloorPlanAuditDataReceipt?
+        get() = if (!raw.has("receipt") || raw.isNull("receipt")) null else VastuFloorPlanAuditDataReceipt(raw.getJSONObject("receipt"))
 }
 
 data class VastuFloorRulesData(override val raw: JSONObject) : VastuData {
@@ -4425,6 +8394,8 @@ data class VastuFloorRulesData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
     val tradition: String?
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuFusionChartData(override val raw: JSONObject) : VastuData {
@@ -4434,8 +8405,8 @@ data class VastuFusionChartData(override val raw: JSONObject) : VastuData {
         get() = List(raw.getJSONArray("grahaDirections").length()) { index0 -> (raw.getJSONArray("grahaDirections").get(index0) as JSONObject) }
     val favourableDirections: List<JSONObject>
         get() = List(raw.getJSONArray("favourableDirections").length()) { index0 -> (raw.getJSONArray("favourableDirections").get(index0) as JSONObject) }
-    val cautionDirections: List<String>
-        get() = List(raw.getJSONArray("cautionDirections").length()) { index0 -> (raw.getJSONArray("cautionDirections").get(index0) as String) }
+    val cautionDirections: List<VastuFusionChartDataCautionDirectionsItem>
+        get() = List(raw.getJSONArray("cautionDirections").length()) { index0 -> VastuFusionChartDataCautionDirectionsItem((raw.getJSONArray("cautionDirections").get(index0) as JSONObject)) }
     val methodology: JSONObject
         get() = raw.getJSONObject("methodology")
     val summary: String
@@ -4452,6 +8423,8 @@ data class VastuFusionChartData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
     val verified: Boolean?
         get() = if (!raw.has("verified") || raw.isNull("verified")) null else raw.getBoolean("verified")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuJobResultsData(override val raw: JSONObject) : VastuData {
@@ -4463,6 +8436,8 @@ data class VastuJobResultsData(override val raw: JSONObject) : VastuData {
         get() = List(raw.getJSONArray("results").length()) { index0 -> raw.getJSONArray("results").get(index0).takeUnless { it == JSONObject.NULL } }
     val nextCursor: String?
         get() = if (!raw.has("nextCursor") || raw.isNull("nextCursor")) null else raw.getString("nextCursor")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuJobStatusData(override val raw: JSONObject) : VastuData {
@@ -4492,6 +8467,8 @@ data class VastuJobStatusData(override val raw: JSONObject) : VastuData {
         get() = raw.getInt("expiresAt")
     val resultsUrl: String
         get() = raw.getString("resultsUrl")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuJobSubmitData(override val raw: JSONObject) : VastuData {
@@ -4509,6 +8486,8 @@ data class VastuJobSubmitData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("preview") || raw.isNull("preview")) null else List(raw.getJSONArray("preview").length()) { index0 -> raw.getJSONArray("preview").get(index0).takeUnless { it == JSONObject.NULL } }
     val previewNote: String?
         get() = if (!raw.has("previewNote") || raw.isNull("previewNote")) null else raw.getString("previewNote")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuLevelAnalysisData(override val raw: JSONObject) : VastuData {
@@ -4534,6 +8513,8 @@ data class VastuLevelAnalysisData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
     val tradition: String?
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuMainGateData(override val raw: JSONObject) : VastuData {
@@ -4543,6 +8524,10 @@ data class VastuMainGateData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("padaScheme")
     val prescribedPadas: List<Int>
         get() = List(raw.getJSONArray("prescribedPadas").length()) { index0 -> (raw.getJSONArray("prescribedPadas").get(index0) as Number).toInt() }
+    val facingAffectsPrescribedPadas: Boolean?
+        get() = if (!raw.has("facingAffectsPrescribedPadas") || raw.isNull("facingAffectsPrescribedPadas")) null else raw.getBoolean("facingAffectsPrescribedPadas")
+    val facingNote: String?
+        get() = if (!raw.has("facingNote") || raw.isNull("facingNote")) null else raw.getString("facingNote")
     val rule: String
         get() = raw.getString("rule")
     val remedy: String
@@ -4567,6 +8552,8 @@ data class VastuMainGateData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
     val verified: Boolean?
         get() = if (!raw.has("verified") || raw.isNull("verified")) null else raw.getBoolean("verified")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuMandalaProjectionData(override val raw: JSONObject) : VastuData {
@@ -4586,6 +8573,12 @@ data class VastuMandalaProjectionData(override val raw: JSONObject) : VastuData 
         get() = if (!raw.has("classification") || raw.isNull("classification")) null else raw.getString("classification")
     val computed: Boolean?
         get() = if (!raw.has("computed") || raw.isNull("computed")) null else raw.getBoolean("computed")
+    val gridFrame: VastuMandalaProjectionDataGridFrame?
+        get() = if (!raw.has("gridFrame") || raw.isNull("gridFrame")) null else VastuMandalaProjectionDataGridFrame(raw.getJSONObject("gridFrame"))
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuMandalaReferenceData(override val raw: JSONObject) : VastuData {
@@ -4635,6 +8628,23 @@ data class VastuMandalaReferenceData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
     val referenceVersion: String
         get() = raw.getString("referenceVersion")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuMeasurementUncertainty(override val raw: JSONObject) : VastuData {
+    val pointResult: JSONObject
+        get() = raw.getJSONObject("pointResult")
+    val results: List<VastuMeasurementUncertaintyResultsItem>
+        get() = List(raw.getJSONArray("results").length()) { index0 -> VastuMeasurementUncertaintyResultsItem((raw.getJSONArray("results").get(index0) as JSONObject)) }
+    val stable: Boolean
+        get() = raw.getBoolean("stable")
+    val bounds: VastuMeasurementUncertaintyBounds
+        get() = VastuMeasurementUncertaintyBounds(raw.getJSONObject("bounds"))
+    val coordinateUnits: String?
+        get() = if (!raw.has("coordinateUnits") || raw.isNull("coordinateUnits")) null else raw.getString("coordinateUnits")
+    val rulesChanged: Boolean
+        get() = raw.getBoolean("rulesChanged")
 }
 
 data class VastuObstructionData(override val raw: JSONObject) : VastuData {
@@ -4668,6 +8678,8 @@ data class VastuObstructionData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("rangeClassification") || raw.isNull("rangeClassification")) null else raw.getString("rangeClassification")
     val rangeSource: String?
         get() = if (!raw.has("rangeSource") || raw.isNull("rangeSource")) null else raw.getString("rangeSource")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuOverallScoreData(override val raw: JSONObject) : VastuData {
@@ -4711,6 +8723,10 @@ data class VastuOverallScoreData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuOverallScoreDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
     val scoreNote: String?
         get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val receipt: VastuOverallScoreDataReceipt?
+        get() = if (!raw.has("receipt") || raw.isNull("receipt")) null else VastuOverallScoreDataReceipt(raw.getJSONObject("receipt"))
 }
 
 data class VastuPlacementData(override val raw: JSONObject) : VastuData {
@@ -4760,6 +8776,10 @@ data class VastuPlacementData(override val raw: JSONObject) : VastuData {
         get() = raw.getJSONObject("meta")
     val tradition: String?
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuPlanAuditData(override val raw: JSONObject) : VastuData {
@@ -4771,8 +8791,8 @@ data class VastuPlanAuditData(override val raw: JSONObject) : VastuData {
         get() = raw.getJSONObject("input")
     val facing: JSONObject
         get() = raw.getJSONObject("facing")
-    val plotShape: JSONObject
-        get() = raw.getJSONObject("plotShape")
+    val plotShape: JSONObject?
+        get() = if (!raw.has("plotShape") || raw.isNull("plotShape")) null else raw.getJSONObject("plotShape")
     val overallScore: Double?
         get() = if (!raw.has("overallScore") || raw.isNull("overallScore")) null else raw.getDouble("overallScore")
     val grade: String?
@@ -4797,8 +8817,8 @@ data class VastuPlanAuditData(override val raw: JSONObject) : VastuData {
         get() = raw.getJSONObject("meta")
     val printReady: JSONObject?
         get() = if (!raw.has("printReady") || raw.isNull("printReady")) null else raw.getJSONObject("printReady")
-    val tracedGeometry: JSONObject?
-        get() = if (!raw.has("tracedGeometry") || raw.isNull("tracedGeometry")) null else raw.getJSONObject("tracedGeometry")
+    val tracedGeometry: VastuPlanAuditDataTracedGeometry?
+        get() = if (!raw.has("tracedGeometry") || raw.isNull("tracedGeometry")) null else VastuPlanAuditDataTracedGeometry(raw.getJSONObject("tracedGeometry"))
     val gradeLabel: String?
         get() = if (!raw.has("gradeLabel") || raw.isNull("gradeLabel")) null else raw.getString("gradeLabel")
     val scoreDisclaimer: String?
@@ -4809,6 +8829,105 @@ data class VastuPlanAuditData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuPlanAuditDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
     val scoreNote: String?
         get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
+    val warnings: List<JSONObject>?
+        get() = if (!raw.has("warnings") || raw.isNull("warnings")) null else List(raw.getJSONArray("warnings").length()) { index0 -> (raw.getJSONArray("warnings").get(index0) as JSONObject) }
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val merchantCatalogId: String?
+        get() = if (!raw.has("merchantCatalogId") || raw.isNull("merchantCatalogId")) null else raw.getString("merchantCatalogId")
+    val merchantCatalogRevision: Long?
+        get() = if (!raw.has("merchantCatalogRevision") || raw.isNull("merchantCatalogRevision")) null else raw.getLong("merchantCatalogRevision")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val receipt: VastuPlanAuditDataReceipt?
+        get() = if (!raw.has("receipt") || raw.isNull("receipt")) null else VastuPlanAuditDataReceipt(raw.getJSONObject("receipt"))
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+    val inputUnits: String?
+        get() = if (!raw.has("inputUnits") || raw.isNull("inputUnits")) null else raw.getString("inputUnits")
+    val metresPerInputUnit: Double?
+        get() = if (!raw.has("metresPerInputUnit") || raw.isNull("metresPerInputUnit")) null else raw.getDouble("metresPerInputUnit")
+}
+
+data class VastuPlanConvertUnitsData(override val raw: JSONObject) : VastuData {
+    val plan: JSONObject
+        get() = raw.getJSONObject("plan")
+    val inputUnits: String
+        get() = raw.getString("inputUnits")
+    val outputUnits: String
+        get() = raw.getString("outputUnits")
+    val scaleFactor: Double
+        get() = raw.getDouble("scaleFactor")
+    val canonicalUnits: String
+        get() = raw.getString("canonicalUnits")
+    val pricing: JSONObject?
+        get() = if (!raw.has("pricing") || raw.isNull("pricing")) null else raw.getJSONObject("pricing")
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+    val metresPerInputUnit: Double?
+        get() = if (!raw.has("metresPerInputUnit") || raw.isNull("metresPerInputUnit")) null else raw.getDouble("metresPerInputUnit")
+}
+
+data class VastuPlanExportDxfData(override val raw: JSONObject) : VastuData {
+    val dxf: String
+        get() = raw.getString("dxf")
+    val contentType: String
+        get() = raw.getString("contentType")
+    val fileName: String
+        get() = raw.getString("fileName")
+    val version: String
+        get() = raw.getString("version")
+    val unitsCode: Int
+        get() = raw.getInt("unitsCode")
+    val trueNorthDeg: Double
+        get() = raw.getDouble("trueNorthDeg")
+    val zones: Int
+        get() = raw.getInt("zones")
+    val roomCount: Int
+        get() = raw.getInt("roomCount")
+    val openingCount: Int
+        get() = raw.getInt("openingCount")
+    val dimensionCount: Int
+        get() = raw.getInt("dimensionCount")
+    val findingCount: Int
+        get() = raw.getInt("findingCount")
+    val needsReview: Boolean
+        get() = raw.getBoolean("needsReview")
+    val pricing: JSONObject?
+        get() = if (!raw.has("pricing") || raw.isNull("pricing")) null else raw.getJSONObject("pricing")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+    val inputUnits: String?
+        get() = if (!raw.has("inputUnits") || raw.isNull("inputUnits")) null else raw.getString("inputUnits")
+    val metresPerInputUnit: Double?
+        get() = if (!raw.has("metresPerInputUnit") || raw.isNull("metresPerInputUnit")) null else raw.getDouble("metresPerInputUnit")
+}
+
+data class VastuPlanExportIfcData(override val raw: JSONObject) : VastuData {
+    val ifc: String
+        get() = raw.getString("ifc")
+    val schema: String
+        get() = raw.getString("schema")
+    val contentType: String
+        get() = raw.getString("contentType")
+    val fileName: String
+        get() = raw.getString("fileName")
+    val outputUnits: String
+        get() = raw.getString("outputUnits")
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+    val roomCount: Int
+        get() = raw.getInt("roomCount")
+    val pricing: JSONObject?
+        get() = if (!raw.has("pricing") || raw.isNull("pricing")) null else raw.getJSONObject("pricing")
+    val inputUnits: String?
+        get() = if (!raw.has("inputUnits") || raw.isNull("inputUnits")) null else raw.getString("inputUnits")
+    val metresPerInputUnit: Double?
+        get() = if (!raw.has("metresPerInputUnit") || raw.isNull("metresPerInputUnit")) null else raw.getDouble("metresPerInputUnit")
+    val canonicalUnits: String
+        get() = raw.getString("canonicalUnits")
 }
 
 data class VastuPlanGenerateData(override val raw: JSONObject) : VastuData {
@@ -4862,6 +8981,101 @@ data class VastuPlanGenerateData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("verticalChecks") || raw.isNull("verticalChecks")) null else List(raw.getJSONArray("verticalChecks").length()) { index0 -> (raw.getJSONArray("verticalChecks").get(index0) as JSONObject) }
     val floorNote: String?
         get() = if (!raw.has("floorNote") || raw.isNull("floorNote")) null else raw.getString("floorNote")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val merchantCatalogId: String?
+        get() = if (!raw.has("merchantCatalogId") || raw.isNull("merchantCatalogId")) null else raw.getString("merchantCatalogId")
+    val merchantCatalogRevision: Long?
+        get() = if (!raw.has("merchantCatalogRevision") || raw.isNull("merchantCatalogRevision")) null else raw.getLong("merchantCatalogRevision")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+    val inputUnits: String?
+        get() = if (!raw.has("inputUnits") || raw.isNull("inputUnits")) null else raw.getString("inputUnits")
+    val metresPerInputUnit: Double?
+        get() = if (!raw.has("metresPerInputUnit") || raw.isNull("metresPerInputUnit")) null else raw.getDouble("metresPerInputUnit")
+    val plotRegion: VastuPlanGenerateDataPlotRegion?
+        get() = if (!raw.has("plotRegion") || raw.isNull("plotRegion")) null else VastuPlanGenerateDataPlotRegion(raw.getJSONObject("plotRegion"))
+}
+
+data class VastuPlanImportData(override val raw: JSONObject) : VastuData {
+    val plan: VastuPlanImportDataPlan
+        get() = VastuPlanImportDataPlan(raw.getJSONObject("plan"))
+    val north: VastuPlanImportDataNorth
+        get() = VastuPlanImportDataNorth(raw.getJSONObject("north"))
+    val scale: VastuPlanImportDataScale
+        get() = VastuPlanImportDataScale(raw.getJSONObject("scale"))
+    val dimensions: List<VastuPlanImportDataDimensionsItem>
+        get() = List(raw.getJSONArray("dimensions").length()) { index0 -> VastuPlanImportDataDimensionsItem((raw.getJSONArray("dimensions").get(index0) as JSONObject)) }
+    val confidence: JSONObject
+        get() = raw.getJSONObject("confidence")
+    val needsReview: List<VastuPlanImportDataNeedsReviewItem>
+        get() = List(raw.getJSONArray("needsReview").length()) { index0 -> VastuPlanImportDataNeedsReviewItem((raw.getJSONArray("needsReview").get(index0) as JSONObject)) }
+    val analysisReady: Boolean
+        get() = raw.getBoolean("analysisReady")
+    val source: VastuPlanImportDataSource
+        get() = VastuPlanImportDataSource(raw.getJSONObject("source"))
+    val usage: VastuPlanImportDataUsage
+        get() = VastuPlanImportDataUsage(raw.getJSONObject("usage"))
+    val pricing: VastuPlanImportDataPricing
+        get() = VastuPlanImportDataPricing(raw.getJSONObject("pricing"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+    val inputUnits: String?
+        get() = if (!raw.has("inputUnits") || raw.isNull("inputUnits")) null else raw.getString("inputUnits")
+    val metresPerInputUnit: Double?
+        get() = if (!raw.has("metresPerInputUnit") || raw.isNull("metresPerInputUnit")) null else raw.getDouble("metresPerInputUnit")
+}
+
+data class VastuPlanImportDxfData(override val raw: JSONObject) : VastuData {
+    val plan: VastuPlanImportDxfDataPlan
+        get() = VastuPlanImportDxfDataPlan(raw.getJSONObject("plan"))
+    val mappingReport: List<VastuPlanImportDxfDataMappingReportItem>
+        get() = List(raw.getJSONArray("mappingReport").length()) { index0 -> VastuPlanImportDxfDataMappingReportItem((raw.getJSONArray("mappingReport").get(index0) as JSONObject)) }
+    val needsReview: Boolean
+        get() = raw.getBoolean("needsReview")
+    val reviewReasons: List<VastuPlanImportDxfDataReviewReasonsItem>
+        get() = List(raw.getJSONArray("reviewReasons").length()) { index0 -> VastuPlanImportDxfDataReviewReasonsItem((raw.getJSONArray("reviewReasons").get(index0) as JSONObject)) }
+    val pricing: JSONObject?
+        get() = if (!raw.has("pricing") || raw.isNull("pricing")) null else raw.getJSONObject("pricing")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+    val inputUnits: String?
+        get() = if (!raw.has("inputUnits") || raw.isNull("inputUnits")) null else raw.getString("inputUnits")
+    val metresPerInputUnit: Double?
+        get() = if (!raw.has("metresPerInputUnit") || raw.isNull("metresPerInputUnit")) null else raw.getDouble("metresPerInputUnit")
+}
+
+data class VastuPlanImportIfcData(override val raw: JSONObject) : VastuData {
+    val schema: String
+        get() = raw.getString("schema")
+    val buildings: List<VastuPlanImportIfcDataBuildingsItem>
+        get() = List(raw.getJSONArray("buildings").length()) { index0 -> VastuPlanImportIfcDataBuildingsItem((raw.getJSONArray("buildings").get(index0) as JSONObject)) }
+    val storeys: List<VastuPlanImportIfcDataStoreysItem>
+        get() = List(raw.getJSONArray("storeys").length()) { index0 -> VastuPlanImportIfcDataStoreysItem((raw.getJSONArray("storeys").get(index0) as JSONObject)) }
+    val trueNorthDeg: Double
+        get() = raw.getDouble("trueNorthDeg")
+    val mappingReport: List<VastuPlanImportIfcDataMappingReportItem>
+        get() = List(raw.getJSONArray("mappingReport").length()) { index0 -> VastuPlanImportIfcDataMappingReportItem((raw.getJSONArray("mappingReport").get(index0) as JSONObject)) }
+    val needsReview: Boolean
+        get() = raw.getBoolean("needsReview")
+    val reviewReasons: List<VastuPlanImportIfcDataReviewReasonsItem>
+        get() = List(raw.getJSONArray("reviewReasons").length()) { index0 -> VastuPlanImportIfcDataReviewReasonsItem((raw.getJSONArray("reviewReasons").get(index0) as JSONObject)) }
+    val pricing: JSONObject?
+        get() = if (!raw.has("pricing") || raw.isNull("pricing")) null else raw.getJSONObject("pricing")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+    val inputUnits: String?
+        get() = if (!raw.has("inputUnits") || raw.isNull("inputUnits")) null else raw.getString("inputUnits")
+    val metresPerInputUnit: Double?
+        get() = if (!raw.has("metresPerInputUnit") || raw.isNull("metresPerInputUnit")) null else raw.getDouble("metresPerInputUnit")
 }
 
 data class VastuPlanOptimizeData(override val raw: JSONObject) : VastuData {
@@ -4895,6 +9109,32 @@ data class VastuPlanOptimizeData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
     val verified: Boolean?
         get() = if (!raw.has("verified") || raw.isNull("verified")) null else raw.getBoolean("verified")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val unmetConstraints: List<JSONObject>?
+        get() = if (!raw.has("unmetConstraints") || raw.isNull("unmetConstraints")) null else List(raw.getJSONArray("unmetConstraints").length()) { index0 -> (raw.getJSONArray("unmetConstraints").get(index0) as JSONObject) }
+    val initialConstraintViolations: List<JSONObject>?
+        get() = if (!raw.has("initialConstraintViolations") || raw.isNull("initialConstraintViolations")) null else List(raw.getJSONArray("initialConstraintViolations").length()) { index0 -> (raw.getJSONArray("initialConstraintViolations").get(index0) as JSONObject) }
+    val feasible: Boolean?
+        get() = if (!raw.has("feasible") || raw.isNull("feasible")) null else raw.getBoolean("feasible")
+    val search: JSONObject?
+        get() = if (!raw.has("search") || raw.isNull("search")) null else raw.getJSONObject("search")
+    val scoring: JSONObject?
+        get() = if (!raw.has("scoring") || raw.isNull("scoring")) null else raw.getJSONObject("scoring")
+    val merchantCatalogId: String?
+        get() = if (!raw.has("merchantCatalogId") || raw.isNull("merchantCatalogId")) null else raw.getString("merchantCatalogId")
+    val merchantCatalogRevision: Long?
+        get() = if (!raw.has("merchantCatalogRevision") || raw.isNull("merchantCatalogRevision")) null else raw.getLong("merchantCatalogRevision")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val units: String?
+        get() = if (!raw.has("units") || raw.isNull("units")) null else raw.getString("units")
+    val inputUnits: String?
+        get() = if (!raw.has("inputUnits") || raw.isNull("inputUnits")) null else raw.getString("inputUnits")
+    val metresPerInputUnit: Double?
+        get() = if (!raw.has("metresPerInputUnit") || raw.isNull("metresPerInputUnit")) null else raw.getDouble("metresPerInputUnit")
+    val plotRegion: VastuPlanOptimizeDataPlotRegion?
+        get() = if (!raw.has("plotRegion") || raw.isNull("plotRegion")) null else VastuPlanOptimizeDataPlotRegion(raw.getJSONObject("plotRegion"))
 }
 
 data class VastuPlotExtensionsCutsData(override val raw: JSONObject) : VastuData {
@@ -4902,10 +9142,10 @@ data class VastuPlotExtensionsCutsData(override val raw: JSONObject) : VastuData
         get() = List(raw.getJSONArray("directions").length()) { index0 -> (raw.getJSONArray("directions").get(index0) as JSONObject) }
     val extensions: List<String>
         get() = List(raw.getJSONArray("extensions").length()) { index0 -> (raw.getJSONArray("extensions").get(index0) as String) }
-    val cuts: List<JSONObject>
-        get() = List(raw.getJSONArray("cuts").length()) { index0 -> (raw.getJSONArray("cuts").get(index0) as JSONObject) }
-    val severeCuts: List<JSONObject>
-        get() = List(raw.getJSONArray("severeCuts").length()) { index0 -> (raw.getJSONArray("severeCuts").get(index0) as JSONObject) }
+    val cuts: List<String>
+        get() = List(raw.getJSONArray("cuts").length()) { index0 -> (raw.getJSONArray("cuts").get(index0) as String) }
+    val severeCuts: List<String>
+        get() = List(raw.getJSONArray("severeCuts").length()) { index0 -> (raw.getJSONArray("severeCuts").get(index0) as String) }
     val sources: List<String>
         get() = List(raw.getJSONArray("sources").length()) { index0 -> (raw.getJSONArray("sources").get(index0) as String) }
     val verified: Boolean
@@ -4930,6 +9170,41 @@ data class VastuPlotExtensionsCutsData(override val raw: JSONObject) : VastuData
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
     val verdict: String?
         get() = if (!raw.has("verdict") || raw.isNull("verdict")) null else raw.getString("verdict")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuPlotFromSurveyData(override val raw: JSONObject) : VastuData {
+    val method: String
+        get() = raw.getString("method")
+    val sourceCrs: String
+        get() = raw.getString("sourceCrs")
+    val sourceUnits: String
+        get() = raw.getString("sourceUnits")
+    val coordinateOrder: String
+        get() = raw.getString("coordinateOrder")
+    val frame: JSONObject
+        get() = raw.getJSONObject("frame")
+    val plotPolygon: List<List<Double>>
+        get() = List(raw.getJSONArray("plotPolygon").length()) { index0 -> List((raw.getJSONArray("plotPolygon").get(index0) as org.json.JSONArray).length()) { index1 -> ((raw.getJSONArray("plotPolygon").get(index0) as org.json.JSONArray).get(index1) as Number).toDouble() } }
+    val controlPoints: List<JSONObject>
+        get() = List(raw.getJSONArray("controlPoints").length()) { index0 -> (raw.getJSONArray("controlPoints").get(index0) as JSONObject) }
+    val areaM2: Double
+        get() = raw.getDouble("areaM2")
+    val gridConvergenceDeg: Double
+        get() = raw.getDouble("gridConvergenceDeg")
+    val boundaryGridConvergenceDeg: List<Double>
+        get() = List(raw.getJSONArray("boundaryGridConvergenceDeg").length()) { index0 -> (raw.getJSONArray("boundaryGridConvergenceDeg").get(index0) as Number).toDouble() }
+    val trueNorthGridBearingDeg: Double
+        get() = raw.getDouble("trueNorthGridBearingDeg")
+    val maxDistanceFromOriginM: Double
+        get() = raw.getDouble("maxDistanceFromOriginM")
+    val pricing: VastuPlotFromSurveyDataPricing?
+        get() = if (!raw.has("pricing") || raw.isNull("pricing")) null else VastuPlotFromSurveyDataPricing(raw.getJSONObject("pricing"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuPlotOrientationData(override val raw: JSONObject) : VastuData {
@@ -4963,6 +9238,10 @@ data class VastuPlotOrientationData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("provenance") || raw.isNull("provenance")) null else raw.getJSONObject("provenance")
     val system: String?
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuPlotRatioData(override val raw: JSONObject) : VastuData {
@@ -4994,6 +9273,16 @@ data class VastuPlotRatioData(override val raw: JSONObject) : VastuData {
         get() = raw.getBoolean("verified")
     val boundingFrame: String
         get() = raw.getString("boundingFrame")
+    val rectangular: Boolean?
+        get() = if (!raw.has("rectangular") || raw.isNull("rectangular")) null else raw.getBoolean("rectangular")
+    val fillRatio: Double?
+        get() = if (!raw.has("fillRatio") || raw.isNull("fillRatio")) null else raw.getDouble("fillRatio")
+    val ratioScope: String?
+        get() = if (!raw.has("ratioScope") || raw.isNull("ratioScope")) null else raw.getString("ratioScope")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuPlotShapeData(override val raw: JSONObject) : VastuData {
@@ -5019,6 +9308,10 @@ data class VastuPlotShapeData(override val raw: JSONObject) : VastuData {
         get() = raw.getBoolean("verified")
     val boundingFrame: String
         get() = raw.getString("boundingFrame")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuPlotSlopeData(override val raw: JSONObject) : VastuData {
@@ -5056,6 +9349,367 @@ data class VastuPlotSlopeData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("remedyType") || raw.isNull("remedyType")) null else raw.getString("remedyType")
     val system: String?
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuPortfolioAnalyticsData(override val raw: JSONObject) : VastuData {
+    val fromEpoch: Long
+        get() = raw.getLong("fromEpoch")
+    val toEpoch: Long
+        get() = raw.getLong("toEpoch")
+    val account: VastuPortfolioAnalyticsDataAccount
+        get() = VastuPortfolioAnalyticsDataAccount(raw.getJSONObject("account"))
+    val byTag: JSONObject
+        get() = raw.getJSONObject("byTag")
+}
+
+data class VastuPortfolioBudgetsGetData(override val raw: JSONObject) : VastuData {
+    val dimensions: JSONObject
+        get() = raw.getJSONObject("dimensions")
+    val period: String
+        get() = raw.getString("period")
+}
+
+data class VastuPortfolioBudgetsSetData(override val raw: JSONObject) : VastuData {
+    val scope: VastuPortfolioBudgetsSetDataScope
+        get() = VastuPortfolioBudgetsSetDataScope(raw.getJSONObject("scope"))
+    val capUsd: String?
+        get() = if (!raw.has("capUsd") || raw.isNull("capUsd")) null else raw.getString("capUsd")
+    val period: String
+        get() = raw.getString("period")
+}
+
+data class VastuPortfolioCompareData(override val raw: JSONObject) : VastuData {
+    val properties: List<VastuPortfolioCompareDataPropertiesItem>
+        get() = List(raw.getJSONArray("properties").length()) { index0 -> VastuPortfolioCompareDataPropertiesItem((raw.getJSONArray("properties").get(index0) as JSONObject)) }
+    val comparableGroups: JSONObject
+        get() = raw.getJSONObject("comparableGroups")
+    val crossRulesetRanking: Boolean
+        get() = raw.getBoolean("crossRulesetRanking")
+}
+
+data class VastuPortfolioSearchData(override val raw: JSONObject) : VastuData {
+    val properties: List<VastuPortfolioSearchDataPropertiesItem>
+        get() = List(raw.getJSONArray("properties").length()) { index0 -> VastuPortfolioSearchDataPropertiesItem((raw.getJSONArray("properties").get(index0) as JSONObject)) }
+    val total: Int
+        get() = raw.getInt("total")
+    val nextCursor: String?
+        get() = if (!raw.has("nextCursor") || raw.isNull("nextCursor")) null else raw.getString("nextCursor")
+}
+
+data class VastuPortfolioUsageData(override val raw: JSONObject) : VastuData {
+    val fromEpoch: Long
+        get() = raw.getLong("fromEpoch")
+    val toEpoch: Long
+        get() = raw.getLong("toEpoch")
+    val retentionDays: Int
+        get() = raw.getInt("retentionDays")
+    val groups: List<VastuPortfolioUsageDataGroupsItem>
+        get() = List(raw.getJSONArray("groups").length()) { index0 -> VastuPortfolioUsageDataGroupsItem((raw.getJSONArray("groups").get(index0) as JSONObject)) }
+}
+
+data class VastuPortfolioUsageExportData(override val raw: JSONObject) : VastuData {
+    val csv: String
+        get() = raw.getString("csv")
+    val filename: String
+        get() = raw.getString("filename")
+    val contentType: String
+        get() = raw.getString("contentType")
+}
+
+data class VastuPropertiesActivityExportData(override val raw: JSONObject) : VastuData {
+    val events: List<VastuPropertiesActivityExportDataEventsItem>
+        get() = List(raw.getJSONArray("events").length()) { index0 -> VastuPropertiesActivityExportDataEventsItem((raw.getJSONArray("events").get(index0) as JSONObject)) }
+    val nextCursor: Long?
+        get() = if (!raw.has("nextCursor") || raw.isNull("nextCursor")) null else raw.getLong("nextCursor")
+    val format: String
+        get() = raw.getString("format")
+    val content: String
+        get() = raw.getString("content")
+}
+
+data class VastuPropertiesActivityListData(override val raw: JSONObject) : VastuData {
+    val events: List<VastuPropertiesActivityListDataEventsItem>
+        get() = List(raw.getJSONArray("events").length()) { index0 -> VastuPropertiesActivityListDataEventsItem((raw.getJSONArray("events").get(index0) as JSONObject)) }
+    val nextCursor: Long?
+        get() = if (!raw.has("nextCursor") || raw.isNull("nextCursor")) null else raw.getLong("nextCursor")
+}
+
+data class VastuPropertiesCollaborationCommentData(override val raw: JSONObject) : VastuData {
+    val comment: VastuPropertiesCollaborationCommentDataComment
+        get() = VastuPropertiesCollaborationCommentDataComment(raw.getJSONObject("comment"))
+}
+
+data class VastuPropertiesCollaborationGetData(override val raw: JSONObject) : VastuData {
+    val property: VastuPropertiesCollaborationGetDataProperty
+        get() = VastuPropertiesCollaborationGetDataProperty(raw.getJSONObject("property"))
+    val comments: List<VastuPropertiesCollaborationGetDataCommentsItem>
+        get() = List(raw.getJSONArray("comments").length()) { index0 -> VastuPropertiesCollaborationGetDataCommentsItem((raw.getJSONArray("comments").get(index0) as JSONObject)) }
+    val reviews: List<VastuPropertiesCollaborationGetDataReviewsItem>
+        get() = List(raw.getJSONArray("reviews").length()) { index0 -> VastuPropertiesCollaborationGetDataReviewsItem((raw.getJSONArray("reviews").get(index0) as JSONObject)) }
+}
+
+data class VastuPropertiesCollaborationInviteData(override val raw: JSONObject) : VastuData {
+    val invitationId: String
+        get() = raw.getString("invitationId")
+    val status: String
+        get() = raw.getString("status")
+}
+
+data class VastuPropertiesCollaborationMembersData(override val raw: JSONObject) : VastuData {
+    val members: JSONObject
+        get() = raw.getJSONObject("members")
+}
+
+data class VastuPropertiesCollaborationReviewData(override val raw: JSONObject) : VastuData {
+    val review: VastuPropertiesCollaborationReviewDataReview
+        get() = VastuPropertiesCollaborationReviewDataReview(raw.getJSONObject("review"))
+}
+
+data class VastuPropertiesCollaborationRevokeData(override val raw: JSONObject) : VastuData {
+    val accountId: String?
+        get() = if (!raw.has("accountId") || raw.isNull("accountId")) null else raw.getString("accountId")
+    val revoked: Boolean
+        get() = raw.getBoolean("revoked")
+    val invitationId: String?
+        get() = if (!raw.has("invitationId") || raw.isNull("invitationId")) null else raw.getString("invitationId")
+}
+
+data class VastuPropertiesCollaborationUpdateData(override val raw: JSONObject) : VastuData {
+    val property: VastuPropertiesCollaborationUpdateDataProperty
+        get() = VastuPropertiesCollaborationUpdateDataProperty(raw.getJSONObject("property"))
+}
+
+data class VastuPropertiesCreateData(override val raw: JSONObject) : VastuData {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val ownerId: String
+        get() = raw.getString("ownerId")
+    val ids: VastuPropertiesCreateDataIds
+        get() = VastuPropertiesCreateDataIds(raw.getJSONObject("ids"))
+    val title: String
+        get() = raw.getString("title")
+    val data: JSONObject
+        get() = raw.getJSONObject("data")
+    val retentionDays: Int
+        get() = raw.getInt("retentionDays")
+    val expiresAtEpoch: Long
+        get() = raw.getLong("expiresAtEpoch")
+    val linkedScanIds: List<String>
+        get() = List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>
+        get() = List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val archiveTier: VastuPropertiesCreateDataArchiveTier?
+        get() = if (!raw.has("archiveTier") || raw.isNull("archiveTier")) null else VastuPropertiesCreateDataArchiveTier(raw.getJSONObject("archiveTier"))
+    val externalId: String?
+        get() = if (!raw.has("externalId") || raw.isNull("externalId")) null else raw.getString("externalId")
+    val createdAtEpoch: Long
+        get() = raw.getLong("createdAtEpoch")
+    val updatedAtEpoch: Long
+        get() = raw.getLong("updatedAtEpoch")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuPropertiesDeleteData(override val raw: JSONObject) : VastuData {
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val deleted: Boolean
+        get() = raw.getBoolean("deleted")
+    val erasureStatus: String?
+        get() = if (!raw.has("erasureStatus") || raw.isNull("erasureStatus")) null else raw.getString("erasureStatus")
+    val erasureReceipt: VastuPropertiesDeleteDataErasureReceipt?
+        get() = if (!raw.has("erasureReceipt") || raw.isNull("erasureReceipt")) null else VastuPropertiesDeleteDataErasureReceipt(raw.getJSONObject("erasureReceipt"))
+    val retryAfterEpoch: Long?
+        get() = if (!raw.has("retryAfterEpoch") || raw.isNull("retryAfterEpoch")) null else raw.getLong("retryAfterEpoch")
+    val exportDeleted: Boolean?
+        get() = if (!raw.has("exportDeleted") || raw.isNull("exportDeleted")) null else raw.getBoolean("exportDeleted")
+    val linkedScanIds: List<String>?
+        get() = if (!raw.has("linkedScanIds") || raw.isNull("linkedScanIds")) null else List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>?
+        get() = if (!raw.has("linkedAssessmentIds") || raw.isNull("linkedAssessmentIds")) null else List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val revisionId: String?
+        get() = if (!raw.has("revisionId") || raw.isNull("revisionId")) null else raw.getString("revisionId")
+    val replayed: Boolean?
+        get() = if (!raw.has("replayed") || raw.isNull("replayed")) null else raw.getBoolean("replayed")
+}
+
+data class VastuPropertiesGetData(override val raw: JSONObject) : VastuData {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val ownerId: String
+        get() = raw.getString("ownerId")
+    val ids: VastuPropertiesGetDataIds
+        get() = VastuPropertiesGetDataIds(raw.getJSONObject("ids"))
+    val title: String
+        get() = raw.getString("title")
+    val data: JSONObject
+        get() = raw.getJSONObject("data")
+    val retentionDays: Int
+        get() = raw.getInt("retentionDays")
+    val expiresAtEpoch: Long
+        get() = raw.getLong("expiresAtEpoch")
+    val linkedScanIds: List<String>
+        get() = List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>
+        get() = List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val archiveTier: VastuPropertiesGetDataArchiveTier?
+        get() = if (!raw.has("archiveTier") || raw.isNull("archiveTier")) null else VastuPropertiesGetDataArchiveTier(raw.getJSONObject("archiveTier"))
+    val externalId: String?
+        get() = if (!raw.has("externalId") || raw.isNull("externalId")) null else raw.getString("externalId")
+    val createdAtEpoch: Long
+        get() = raw.getLong("createdAtEpoch")
+    val updatedAtEpoch: Long
+        get() = raw.getLong("updatedAtEpoch")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuPropertiesLinkScanData(override val raw: JSONObject) : VastuData {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val ownerId: String
+        get() = raw.getString("ownerId")
+    val ids: VastuPropertiesLinkScanDataIds
+        get() = VastuPropertiesLinkScanDataIds(raw.getJSONObject("ids"))
+    val title: String
+        get() = raw.getString("title")
+    val data: JSONObject
+        get() = raw.getJSONObject("data")
+    val retentionDays: Int
+        get() = raw.getInt("retentionDays")
+    val expiresAtEpoch: Long
+        get() = raw.getLong("expiresAtEpoch")
+    val linkedScanIds: List<String>
+        get() = List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>
+        get() = List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val archiveTier: VastuPropertiesLinkScanDataArchiveTier?
+        get() = if (!raw.has("archiveTier") || raw.isNull("archiveTier")) null else VastuPropertiesLinkScanDataArchiveTier(raw.getJSONObject("archiveTier"))
+    val externalId: String?
+        get() = if (!raw.has("externalId") || raw.isNull("externalId")) null else raw.getString("externalId")
+    val createdAtEpoch: Long
+        get() = raw.getLong("createdAtEpoch")
+    val updatedAtEpoch: Long
+        get() = raw.getLong("updatedAtEpoch")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuPropertiesListData(override val raw: JSONObject) : VastuData {
+    val properties: List<VastuPropertiesListDataPropertiesItem>
+        get() = List(raw.getJSONArray("properties").length()) { index0 -> VastuPropertiesListDataPropertiesItem((raw.getJSONArray("properties").get(index0) as JSONObject)) }
+    val nextCursor: String?
+        get() = if (!raw.has("nextCursor") || raw.isNull("nextCursor")) null else raw.getString("nextCursor")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuPropertiesUpdateData(override val raw: JSONObject) : VastuData {
+    val propertyId: String
+        get() = raw.getString("propertyId")
+    val ownerId: String
+        get() = raw.getString("ownerId")
+    val ids: VastuPropertiesUpdateDataIds
+        get() = VastuPropertiesUpdateDataIds(raw.getJSONObject("ids"))
+    val title: String
+        get() = raw.getString("title")
+    val data: JSONObject
+        get() = raw.getJSONObject("data")
+    val retentionDays: Int
+        get() = raw.getInt("retentionDays")
+    val expiresAtEpoch: Long
+        get() = raw.getLong("expiresAtEpoch")
+    val linkedScanIds: List<String>
+        get() = List(raw.getJSONArray("linkedScanIds").length()) { index0 -> (raw.getJSONArray("linkedScanIds").get(index0) as String) }
+    val linkedAssessmentIds: List<String>
+        get() = List(raw.getJSONArray("linkedAssessmentIds").length()) { index0 -> (raw.getJSONArray("linkedAssessmentIds").get(index0) as String) }
+    val archiveTier: VastuPropertiesUpdateDataArchiveTier?
+        get() = if (!raw.has("archiveTier") || raw.isNull("archiveTier")) null else VastuPropertiesUpdateDataArchiveTier(raw.getJSONObject("archiveTier"))
+    val externalId: String?
+        get() = if (!raw.has("externalId") || raw.isNull("externalId")) null else raw.getString("externalId")
+    val createdAtEpoch: Long
+        get() = raw.getLong("createdAtEpoch")
+    val updatedAtEpoch: Long
+        get() = raw.getLong("updatedAtEpoch")
+    val contentHash: String
+        get() = raw.getString("contentHash")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuQuoteCalculateData(override val raw: JSONObject) : VastuData {
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val workflowId: String
+        get() = raw.getString("workflowId")
+    val currency: String
+        get() = raw.getString("currency")
+    val subtotal: String
+        get() = raw.getString("subtotal")
+    val total: String
+        get() = raw.getString("total")
+    val lineItems: List<VastuQuoteCalculateDataLineItemsItem>
+        get() = List(raw.getJSONArray("lineItems").length()) { index0 -> VastuQuoteCalculateDataLineItemsItem((raw.getJSONArray("lineItems").get(index0) as JSONObject)) }
+    val explanation: String
+        get() = raw.getString("explanation")
+}
+
+data class VastuReceiptVerifyData(override val raw: JSONObject) : VastuData {
+    val valid: Boolean
+        get() = raw.getBoolean("valid")
+    val receipt: VastuReceiptVerifyDataReceipt
+        get() = VastuReceiptVerifyDataReceipt(raw.getJSONObject("receipt"))
+    val inputMatched: Boolean?
+        get() = if (!raw.has("inputMatched") || raw.isNull("inputMatched")) null else raw.getBoolean("inputMatched")
+    val charged: Double
+        get() = raw.getDouble("charged")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuRemediationTaskData(override val raw: JSONObject) : VastuData {
+    val taskId: String
+        get() = raw.getString("taskId")
+    val reportRef: String
+        get() = raw.getString("reportRef")
+    val findingRef: String
+        get() = raw.getString("findingRef")
+    val remedyKey: String
+        get() = raw.getString("remedyKey")
+    val title: String
+        get() = raw.getString("title")
+    val status: String
+        get() = raw.getString("status")
+    val assignee: String?
+        get() = if (!raw.has("assignee") || raw.isNull("assignee")) null else raw.getString("assignee")
+    val dueDate: String?
+        get() = if (!raw.has("dueDate") || raw.isNull("dueDate")) null else raw.getString("dueDate")
+    val evidence: List<VastuRemediationTaskDataEvidenceItem>?
+        get() = if (!raw.has("evidence") || raw.isNull("evidence")) null else List(raw.getJSONArray("evidence").length()) { index0 -> VastuRemediationTaskDataEvidenceItem((raw.getJSONArray("evidence").get(index0) as JSONObject)) }
+    val createdAt: Long?
+        get() = if (!raw.has("createdAt") || raw.isNull("createdAt")) null else raw.getLong("createdAt")
+    val updatedAt: Long?
+        get() = if (!raw.has("updatedAt") || raw.isNull("updatedAt")) null else raw.getLong("updatedAt")
+    val completedAt: Long?
+        get() = if (!raw.has("completedAt") || raw.isNull("completedAt")) null else raw.getLong("completedAt")
+    val reassessment: JSONObject?
+        get() = if (!raw.has("reassessment") || raw.isNull("reassessment")) null else raw.getJSONObject("reassessment")
+    val reassessmentLink: VastuRemediationTaskDataReassessmentLink?
+        get() = if (!raw.has("reassessmentLink") || raw.isNull("reassessmentLink")) null else VastuRemediationTaskDataReassessmentLink(raw.getJSONObject("reassessmentLink"))
+    val history: List<JSONObject>?
+        get() = if (!raw.has("history") || raw.isNull("history")) null else List(raw.getJSONArray("history").length()) { index0 -> (raw.getJSONArray("history").get(index0) as JSONObject) }
 }
 
 data class VastuRemedyComparisonData(override val raw: JSONObject) : VastuData {
@@ -5087,6 +9741,8 @@ data class VastuRemedyComparisonData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("verified") || raw.isNull("verified")) null else raw.getBoolean("verified")
     val notAssessed: List<VastuRemedyComparisonDataNotAssessedItem>?
         get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuRemedyComparisonDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuRoadOrientationData(override val raw: JSONObject) : VastuData {
@@ -5120,6 +9776,8 @@ data class VastuRoadOrientationData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
     val verdict: String?
         get() = if (!raw.has("verdict") || raw.isNull("verdict")) null else raw.getString("verdict")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuRoomData(override val raw: JSONObject) : VastuData {
@@ -5161,6 +9819,35 @@ data class VastuRoomData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("placementVerified") || raw.isNull("placementVerified")) null else raw.getBoolean("placementVerified")
     val guidanceClassification: String?
         get() = if (!raw.has("guidanceClassification") || raw.isNull("guidanceClassification")) null else raw.getString("guidanceClassification")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val roomTypeApplied: String?
+        get() = if (!raw.has("roomTypeApplied") || raw.isNull("roomTypeApplied")) null else raw.getString("roomTypeApplied")
+    val roomTypeDefaulted: Boolean?
+        get() = if (!raw.has("roomTypeDefaulted") || raw.isNull("roomTypeDefaulted")) null else raw.getBoolean("roomTypeDefaulted")
+    val roomTypeNote: String?
+        get() = if (!raw.has("roomTypeNote") || raw.isNull("roomTypeNote")) null else raw.getString("roomTypeNote")
+    val merchantCatalogId: String?
+        get() = if (!raw.has("merchantCatalogId") || raw.isNull("merchantCatalogId")) null else raw.getString("merchantCatalogId")
+    val merchantCatalogRevision: Long?
+        get() = if (!raw.has("merchantCatalogRevision") || raw.isNull("merchantCatalogRevision")) null else raw.getLong("merchantCatalogRevision")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuRuleVersionsData(override val raw: JSONObject) : VastuData {
+    val currentVersion: String
+        get() = raw.getString("currentVersion")
+    val retainedVersions: Int
+        get() = raw.getInt("retainedVersions")
+    val versions: List<String>
+        get() = List(raw.getJSONArray("versions").length()) { index0 -> (raw.getJSONArray("versions").get(index0) as String) }
+    val scope: String
+        get() = raw.getString("scope")
+    val scoringVersion: String
+        get() = raw.getString("scoringVersion")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuScanStoredData(override val raw: JSONObject) : VastuData {
@@ -5180,6 +9867,8 @@ data class VastuScanStoredData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("geometryUnits")
     val assessmentNote: String
         get() = raw.getString("assessmentNote")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuScansDeleteData(override val raw: JSONObject) : VastuData {
@@ -5193,6 +9882,8 @@ data class VastuScansDeleteData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("persistence")
     val previewNote: String?
         get() = if (!raw.has("previewNote") || raw.isNull("previewNote")) null else raw.getString("previewNote")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuScansListData(override val raw: JSONObject) : VastuData {
@@ -5206,6 +9897,8 @@ data class VastuScansListData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("persistence")
     val previewNote: String?
         get() = if (!raw.has("previewNote") || raw.isNull("previewNote")) null else raw.getString("previewNote")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuScansRetrieveData(override val raw: JSONObject) : VastuData {
@@ -5215,6 +9908,8 @@ data class VastuScansRetrieveData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("persistence")
     val previewNote: String?
         get() = if (!raw.has("previewNote") || raw.isNull("previewNote")) null else raw.getString("previewNote")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuScansSaveData(override val raw: JSONObject) : VastuData {
@@ -5230,6 +9925,8 @@ data class VastuScansSaveData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("previewNote") || raw.isNull("previewNote")) null else raw.getString("previewNote")
     val deviceAttestation: Any?
         get() = if (!raw.has("deviceAttestation") || raw.isNull("deviceAttestation")) null else raw.get("deviceAttestation").takeUnless { it == JSONObject.NULL }
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuScansTimelapseData(override val raw: JSONObject) : VastuData {
@@ -5245,6 +9942,8 @@ data class VastuScansTimelapseData(override val raw: JSONObject) : VastuData {
         get() = raw.getString("persistence")
     val previewNote: String?
         get() = if (!raw.has("previewNote") || raw.isNull("previewNote")) null else raw.getString("previewNote")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuSingleRoomAuditData(override val raw: JSONObject) : VastuData {
@@ -5274,6 +9973,12 @@ data class VastuSingleRoomAuditData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("remedyClassification") || raw.isNull("remedyClassification")) null else raw.getString("remedyClassification")
     val remedySource: String?
         get() = if (!raw.has("remedySource") || raw.isNull("remedySource")) null else raw.getString("remedySource")
+    val merchantCatalogId: String?
+        get() = if (!raw.has("merchantCatalogId") || raw.isNull("merchantCatalogId")) null else raw.getString("merchantCatalogId")
+    val merchantCatalogRevision: Long?
+        get() = if (!raw.has("merchantCatalogRevision") || raw.isNull("merchantCatalogRevision")) null else raw.getLong("merchantCatalogRevision")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuSpecializedAuditData(override val raw: JSONObject) : VastuData {
@@ -5315,6 +10020,12 @@ data class VastuSpecializedAuditData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuSpecializedAuditDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
     val scoreNote: String?
         get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
+    val uncertainty: VastuMeasurementUncertainty?
+        get() = if (!raw.has("uncertainty") || raw.isNull("uncertainty")) null else VastuMeasurementUncertainty(raw.getJSONObject("uncertainty"))
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val receipt: VastuSpecializedAuditDataReceipt?
+        get() = if (!raw.has("receipt") || raw.isNull("receipt")) null else VastuSpecializedAuditDataReceipt(raw.getJSONObject("receipt"))
 }
 
 data class VastuSunPathData(override val raw: JSONObject) : VastuData {
@@ -5350,6 +10061,8 @@ data class VastuSunPathData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("noonUtc") || raw.isNull("noonUtc")) null else raw.getString("noonUtc")
     val noonElevationDeg: Double?
         get() = if (!raw.has("noonElevationDeg") || raw.isNull("noonElevationDeg")) null else raw.getDouble("noonElevationDeg")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuTimingData(override val raw: JSONObject) : VastuData {
@@ -5371,6 +10084,8 @@ data class VastuTimingData(override val raw: JSONObject) : VastuData {
         get() = raw.getJSONObject("guidance")
     val foundationRite: JSONObject?
         get() = if (!raw.has("foundationRite") || raw.isNull("foundationRite")) null else raw.getJSONObject("foundationRite")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuWallAnalysisData(override val raw: JSONObject) : VastuData {
@@ -5396,6 +10111,64 @@ data class VastuWallAnalysisData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("system") || raw.isNull("system")) null else raw.getString("system")
     val tradition: String?
         get() = if (!raw.has("tradition") || raw.isNull("tradition")) null else raw.getString("tradition")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+}
+
+data class VastuWorkflowData(override val raw: JSONObject) : VastuData {
+    val revision: Long
+        get() = raw.getLong("revision")
+    val mutationId: String?
+        get() = if (!raw.has("mutationId") || raw.isNull("mutationId")) null else raw.getString("mutationId")
+    val contentHash: String?
+        get() = if (!raw.has("contentHash") || raw.isNull("contentHash")) null else raw.getString("contentHash")
+    val expiresAt: Long?
+        get() = if (!raw.has("expiresAt") || raw.isNull("expiresAt")) null else raw.getLong("expiresAt")
+    val updatedAt: Long?
+        get() = if (!raw.has("updatedAt") || raw.isNull("updatedAt")) null else raw.getLong("updatedAt")
+    val deleted: Boolean?
+        get() = if (!raw.has("deleted") || raw.isNull("deleted")) null else raw.getBoolean("deleted")
+    val data: VastuWorkflowDataData?
+        get() = if (!raw.has("data") || raw.isNull("data")) null else VastuWorkflowDataData(raw.getJSONObject("data"))
+    val remedies: List<VastuWorkflowDataRemediesItem>?
+        get() = if (!raw.has("remedies") || raw.isNull("remedies")) null else List(raw.getJSONArray("remedies").length()) { index0 -> VastuWorkflowDataRemediesItem((raw.getJSONArray("remedies").get(index0) as JSONObject)) }
+    val merchantCatalogId: String?
+        get() = if (!raw.has("merchantCatalogId") || raw.isNull("merchantCatalogId")) null else raw.getString("merchantCatalogId")
+    val merchantCatalogRevision: Long?
+        get() = if (!raw.has("merchantCatalogRevision") || raw.isNull("merchantCatalogRevision")) null else raw.getLong("merchantCatalogRevision")
+}
+
+data class VastuWorkspaceData(override val raw: JSONObject) : VastuData {
+    val record: JSONObject?
+        get() = if (!raw.has("record") || raw.isNull("record")) null else raw.getJSONObject("record")
+    val replayed: Boolean?
+        get() = if (!raw.has("replayed") || raw.isNull("replayed")) null else raw.getBoolean("replayed")
+    val records: List<JSONObject>?
+        get() = if (!raw.has("records") || raw.isNull("records")) null else List(raw.getJSONArray("records").length()) { index0 -> (raw.getJSONArray("records").get(index0) as JSONObject) }
+    val id: String?
+        get() = if (!raw.has("id") || raw.isNull("id")) null else raw.getString("id")
+    val title: String?
+        get() = if (!raw.has("title") || raw.isNull("title")) null else raw.getString("title")
+    val expiresAt: Long?
+        get() = if (!raw.has("expiresAt") || raw.isNull("expiresAt")) null else raw.getLong("expiresAt")
+    val reset: Boolean?
+        get() = if (!raw.has("reset") || raw.isNull("reset")) null else raw.getBoolean("reset")
+    val deletedRecords: Int?
+        get() = if (!raw.has("deletedRecords") || raw.isNull("deletedRecords")) null else raw.getInt("deletedRecords")
+    val payload: String?
+        get() = if (!raw.has("payload") || raw.isNull("payload")) null else raw.getString("payload")
+    val headers: JSONObject?
+        get() = if (!raw.has("headers") || raw.isNull("headers")) null else raw.getJSONObject("headers")
+    val deliveryMode: String?
+        get() = if (!raw.has("deliveryMode") || raw.isNull("deliveryMode")) null else raw.getString("deliveryMode")
+    val retentionDays: Int?
+        get() = if (!raw.has("retentionDays") || raw.isNull("retentionDays")) null else raw.getInt("retentionDays")
+    val maxRecords: Int?
+        get() = if (!raw.has("maxRecords") || raw.isNull("maxRecords")) null else raw.getInt("maxRecords")
+    val html: String?
+        get() = if (!raw.has("html") || raw.isNull("html")) null else raw.getString("html")
+    val svg: String?
+        get() = if (!raw.has("svg") || raw.isNull("svg")) null else raw.getString("svg")
 }
 
 data class VastuZoneReferenceData(override val raw: JSONObject) : VastuData {
@@ -5417,6 +10190,8 @@ data class VastuZoneReferenceData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("meta") || raw.isNull("meta")) null else raw.getJSONObject("meta")
     val referenceVersion: String
         get() = raw.getString("referenceVersion")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
 }
 
 data class VastuZoneWiseScoreData(override val raw: JSONObject) : VastuData {
@@ -5456,6 +10231,10 @@ data class VastuZoneWiseScoreData(override val raw: JSONObject) : VastuData {
         get() = if (!raw.has("notAssessed") || raw.isNull("notAssessed")) null else List(raw.getJSONArray("notAssessed").length()) { index0 -> VastuZoneWiseScoreDataNotAssessedItem((raw.getJSONArray("notAssessed").get(index0) as JSONObject)) }
     val scoreNote: String?
         get() = if (!raw.has("scoreNote") || raw.isNull("scoreNote")) null else raw.getString("scoreNote")
+    val rulesVersion: String?
+        get() = if (!raw.has("rulesVersion") || raw.isNull("rulesVersion")) null else raw.getString("rulesVersion")
+    val receipt: VastuZoneWiseScoreDataReceipt?
+        get() = if (!raw.has("receipt") || raw.isNull("receipt")) null else VastuZoneWiseScoreDataReceipt(raw.getJSONObject("receipt"))
 }
 
 data class VastuTypedResponse<Data : VastuData>(val success: Boolean, val data: Data, val raw: JSONObject) {
@@ -5483,6 +10262,37 @@ class VastuContract<Request : VastuRequest, Data : VastuData> internal construct
 )
 
 object VastuContracts {
+    val portfolioSearch: VastuContract<VastuPortfolioSearchRequest, VastuPortfolioSearchData> = VastuContract(VastuOperation.PortfolioSearch, ::VastuPortfolioSearchData)
+    val portfolioCompare: VastuContract<VastuPortfolioCompareRequest, VastuPortfolioCompareData> = VastuContract(VastuOperation.PortfolioCompare, ::VastuPortfolioCompareData)
+    val portfolioAnalytics: VastuContract<VastuPortfolioAnalyticsRequest, VastuPortfolioAnalyticsData> = VastuContract(VastuOperation.PortfolioAnalytics, ::VastuPortfolioAnalyticsData)
+    val portfolioUsage: VastuContract<VastuPortfolioUsageRequest, VastuPortfolioUsageData> = VastuContract(VastuOperation.PortfolioUsage, ::VastuPortfolioUsageData)
+    val portfolioUsageExport: VastuContract<VastuPortfolioUsageExportRequest, VastuPortfolioUsageExportData> = VastuContract(VastuOperation.PortfolioUsageExport, ::VastuPortfolioUsageExportData)
+    val portfolioBudgetsSet: VastuContract<VastuPortfolioBudgetsSetRequest, VastuPortfolioBudgetsSetData> = VastuContract(VastuOperation.PortfolioBudgetsSet, ::VastuPortfolioBudgetsSetData)
+    val portfolioBudgetsGet: VastuContract<VastuPortfolioBudgetsGetRequest, VastuPortfolioBudgetsGetData> = VastuContract(VastuOperation.PortfolioBudgetsGet, ::VastuPortfolioBudgetsGetData)
+
+    val drawingSheet: VastuContract<VastuDrawingSheetRequest, VastuDrawingSheetData> = VastuContract(VastuOperation.DrawingSheet, ::VastuDrawingSheetData)
+    val propertiesCreate: VastuContract<VastuPropertiesCreateRequest, VastuPropertiesCreateData> = VastuContract(VastuOperation.PropertiesCreate, ::VastuPropertiesCreateData)
+    val propertiesUpdate: VastuContract<VastuPropertiesUpdateRequest, VastuPropertiesUpdateData> = VastuContract(VastuOperation.PropertiesUpdate, ::VastuPropertiesUpdateData)
+    val propertiesCollaborationGet: VastuContract<VastuPropertiesCollaborationGetRequest, VastuPropertiesCollaborationGetData> = VastuContract(VastuOperation.PropertiesCollaborationGet, ::VastuPropertiesCollaborationGetData)
+    val propertiesCollaborationInvite: VastuContract<VastuPropertiesCollaborationInviteRequest, VastuPropertiesCollaborationInviteData> = VastuContract(VastuOperation.PropertiesCollaborationInvite, ::VastuPropertiesCollaborationInviteData)
+    val propertiesCollaborationRevoke: VastuContract<VastuPropertiesCollaborationRevokeRequest, VastuPropertiesCollaborationRevokeData> = VastuContract(VastuOperation.PropertiesCollaborationRevoke, ::VastuPropertiesCollaborationRevokeData)
+    val propertiesCollaborationMembers: VastuContract<VastuPropertiesCollaborationMembersRequest, VastuPropertiesCollaborationMembersData> = VastuContract(VastuOperation.PropertiesCollaborationMembers, ::VastuPropertiesCollaborationMembersData)
+    val propertiesCollaborationComment: VastuContract<VastuPropertiesCollaborationCommentRequest, VastuPropertiesCollaborationCommentData> = VastuContract(VastuOperation.PropertiesCollaborationComment, ::VastuPropertiesCollaborationCommentData)
+    val propertiesCollaborationReview: VastuContract<VastuPropertiesCollaborationReviewRequest, VastuPropertiesCollaborationReviewData> = VastuContract(VastuOperation.PropertiesCollaborationReview, ::VastuPropertiesCollaborationReviewData)
+    val propertiesCollaborationUpdate: VastuContract<VastuPropertiesCollaborationUpdateRequest, VastuPropertiesCollaborationUpdateData> = VastuContract(VastuOperation.PropertiesCollaborationUpdate, ::VastuPropertiesCollaborationUpdateData)
+    val propertiesActivityList: VastuContract<VastuPropertiesActivityListRequest, VastuPropertiesActivityListData> = VastuContract(VastuOperation.PropertiesActivityList, ::VastuPropertiesActivityListData)
+    val propertiesActivityExport: VastuContract<VastuPropertiesActivityExportRequest, VastuPropertiesActivityExportData> = VastuContract(VastuOperation.PropertiesActivityExport, ::VastuPropertiesActivityExportData)
+    val propertiesGet: VastuContract<VastuPropertiesGetRequest, VastuPropertiesGetData> = VastuContract(VastuOperation.PropertiesGet, ::VastuPropertiesGetData)
+    val propertiesList: VastuContract<VastuPropertiesListRequest, VastuPropertiesListData> = VastuContract(VastuOperation.PropertiesList, ::VastuPropertiesListData)
+    val propertiesDelete: VastuContract<VastuPropertiesDeleteRequest, VastuPropertiesDeleteData> = VastuContract(VastuOperation.PropertiesDelete, ::VastuPropertiesDeleteData)
+    val propertiesLinkScan: VastuContract<VastuPropertiesLinkScanRequest, VastuPropertiesLinkScanData> = VastuContract(VastuOperation.PropertiesLinkScan, ::VastuPropertiesLinkScanData)
+    val archiveTier: VastuContract<VastuArchiveTierRequest, VastuArchiveTierData> = VastuContract(VastuOperation.ArchiveTier, ::VastuArchiveTierData)
+    val archiveExport: VastuContract<VastuArchiveExportRequest, VastuArchiveExportData> = VastuContract(VastuOperation.ArchiveExport, ::VastuArchiveExportData)
+    val archiveDelete: VastuContract<VastuArchiveDeleteRequest, VastuArchiveDeleteData> = VastuContract(VastuOperation.ArchiveDelete, ::VastuArchiveDeleteData)
+    val archiveSummary: VastuContract<VastuArchiveSummaryRequest, VastuArchiveSummaryData> = VastuContract(VastuOperation.ArchiveSummary, ::VastuArchiveSummaryData)
+    val feedListings: VastuContract<VastuFeedListingsRequest, VastuFeedListingsData> = VastuContract(VastuOperation.FeedListings, ::VastuFeedListingsData)
+    val quoteCalculate: VastuContract<VastuQuoteCalculateRequest, VastuQuoteCalculateData> = VastuContract(VastuOperation.QuoteCalculate, ::VastuQuoteCalculateData)
+
     val arCountedScanQuality: VastuContract<VastuArCountedScanQualityRequest, VastuArScanQualityData> = VastuContract(VastuOperation.ArScanQuality, ::VastuArScanQualityData)
 
 
@@ -5492,6 +10302,8 @@ object VastuContracts {
 
     val arDeityIcons: VastuContract<VastuArDeityIconsRequest, VastuArDeityIconsData> = VastuContract(VastuOperation.ArDeityIcons, ::VastuArDeityIconsData)
 
+    val arCaptureMerge: VastuContract<VastuArCaptureMergeRequest, VastuArCaptureMergeData> = VastuContract(VastuOperation.ArCaptureMerge, ::VastuArCaptureMergeData)
+    val plotFromSurvey: VastuContract<VastuPlotFromSurveyRequest, VastuPlotFromSurveyData> = VastuContract(VastuOperation.PlotFromSurvey, ::VastuPlotFromSurveyData)
     val arRoomCapture: VastuContract<VastuArRoomCaptureRequest, VastuArRoomCaptureData> = VastuContract(VastuOperation.ArRoomCapture, ::VastuArRoomCaptureData)
 
     val arAttestationChallenge: VastuContract<VastuArAttestationChallengeRequest, VastuArAttestationChallengeData> = VastuContract(VastuOperation.ArAttestationChallenge, ::VastuArAttestationChallengeData)
@@ -5584,6 +10396,15 @@ object VastuContracts {
     val planOptimize: VastuContract<VastuPlanOptimizeRequest, VastuPlanOptimizeData> = VastuContract(VastuOperation.PlanOptimize, ::VastuPlanOptimizeData)
 
     val planReport: VastuContract<VastuPlanReportRequest, VastuPlanAuditData> = VastuContract(VastuOperation.PlanReport, ::VastuPlanAuditData)
+
+    val planImportDxf: VastuContract<VastuPlanImportDxfRequest, VastuPlanImportDxfData> = VastuContract(VastuOperation.PlanImportDxf, ::VastuPlanImportDxfData)
+    val planExportDxf: VastuContract<VastuPlanExportDxfRequest, VastuPlanExportDxfData> = VastuContract(VastuOperation.PlanExportDxf, ::VastuPlanExportDxfData)
+    val planExportIfc: VastuContract<VastuPlanExportIfcRequest, VastuPlanExportIfcData> = VastuContract(VastuOperation.PlanExportIfc, ::VastuPlanExportIfcData)
+    val planConvertUnits: VastuContract<VastuPlanConvertUnitsRequest, VastuPlanConvertUnitsData> = VastuContract(VastuOperation.PlanConvertUnits, ::VastuPlanConvertUnitsData)
+    val planImportIfc: VastuContract<VastuPlanImportIfcRequest, VastuPlanImportIfcData> = VastuContract(VastuOperation.PlanImportIfc, ::VastuPlanImportIfcData)
+    val planImportImage: VastuContract<VastuPlanImportImageRequest, VastuPlanImportData> = VastuContract(VastuOperation.PlanImportImage, ::VastuPlanImportData)
+
+    val planImportPdf: VastuContract<VastuPlanImportPdfRequest, VastuPlanImportData> = VastuContract(VastuOperation.PlanImportPdf, ::VastuPlanImportData)
 
     val planUpload: VastuContract<VastuPlanUploadRequest, VastuPlanAuditData> = VastuContract(VastuOperation.PlanUpload, ::VastuPlanAuditData)
 
@@ -5691,12 +10512,25 @@ object VastuContracts {
  * Caller-owned idempotency keys may be retained across client or process restarts.
  */
 class VastuService internal constructor(private val client: VedikaClient) {
+    suspend fun vastuCompareVersions(fromVersion: String, toVersion: String, input: JSONObject, operation: String = "plan/analyze", idempotencyKey: String? = null): VastuTypedResponse<VastuCompareVersionsData> {
+        val raw = client.post("$BASE/plan/compare-versions", mapOf("fromVersion" to fromVersion, "toVersion" to toVersion, "input" to input, "operation" to operation), idempotencyKey = idempotencyKey)
+        return VastuTypedResponse(raw.getBoolean("success"), VastuCompareVersionsData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuVerifyReceipt(token: String, input: JSONObject? = null): VastuTypedResponse<VastuReceiptVerifyData> {
+        val raw = client.post("$BASE/receipt/verify", mapOf("token" to token, "input" to input).filterValues { it != null })
+        return VastuTypedResponse(raw.getBoolean("success"), VastuReceiptVerifyData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuRuleVersions(): VastuTypedResponse<VastuRuleVersionsData> {
+        val raw = client.get("$BASE/rules/versions")
+        return VastuTypedResponse(raw.getBoolean("success"), VastuRuleVersionsData(raw.getJSONObject("data")), raw)
+    }
+
 
     private companion object {
         const val BASE = "/v2/astrology/vastu"
     }
 
-    /** Exact request and result types for one of the 98 mounted operations. */
+    /** Exact request and result types for one of the 100 mounted operations. */
     suspend fun <Request : VastuRequest, Data : VastuData> vastuOperation(
         contract: VastuContract<Request, Data>,
         request: Request,
@@ -5734,6 +10568,185 @@ class VastuService internal constructor(private val client: VedikaClient) {
         } else {
             client.post("$BASE/$path", params, idempotencyKey = idempotencyKey)
         }
+    }
+
+    suspend fun vastuPortfolioSearch(request: VastuPortfolioSearchRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPortfolioSearchData> {
+        val raw = client.post("$BASE/portfolio/search", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPortfolioSearchData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPortfolioCompare(request: VastuPortfolioCompareRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPortfolioCompareData> {
+        val raw = client.post("$BASE/portfolio/compare", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPortfolioCompareData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPortfolioAnalytics(request: VastuPortfolioAnalyticsRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPortfolioAnalyticsData> {
+        val raw = client.post("$BASE/portfolio/analytics", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPortfolioAnalyticsData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPortfolioUsage(request: VastuPortfolioUsageRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPortfolioUsageData> {
+        val raw = client.post("$BASE/portfolio/usage", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPortfolioUsageData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPortfolioUsageExport(request: VastuPortfolioUsageExportRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPortfolioUsageExportData> {
+        val raw = client.post("$BASE/portfolio/usage/export", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPortfolioUsageExportData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPortfolioBudgetsSet(request: VastuPortfolioBudgetsSetRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPortfolioBudgetsSetData> {
+        val raw = client.post("$BASE/portfolio/budgets/set", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPortfolioBudgetsSetData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPortfolioBudgetsGet(request: VastuPortfolioBudgetsGetRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPortfolioBudgetsGetData> {
+        val raw = client.post("$BASE/portfolio/budgets/get", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPortfolioBudgetsGetData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuDrawingSheet(request: VastuDrawingSheetRequest, idempotencyKey: String? = null): VastuScanResponse<VastuDrawingSheetData> {
+        val raw = client.post("$BASE/report/drawing-sheet", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuDrawingSheetData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuWorkspace(operation: VastuWorkspaceOperation, request: VastuWorkspaceRequest = VastuWorkspaceRequest()): VastuScanResponse<VastuWorkspaceData> {
+        val raw = client.post("/sandbox/v2/vastu/workspace/${operation.path}", request.toMap())
+        return VastuScanResponse(raw.getBoolean("success"), VastuWorkspaceData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuPropertiesCreate(request: VastuPropertiesCreateRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesCreateData> {
+        val raw = client.post("$BASE/properties/create", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesCreateData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPropertiesUpdate(request: VastuPropertiesUpdateRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesUpdateData> {
+        val raw = client.post("$BASE/properties/update", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesUpdateData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPropertiesCollaborationGet(request: VastuPropertiesCollaborationGetRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesCollaborationGetData> {
+        val raw = client.post("$BASE/properties/collaboration/get", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesCollaborationGetData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuPropertiesCollaborationInvite(request: VastuPropertiesCollaborationInviteRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesCollaborationInviteData> {
+        val raw = client.post("$BASE/properties/collaboration/invite", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesCollaborationInviteData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuPropertiesCollaborationRevoke(request: VastuPropertiesCollaborationRevokeRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesCollaborationRevokeData> {
+        val raw = client.post("$BASE/properties/collaboration/revoke", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesCollaborationRevokeData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuPropertiesCollaborationMembers(request: VastuPropertiesCollaborationMembersRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesCollaborationMembersData> {
+        val raw = client.post("$BASE/properties/collaboration/members", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesCollaborationMembersData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuPropertiesCollaborationComment(request: VastuPropertiesCollaborationCommentRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesCollaborationCommentData> {
+        val raw = client.post("$BASE/properties/collaboration/comment", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesCollaborationCommentData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuPropertiesCollaborationReview(request: VastuPropertiesCollaborationReviewRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesCollaborationReviewData> {
+        val raw = client.post("$BASE/properties/collaboration/review", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesCollaborationReviewData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuPropertiesCollaborationUpdate(request: VastuPropertiesCollaborationUpdateRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesCollaborationUpdateData> {
+        val raw = client.post("$BASE/properties/collaboration/update", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesCollaborationUpdateData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuPropertiesActivityList(request: VastuPropertiesActivityListRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesActivityListData> {
+        val raw = client.post("$BASE/properties/activity/list", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesActivityListData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuPropertiesActivityExport(request: VastuPropertiesActivityExportRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesActivityExportData> {
+        val raw = client.post("$BASE/properties/activity/export", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesActivityExportData(raw.getJSONObject("data")), raw)
+    }
+    suspend fun vastuPropertiesGet(request: VastuPropertiesGetRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesGetData> {
+        val raw = client.post("$BASE/properties/get", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesGetData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPropertiesList(request: VastuPropertiesListRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesListData> {
+        val raw = client.post("$BASE/properties/list", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesListData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPropertiesDelete(request: VastuPropertiesDeleteRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesDeleteData> {
+        val raw = client.post("$BASE/properties/delete", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesDeleteData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuPropertiesLinkScan(request: VastuPropertiesLinkScanRequest, idempotencyKey: String? = null): VastuScanResponse<VastuPropertiesLinkScanData> {
+        val raw = client.post("$BASE/properties/link-scan", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuPropertiesLinkScanData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuArchiveTier(request: VastuArchiveTierRequest, idempotencyKey: String? = null): VastuScanResponse<VastuArchiveTierData> {
+        val raw = client.post("$BASE/archive/tier", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuArchiveTierData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuArchiveExport(request: VastuArchiveExportRequest, idempotencyKey: String? = null): VastuScanResponse<VastuArchiveExportData> {
+        val raw = client.post("$BASE/archive/export", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuArchiveExportData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuArchiveDelete(request: VastuArchiveDeleteRequest, idempotencyKey: String? = null): VastuScanResponse<VastuArchiveDeleteData> {
+        val raw = client.post("$BASE/archive/delete", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuArchiveDeleteData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuArchiveSummary(request: VastuArchiveSummaryRequest, idempotencyKey: String? = null): VastuScanResponse<VastuArchiveSummaryData> {
+        val raw = client.post("$BASE/archive/summary", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuArchiveSummaryData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuFeedListings(request: VastuFeedListingsRequest, idempotencyKey: String? = null): VastuScanResponse<VastuFeedListingsData> {
+        val raw = client.post("$BASE/feed/listings", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuFeedListingsData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuQuoteCalculate(request: VastuQuoteCalculateRequest, idempotencyKey: String? = null): VastuScanResponse<VastuQuoteCalculateData> {
+        val raw = client.post("$BASE/quote/calculate", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuQuoteCalculateData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuRemediationTasksUpsert(request: VastuRemediationTasksUpsertRequest, idempotencyKey: String? = null): VastuScanResponse<VastuWorkflowData> {
+        val raw = client.post("$BASE/remediation/tasks/upsert", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuWorkflowData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuRemediationTasksList(request: VastuRemediationTasksListRequest, idempotencyKey: String? = null): VastuScanResponse<VastuWorkflowData> {
+        val raw = client.post("$BASE/remediation/tasks/list", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuWorkflowData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuRemediationTasksDelete(request: VastuRemediationTasksDeleteRequest, idempotencyKey: String? = null): VastuScanResponse<VastuWorkflowData> {
+        val raw = client.post("$BASE/remediation/tasks/delete", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuWorkflowData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuRemediationReassess(request: VastuRemediationReassessRequest, idempotencyKey: String? = null): VastuScanResponse<VastuWorkflowData> {
+        val raw = client.post("$BASE/remediation/reassess", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuWorkflowData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuMerchantCatalogUpload(request: VastuMerchantCatalogUploadRequest, idempotencyKey: String? = null): VastuScanResponse<VastuWorkflowData> {
+        val raw = client.post("$BASE/merchant/catalog/upload", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuWorkflowData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuMerchantCatalogGet(request: VastuMerchantCatalogGetRequest, idempotencyKey: String? = null): VastuScanResponse<VastuWorkflowData> {
+        val raw = client.post("$BASE/merchant/catalog/get", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuWorkflowData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuMerchantCatalogDelete(request: VastuMerchantCatalogDeleteRequest, idempotencyKey: String? = null): VastuScanResponse<VastuWorkflowData> {
+        val raw = client.post("$BASE/merchant/catalog/delete", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuWorkflowData(raw.getJSONObject("data")), raw)
+    }
+
+    suspend fun vastuMerchantRemedies(request: VastuMerchantRemediesRequest, idempotencyKey: String? = null): VastuScanResponse<VastuWorkflowData> {
+        val raw = client.post("$BASE/merchant/remedies", request.toMap(), idempotencyKey = idempotencyKey)
+        return VastuScanResponse(raw.getBoolean("success"), VastuWorkflowData(raw.getJSONObject("data")), raw)
     }
 
     suspend fun vastuScansSave(request: VastuScansSaveRequest, idempotencyKey: String? = null): VastuScanResponse<VastuScansSaveData> {
@@ -5925,6 +10938,19 @@ class VastuService internal constructor(private val client: VedikaClient) {
         client.post("$BASE/score/${stripLeadingSlash(kind)}", params, idempotencyKey = idempotencyKey)
 
     /** Generate up to 3 ranked floor plans from a plot + room programme. */
+    suspend fun vastuPlanImportDxf(request: VastuPlanImportDxfRequest, idempotencyKey: String? = null): VastuTypedResponse<VastuPlanImportDxfData> =
+        vastuOperation(VastuContracts.planImportDxf, request, idempotencyKey = idempotencyKey)
+
+    suspend fun vastuPlanExportDxf(request: VastuPlanExportDxfRequest, idempotencyKey: String? = null): VastuTypedResponse<VastuPlanExportDxfData> =
+        vastuOperation(VastuContracts.planExportDxf, request, idempotencyKey = idempotencyKey)
+
+    suspend fun vastuPlanExportIfc(request: VastuPlanExportIfcRequest, idempotencyKey: String? = null): VastuTypedResponse<VastuPlanExportIfcData> =
+        vastuOperation(VastuContracts.planExportIfc, request, idempotencyKey = idempotencyKey)
+    suspend fun vastuPlanConvertUnits(request: VastuPlanConvertUnitsRequest, idempotencyKey: String? = null): VastuTypedResponse<VastuPlanConvertUnitsData> =
+        vastuOperation(VastuContracts.planConvertUnits, request, idempotencyKey = idempotencyKey)
+    suspend fun vastuPlanImportIfc(request: VastuPlanImportIfcRequest, idempotencyKey: String? = null): VastuTypedResponse<VastuPlanImportIfcData> =
+        vastuOperation(VastuContracts.planImportIfc, request, idempotencyKey = idempotencyKey)
+
     suspend fun vastuPlanGenerate(
         request: VastuPlanGenerateRequest,
         idempotencyKey: String? = null,
@@ -5948,7 +10974,7 @@ class VastuService internal constructor(private val client: VedikaClient) {
         vastuOperation(VastuContracts.directionDeclination, VastuDirectionDeclinationRequest(lat, lon, date), idempotencyKey = idempotencyKey)
 
     private fun isGetOp(path: String): Boolean {
-        if (path.startsWith("reference/") || path == "direction/declination") return true
+        if ((path == "rules/versions" || path.startsWith("reference/")) || path == "direction/declination") return true
         val job = VASTU_JOB_PATH.matchEntire(path) ?: return false
         return job.groupValues[2] != "/cancel"
     }
@@ -5965,3 +10991,189 @@ data class VastuScanResponse<Data : VastuData>(val success: Boolean, val data: D
     val billing: JSONObject? get() = raw.optJSONObject("billing")
     val meta: JSONObject? get() = raw.optJSONObject("meta")
 }
+
+data class VastuPlanImportDxfRequest(
+    val dxf: String,
+    val fileName: String? = null,
+    val contentType: String? = null,
+    val trueNorthDeg: Double? = null,
+    val unitsOverride: Int? = null,
+    val layerRoles: Map<String, String>? = null
+,
+    val maxChargeUsd: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "dxf" to dxf,
+        "fileName" to fileName,
+        "contentType" to contentType,
+        "trueNorthDeg" to trueNorthDeg,
+        "unitsOverride" to unitsOverride,
+        "layerRoles" to layerRoles
+,
+        "maxChargeUsd" to maxChargeUsd
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPlanExportDxfRequest(
+    val plan: JSONObject,
+    val analysis: JSONObject? = null,
+    val zones: Int? = null,
+    val unitsCode: Int? = null,
+    val trueNorthDeg: Double? = null
+,
+    val maxChargeUsd: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+    val units: String? = null
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+        "units" to units,
+        "plan" to plan,
+        "analysis" to analysis,
+        "zones" to zones,
+        "unitsCode" to unitsCode,
+        "trueNorthDeg" to trueNorthDeg
+,
+        "maxChargeUsd" to maxChargeUsd
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPlanImportIfcRequest(
+    val ifc: String,
+    val trueNorthDeg: Double? = null
+,
+    val maxChargeUsd: String? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+) : VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf(
+        "propertyId" to propertyId,
+        "tenantRef" to tenantRef,
+
+        "ifc" to ifc,
+        "trueNorthDeg" to trueNorthDeg
+,
+        "maxChargeUsd" to maxChargeUsd
+    ).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+
+data class VastuPortfolioSearchRequest(
+    val city: String? = null,
+    val tags: List<String>? = null,
+    val minScore: Int? = null,
+    val maxScore: Int? = null,
+    val zoneDefects: List<String>? = null,
+    val ruleset: String? = null,
+    val inputSource: String? = null,
+    val sort: String? = null,
+    val limit: Int? = null,
+    val cursor: String? = null
+) : VastuRequest {
+    override fun toMap(): Map<String, Any> {
+        val result = mutableMapOf<String, Any>()
+        city?.let { result["city"] = it }
+        tags?.let { result["tags"] = it }
+        minScore?.let { result["minScore"] = it }
+        maxScore?.let { result["maxScore"] = it }
+        zoneDefects?.let { result["zoneDefects"] = it }
+        ruleset?.let { result["ruleset"] = it }
+        inputSource?.let { result["inputSource"] = it }
+        sort?.let { result["sort"] = it }
+        limit?.let { result["limit"] = it }
+        cursor?.let { result["cursor"] = it }
+        return result
+    }
+}
+data class VastuPortfolioCompareRequest(
+    val propertyIds: List<String>
+) : VastuRequest {
+    override fun toMap(): Map<String, Any> {
+        val result = mutableMapOf<String, Any>()
+        result["propertyIds"] = propertyIds
+        return result
+    }
+}
+data class VastuPortfolioAnalyticsRequest(
+    val fromEpoch: Long? = null,
+    val toEpoch: Long? = null,
+    val tag: String? = null,
+    val propertyId: String? = null
+) : VastuRequest {
+    override fun toMap(): Map<String, Any> {
+        val result = mutableMapOf<String, Any>()
+        fromEpoch?.let { result["fromEpoch"] = it }
+        toEpoch?.let { result["toEpoch"] = it }
+        tag?.let { result["tag"] = it }
+        propertyId?.let { result["propertyId"] = it }
+        return result
+    }
+}
+data class VastuPortfolioUsageRequest(
+    val fromEpoch: Long? = null,
+    val toEpoch: Long? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null
+) : VastuRequest {
+    override fun toMap(): Map<String, Any> {
+        val result = mutableMapOf<String, Any>()
+        fromEpoch?.let { result["fromEpoch"] = it }
+        toEpoch?.let { result["toEpoch"] = it }
+        propertyId?.let { result["propertyId"] = it }
+        tenantRef?.let { result["tenantRef"] = it }
+        return result
+    }
+}
+data class VastuPortfolioUsageExportRequest(
+    val fromEpoch: Long? = null,
+    val toEpoch: Long? = null,
+    val propertyId: String? = null,
+    val tenantRef: String? = null
+) : VastuRequest {
+    override fun toMap(): Map<String, Any> {
+        val result = mutableMapOf<String, Any>()
+        fromEpoch?.let { result["fromEpoch"] = it }
+        toEpoch?.let { result["toEpoch"] = it }
+        propertyId?.let { result["propertyId"] = it }
+        tenantRef?.let { result["tenantRef"] = it }
+        return result
+    }
+}
+data class VastuPortfolioBudgetsSetRequest(
+    val propertyId: String? = null,
+    val tenantRef: String? = null,
+    val capUsd: String?
+) : VastuRequest {
+    override fun toMap(): Map<String, Any> {
+        val result = mutableMapOf<String, Any>()
+        propertyId?.let { result["propertyId"] = it }
+        tenantRef?.let { result["tenantRef"] = it }
+        result["capUsd"] = capUsd ?: JSONObject.NULL
+        return result
+    }
+}
+data class VastuPortfolioBudgetsGetRequest(
+    val propertyId: String? = null,
+    val tenantRef: String? = null
+) : VastuRequest {
+    override fun toMap(): Map<String, Any> {
+        val result = mutableMapOf<String, Any>()
+        propertyId?.let { result["propertyId"] = it }
+        tenantRef?.let { result["tenantRef"] = it }
+        return result
+    }
+}
+
+data class VastuPlanExportIfcRequest(val plan: JSONObject, val outputUnits: String? = null, val maxChargeUsd: String? = null): VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf("plan" to plan,"outputUnits" to outputUnits,"maxChargeUsd" to maxChargeUsd).filterValues { it != null }.mapValues { encodeVastu(it.value) }
+}
+data class VastuPlanConvertUnitsRequest(val plan: JSONObject, val inputUnits: String, val outputUnits: String): VastuRequest {
+    override fun toMap(): Map<String, Any?> = mapOf("plan" to plan,"inputUnits" to inputUnits,"outputUnits" to outputUnits).mapValues { encodeVastu(it.value) }
+}
+enum class VastuWorkspaceOperation(val path: String) { Properties("properties"), Jobs("jobs"), Get("get"), List("list"), Reset("reset"), Webhook("webhook"), Report("report") }

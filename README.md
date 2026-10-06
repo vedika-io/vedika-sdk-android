@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.vedika-io:vedika-sdk-android:1.1.0")
+    implementation("com.github.vedika-io:vedika-sdk-android:1.1.1")
 }
 ```
 
@@ -26,28 +26,44 @@ from the jar filename below (`vedika-android-sdk-*.jar`, from this module's
 Gradle project name) — both are correct, just two different naming schemes for
 the same build.
 
-The published jar is `vedika-android-sdk-1.1.0.jar`, attached to each release. Build
+The published jar is `vedika-android-sdk-1.1.1.jar`, attached to each release. Build
 it yourself with:
 
 ```sh
 gradle jar
 ```
 
-It is a plain `kotlin("jvm")` library, not an Android library module, so it builds
-and unit-tests on a bare JDK with no Android SDK installed — and an Android app
-consumes it like any other JVM dependency. `VastuArView` is the one class that
-touches Android framework types (`WebView`, `SensorManager`, `Context`); it compiles
-against `android.jar` when `ANDROID_HOME` is set and is simply absent otherwise.
+It is a plain `kotlin("jvm")` library, not an Android library module, and an Android
+app consumes it like any other JVM dependency. `gradle test` runs on a bare JDK with
+no Android SDK. `gradle jar` needs `ANDROID_HOME` pointing at an Android platform,
+because `VastuArView` touches Android framework types (`WebView`, `SensorManager`,
+`Context`) and compiles against `android.jar`.
 
 Requires JDK 17.
 
 ## Use
 
 ```kotlin
-val client = VedikaClient(VedikaConfig(apiKey = "vk_live_..."))
-val audit = client.vastu.auditSingleRoom(roomType = "kitchen", zone = "NE")
-println(audit.score)
+val client = VedikaClient(apiKey = "vk_live_...")  // server-side only, see Keys
+// vastuOperation is a suspend function: call it from a coroutine.
+val audit = client.vastu.vastuOperation(
+    VastuContracts.auditSingleRoom,
+    VastuAuditSingleRoomRequest(roomType = "kitchen", zone = "NE"))
+println("${audit.data.compliance} ${audit.data.remedy}")
 ```
+
+## Errors
+
+All failures throw a `VedikaApiError` subclass. Branch on the type, not the text.
+
+- `VedikaInsufficientCredits` (402): `required`, `available`, `deficit`, `purchaseUrl`. Never retried.
+- `VedikaRateLimitError` (429): read `code`. `isDailyLimit` or not `isRetryable` means stop; otherwise wait `retryAfterSeconds`.
+- `VedikaAuthError` (401): not retried.
+- `VedikaIdempotencyNotSupportedError` (422 `IDEMPOTENCY_NOT_SUPPORTED`): the route rejects keys and nothing was charged.
+
+The client sends an `Idempotency-Key` automatically only on the Vastu routes that
+accept one, and never retries a billed POST that has no key on a server error or
+network failure. Pass your own `idempotencyKey` on any call you want retried safely.
 
 ## Keys
 
