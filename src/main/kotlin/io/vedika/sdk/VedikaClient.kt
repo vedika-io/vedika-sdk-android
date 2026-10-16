@@ -45,7 +45,7 @@ class VedikaClient @JvmOverloads constructor(
     allowInsecureHttp: Boolean = false,
 ) {
     companion object {
-        private const val SDK_VERSION = "vedika-android/1.1.0"
+        private const val SDK_VERSION = "vedika-android/1.1.1"
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
         /**

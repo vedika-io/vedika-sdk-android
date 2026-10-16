@@ -53,4 +53,16 @@ class VastuRuntimeBundleTest {
         }
         assertTrue("runtime.js should be substantial", resource("runtime.js").size > 10_000)
     }
+
+    @Test fun theRuntimeSendsTheKeyAsBearerAndNeverAsLegacyXApiKey() {
+        val js = String(resource("runtime.js"), Charsets.UTF_8)
+        assertTrue(
+            "the heading request must carry the key as Authorization: Bearer",
+            js.contains("Authorization: `Bearer \${apiKey}`")
+        )
+        assertFalse(
+            "the runtime must not send the legacy x-api-key header",
+            js.contains("x-api-key", ignoreCase = true)
+        )
+    }
 }

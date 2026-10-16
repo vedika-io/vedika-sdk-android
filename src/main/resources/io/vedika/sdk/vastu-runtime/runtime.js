@@ -348,7 +348,7 @@ async function fetchDeclinationResult({ apiBase, lat, lon, apiKey, keyed, fetchI
     const base = String(apiBase || '').replace(/\/$/, '');
     const path = keyed ? '/v2/astrology/vastu/direction/declination' : '/sandbox/astrology/vastu/direction/declination';
     const url = `${base}${path}?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
-    const headers = keyed && apiKey ? { 'x-api-key': apiKey } : {};
+    const headers = keyed && apiKey ? { Authorization: `Bearer ${apiKey}` } : {};
     const resp = await impl(url, { cache: 'no-store', headers });
     const data = await resp.json().catch(() => null);
     if (!resp.ok)

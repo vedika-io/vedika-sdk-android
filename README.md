@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.vedika-io:vedika-sdk-android:1.1.0")
+    implementation("com.github.vedika-io:vedika-sdk-android:1.1.1")
 }
 ```
 
@@ -26,7 +26,7 @@ from the jar filename below (`vedika-android-sdk-*.jar`, from this module's
 Gradle project name) — both are correct, just two different naming schemes for
 the same build.
 
-The published jar is `vedika-android-sdk-1.1.0.jar`, attached to each release. Build
+The published jar is `vedika-android-sdk-1.1.1.jar`, attached to each release. Build
 it yourself with:
 
 ```sh
