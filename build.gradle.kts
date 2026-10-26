@@ -14,16 +14,11 @@ plugins {
     `maven-publish`
 }
 
-// JitPack builds this module by invoking Gradle with `-Pgroup=com.github.vedika-io
-// -Pversion=<tag or commit>` so it can publish under the coordinate a consumer
-// actually asks for (`com.github.vedika-io:vedika-sdk-android:<tag>`). A plain
-// `group = "..."` / `version = "..."` assignment runs AFTER Gradle applies those
-// `-P` values and would silently overwrite them back to the hardcoded default,
-// which is why JitPack's own coordinate would otherwise never take effect. Fall
-// back to the local defaults only when the property is absent (a bare `./gradlew
-// jar` on a dev machine) or still Gradle's own "unspecified" placeholder.
+// JitPack builds this module with -Pgroup=com.github.vedika-io -Pversion=<tag> so it publishes under the
+// coordinate a consumer asks for. A plain assignment would run after those -P values and overwrite
+// them, so fall back to the local defaults only when the property is absent or still "unspecified".
 group = (findProperty("group") as String?).takeUnless { it.isNullOrBlank() } ?: "io.vedika"
-version = (findProperty("version") as String?).takeUnless { it.isNullOrBlank() || it == "unspecified" } ?: "1.1.1"
+version = (findProperty("version") as String?).takeUnless { it.isNullOrBlank() || it == "unspecified" } ?: "2.0.0"
 
 repositories {
     mavenCentral()
@@ -39,7 +34,7 @@ kotlin {
 // every OTHER file here is plain JVM. It needs `android.jar` on the compile
 // classpath to build, and no full AGP application/library plugin.
 //
-// 2026-08-22 packaging fix (b2c#21/ar#17): this file used to be excluded
+// 2026-08-22 packaging fix: this file used to be excluded
 // from compilation entirely, which meant the published SDK jar never
 // contained it — a buyer had to copy the `.kt` source into their own app by
 // hand to get the AR view at all. That is fixed here with a `compileOnly`
@@ -52,7 +47,7 @@ kotlin {
 // `compileOnly` means. With this jar on the classpath, `VastuArView.kt`
 // compiles as an ordinary part of this module's main source set and ships
 // inside the published artifact like every other class here. A consuming
-// Android app now gets it via a normal `implementation("io.vedika:vedika-android-sdk:1.1.1")`
+// Android app now gets it via a normal `implementation("io.vedika:vedika-android-sdk:2.0.0")`
 // dependency — no manual file copy.
 //
 // A bare-JDK host can still run the client tests without the AR class.
@@ -162,18 +157,9 @@ val verifyVastuRuntime = tasks.register<Exec>("verifyVastuRuntime") {
 }
 tasks.named("jar") { dependsOn(verifyVastuRuntime) }
 
-// JitPack resolves `com.github.vedika-io:vedika-sdk-android:<tag>` by running
-// `gradle publishToMavenLocal` — that task only exists once a `maven-publish`
-// publication is registered. `from(components["java"])` publishes the main jar
-// plus a generated POM with this module's runtime dependencies.
-//
-// `artifactId` is pinned to "vedika-sdk-android" (this GitHub repo's name), NOT
-// left to default to `rootProject.name` ("vedika-android-sdk", set in
-// settings.gradle.kts for parity with the monorepo path `sdks/android`).
-// JitPack's Maven coordinate for a dependency is `com.github.<owner>:<repo>`,
-// so the artifactId must equal the repo name or `com.github.vedika-io:vedika-sdk-android`
-// never resolves — this mismatch would have broken every published version
-// (1.0.0-1.0.3) even after the Gradle/JDK build itself was fixed.
+// JitPack resolves com.github.vedika-io:vedika-sdk-android:<tag> by running publishToMavenLocal, which
+// exists only once a maven-publish publication is registered. The artifactId is pinned to the
+// repository name ("vedika-sdk-android"), not the Gradle project name ("vedika-android-sdk").
 publishing {
     publications {
         create<MavenPublication>("maven") {

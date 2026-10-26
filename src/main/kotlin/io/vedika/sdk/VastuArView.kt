@@ -189,7 +189,7 @@ class VastuArView(private val context: Context, arUrl: String? = null) : SensorE
         private const val MIN_PUSH_INTERVAL_MS = 50L
 
         /**
-         * Sensor-honesty fix (2026-08-22, ar#12): [setLocation] used to be
+         * Sensor-honesty fix (2026-08-22): [setLocation] used to be
          * trusted forever, at any accuracy, once called once — a fix from an
          * hour ago (host app cached it, never refreshed, user walked
          * indoors/underground) or a poor GPS fix (tens/hundreds of meters
@@ -211,7 +211,7 @@ class VastuArView(private val context: Context, arUrl: String? = null) : SensorE
         private const val MAX_LOCATION_ACCURACY_METERS = 500f
 
         /**
-         * b2c#23 / ar#20: rendered in place of the AR page on a main-frame
+         * Rendered in place of the AR page on a main-frame
          * navigation failure (see [onReceivedError] above) so a cold offline
          * start shows an honest, first-party message instead of the
          * platform's own blank/default error chrome. Deliberately plain
@@ -274,7 +274,7 @@ class VastuArView(private val context: Context, arUrl: String? = null) : SensorE
     @Volatile private var reportedNoLocationOnce = false
 
     /**
-     * Sensor-honesty fix (2026-08-22, ar#9): guards the
+     * Sensor-honesty fix (2026-08-22): guards the
      * `SENSOR_STATUS_ACCURACY_UNRELIABLE` refusal in [onSensorChanged] so it
      * reports once per unreliable episode, not on every sensor tick --
      * same "report once" shape as [reportedNoLocationOnce].
@@ -358,7 +358,7 @@ class VastuArView(private val context: Context, arUrl: String? = null) : SensorE
             }
 
             /**
-             * Offline/navigation-failure fix (b2c#23 / ar#20): only acts on
+             * Offline/navigation-failure fix: only acts on
              * the MAIN-FRAME request for [arUrlToLoad] itself (checked via
              * [WebResourceRequest.isForMainFrame] + host match) -- a
              * sub-resource failure (one image/script 404ing) is NOT a "the
@@ -507,7 +507,7 @@ class VastuArView(private val context: Context, arUrl: String? = null) : SensorE
             // 2026-08-13 fix (FIX 1): push the RAW magnetic azimuth, honestly
             // labeled "magnetic" -- see class doc "native -> web contract" for
             // why this replaced the earlier withhold-entirely behavior.
-            // 2026-08-22 fix (ar#12): this branch is now ALSO reached when
+            // 2026-08-22 fix: this branch is now ALSO reached when
             // [lastLocation] is non-null but stale/inaccurate (see
             // [isLocationUsable]) -- a bad fix degrades exactly like no fix
             // at all, rather than being trusted at face value.
@@ -585,7 +585,7 @@ class VastuArView(private val context: Context, arUrl: String? = null) : SensorE
             context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     /**
-     * Sensor-honesty gate (ar#12): a [Location] is only trusted for
+     * Sensor-honesty gate: a [Location] is only trusted for
      * declination math if it is BOTH recent and reasonably accurate. Age is
      * computed from [SystemClock.elapsedRealtime] against
      * [Location.getElapsedRealtimeNanos] where available (API 17+; monotonic,

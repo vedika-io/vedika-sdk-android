@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.vedika-io:vedika-sdk-android:1.1.1")
+    implementation("com.github.vedika-io:vedika-sdk-android:2.0.0")
 }
 ```
 
@@ -26,20 +26,40 @@ from the jar filename below (`vedika-android-sdk-*.jar`, from this module's
 Gradle project name) — both are correct, just two different naming schemes for
 the same build.
 
-The published jar is `vedika-android-sdk-1.1.1.jar`, attached to each release. Build
-it yourself with:
+The published jar is `vedika-android-sdk-2.0.0.jar`, attached to each release. Build
+it yourself with an Android SDK platform 34, 35 or 36 installed (`ANDROID_HOME` or
+`ANDROID_SDK_ROOT` set), because `VastuArView` compiles against `android.jar` and the jar
+task refuses to produce an artifact without it:
 
 ```sh
-gradle jar
+./gradlew jar
 ```
 
-It is a plain `kotlin("jvm")` library, not an Android library module, so it builds
-and unit-tests on a bare JDK with no Android SDK installed — and an Android app
-consumes it like any other JVM dependency. `VastuArView` is the one class that
-touches Android framework types (`WebView`, `SensorManager`, `Context`); it compiles
-against `android.jar` when `ANDROID_HOME` is set and is simply absent otherwise.
+It is a plain `kotlin("jvm")` library, not an Android library module, so an Android app
+consumes it like any other JVM dependency. `./gradlew test` runs on a bare JDK with no
+Android SDK; in that case `VastuArView` is left out of the test build. `VastuArView` is
+the one class that touches Android framework types (`WebView`, `SensorManager`,
+`Context`).
 
 Requires JDK 17.
+
+## Changes
+
+### 2.0.0 (major: some response accessors changed type)
+
+Breaking for Kotlin callers that read these:
+
+- `VastuService` response models: `cautionDirections` is a list of `VastuFusionChartDataCautionDirectionsItem` (was `List<String>`), `plotShape` is nullable, and `tracedGeometry` is `VastuPlanAuditDataTracedGeometry?` (was `JSONObject?`).
+- `VastuJobItem.input` is a `VastuRequest` (was `VastuAssessmentsRequest`). Passing a `VastuAssessmentsRequest` still compiles.
+
+Added since 1.1.1 (merged to the monorepo, not in any earlier release):
+
+- Capture merge: `VastuArCaptureMergeRequest` and its response types, used by `ar/capture-merge` and by `vedika-sdk-android-ar` 1.2.0 and later.
+- Vastu portfolio discovery with atomic spending budgets, property collaboration audit and physical erasure, courtyard geometry and unit interchange, remediation and partner report workflows, pinned rule snapshots with signed assessment receipts, lifecycle events and bulk plan-job artifacts (`VastuJobArtifact`), and native device attestation.
+- Every delete returns a receipt the customer can keep (VA-16).
+- Errors: `VedikaApiError.code`; `VedikaInsufficientBalanceError` exposes `required`, `available`, `deficit` and `purchaseUrl`; `VedikaRateLimitError` exposes `isDailyLimit`, `isMonthlySpendLimit`, `isRetryable` and `upgradeUrl`, and takes its wait from the body's `retryAfter`; new `VedikaIdempotencyNotSupportedError` for a 422 `IDEMPOTENCY_NOT_SUPPORTED`.
+- Idempotency: the query route uses `X-Idempotency-Key`, the Vastu routes `Idempotency-Key`; the client attaches an automatic key only on routes that accept one, and never retries a keyless billed POST after a network error or 5xx.
+- The Vastu runtime and the bundled AR engine send `Authorization: Bearer`.
 
 ## Use
 
@@ -66,7 +86,7 @@ resource.
 ## Tests
 
 ```sh
-gradle test
+./gradlew test
 ```
 
 The response-parity test needs the monorepo's OpenAPI spec and sandbox corpus and

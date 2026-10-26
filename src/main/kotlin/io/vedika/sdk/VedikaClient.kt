@@ -2,6 +2,7 @@ package io.vedika.sdk
 
 import io.vedika.sdk.exceptions.VedikaApiError
 import io.vedika.sdk.exceptions.VedikaAuthError
+import io.vedika.sdk.exceptions.VedikaIdempotencyNotSupportedError
 import io.vedika.sdk.exceptions.VedikaInsufficientCredits
 import io.vedika.sdk.exceptions.VedikaRateLimitError
 import io.vedika.sdk.exceptions.VedikaServerError
@@ -45,7 +46,7 @@ class VedikaClient @JvmOverloads constructor(
     allowInsecureHttp: Boolean = false,
 ) {
     companion object {
-        private const val SDK_VERSION = "vedika-android/1.1.1"
+        private const val SDK_VERSION = "vedika-android/2.0.0"
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
         /**
@@ -72,6 +73,28 @@ class VedikaClient @JvmOverloads constructor(
                     "direction/declination",
                 ).map { prefix + it }
             }.toSet()
+
+        private val IDEMPOTENCY_HEADER_NAMES = listOf("Idempotency-Key", "X-Idempotency-Key")
+
+        /**
+         * Header spelling per operation. The live spec names `X-Idempotency-Key` on
+         * `/api/v1/astrology/query` and `Idempotency-Key` on the Vastu operations.
+         */
+        internal fun idempotencyHeaderName(path: String): String =
+            if (path.substringBefore("?") == "/api/v1/astrology/query") "X-Idempotency-Key" else "Idempotency-Key"
+
+        /**
+         * True for the paths where the client may attach a key the caller did not
+         * supply: the Vastu operations, which accept one, and the report-chat query.
+         * Anything else (the free `/sandbox` routes, unknown paths) gets a key only
+         * when the caller passes one, because a key sent to an operation that does
+         * not take it is answered 422 `IDEMPOTENCY_NOT_SUPPORTED`.
+         */
+        internal fun acceptsAutomaticKey(path: String): Boolean {
+            val bare = path.substringBefore("?")
+            return bare.startsWith("/v2/vastu/") || bare.startsWith("/v2/astrology/vastu/") ||
+                bare == "/api/v1/astrology/query"
+        }
 
         /** Linear backoff base; attempt 0 waits this long, attempt 1 waits 2x, etc. */
         private const val RETRY_BACKOFF_BASE_MS = 250L
@@ -116,14 +139,14 @@ class VedikaClient @JvmOverloads constructor(
      */
     val vastu: VastuService = VastuService(this)
 
-    private fun headers(idempotencyKey: String? = null): Headers {
+    private fun headers(idempotencyKey: String? = null, path: String = ""): Headers {
         val builder = Headers.Builder()
             .add("Authorization", "Bearer ${config.apiKey}")
             .add("Content-Type", "application/json")
             .add("Accept", "application/json")
             .add("X-SDK", SDK_VERSION)
         if (idempotencyKey != null) {
-            builder.add("Idempotency-Key", idempotencyKey)
+            builder.add(idempotencyHeaderName(path), idempotencyKey)
         }
         return builder.build()
     }
@@ -136,21 +159,20 @@ class VedikaClient @JvmOverloads constructor(
     ): JSONObject = withContext(Dispatchers.IO) {
         val urlBuilder = (config.baseUrl + path).toHttpUrl().newBuilder()
         queryParams.forEach { (k, v) -> urlBuilder.addQueryParameter(k, v) }
-        val key = idempotencyKey ?: if (path.substringBefore("?") in BILLED_VASTU_GET_PATHS) {
-            UUID.randomUUID().toString()
-        } else null
+        val automatic = idempotencyKey == null && path.substringBefore("?") in BILLED_VASTU_GET_PATHS
+        val key = idempotencyKey ?: if (automatic) UUID.randomUUID().toString() else null
         val request = Request.Builder()
             .url(urlBuilder.build())
-            .headers(headers(key))
+            .headers(headers(key, path))
             .get()
             .build()
-        execute(request)
+        execute(request, keyIsAutomatic = automatic)
     }
 
     /**
      * Sends a POST request to the Vedika API.
      *
-     * [idempotencyKey] (b2c#32): every paid POST needs one so a client-side
+     * [idempotencyKey]: every paid POST needs one so a client-side
      * retry after a LOST response (the request reached the server and was
      * billed, but the reply never made it back to the phone) cannot create a
      * duplicate charge — the server dedupes on this key and returns the
@@ -176,50 +198,74 @@ class VedikaClient @JvmOverloads constructor(
         require(!bodyIdentity || idempotencyKey == null) {
             "Scan operations use scanId or requestId in the body; do not pass an Idempotency-Key"
         }
-        val key = if (bodyIdentity) null else idempotencyKey ?: UUID.randomUUID().toString()
+        val automatic = !bodyIdentity && idempotencyKey == null && acceptsAutomaticKey(path)
+        val key = if (bodyIdentity) null else idempotencyKey ?: if (automatic) UUID.randomUUID().toString() else null
         val request = Request.Builder()
             .url((config.baseUrl + path).toHttpUrl())
-            .headers(headers(key))
+            .headers(headers(key, path))
             .post(mapToJson(body).toString().toRequestBody(JSON_MEDIA_TYPE))
             .build()
-        execute(request)
+        execute(request, keyIsAutomatic = automatic)
     }
 
     /**
-     * Runs [request], retrying transient failures (see [MAX_RETRIES]).
-     * Every POST (except the scan operations, whose identity is in the body)
-     * and mounted billed Vastu GET carries an `Idempotency-Key` (see [post] and [get]), so a retry of the exact same [Request]
-     * object (same body, same key) cannot double-charge even if the first
-     * attempt's request actually reached the server before the network
-     * dropped the response.
+     * True when resending [request] cannot be billed twice: a read, a request
+     * carrying an idempotency key, or a scan operation whose identity is in the
+     * body. A keyless billed POST is never retried after a network error or a
+     * 5xx, because either can follow a completed charge.
      */
-    private fun execute(request: Request, attempt: Int = 0): JSONObject {
+    private fun isReplaySafe(request: Request): Boolean =
+        request.method == "GET" ||
+            IDEMPOTENCY_HEADER_NAMES.any { request.header(it) != null } ||
+            usesBodyIdentity(request.url.encodedPath)
+
+    /**
+     * Runs [request], retrying transient failures (see [MAX_RETRIES]).
+     * Billed Vastu calls carry an `Idempotency-Key`, so a retry of the exact same
+     * [Request] (same body, same key) cannot double-charge even if the first
+     * attempt reached the server before the network dropped the response.
+     *
+     * [keyIsAutomatic]: the key was generated here, not supplied by the caller.
+     * If the endpoint answers 422 `IDEMPOTENCY_NOT_SUPPORTED` (no charge was
+     * attempted), the request is sent once more without the key and without any
+     * automatic retry, since it is no longer replay-safe. A caller's own key is
+     * never dropped: that case throws [VedikaIdempotencyNotSupportedError].
+     */
+    private fun execute(request: Request, attempt: Int = 0, keyIsAutomatic: Boolean = false): JSONObject {
+        val replaySafe = isReplaySafe(request)
         val response: Response = try {
             httpClient.newCall(request).execute()
         } catch (e: IOException) {
-            if (attempt < MAX_RETRIES) {
+            if (attempt < MAX_RETRIES && replaySafe) {
                 Thread.sleep(RETRY_BACKOFF_BASE_MS * (attempt + 1))
-                return execute(request, attempt + 1)
+                return execute(request, attempt + 1, keyIsAutomatic)
             }
             throw VedikaApiError("Network error: ${e.message}")
         }
-        if (response.code >= 500 && attempt < MAX_RETRIES) {
-            response.close()
-            Thread.sleep(RETRY_BACKOFF_BASE_MS * (attempt + 1))
-            return execute(request, attempt + 1)
+        val status = response.code
+        val retryAfterHeader = response.header("Retry-After")
+        val bodyText = response.use { it.body?.string().orEmpty() }
+        if (status == 422 && keyIsAutomatic && parseBody(bodyText).optString("code") == "IDEMPOTENCY_NOT_SUPPORTED") {
+            val keyless = request.newBuilder().apply { IDEMPOTENCY_HEADER_NAMES.forEach { removeHeader(it) } }.build()
+            return execute(keyless, MAX_RETRIES, keyIsAutomatic = false)
         }
-        return response.use { handleResponse(it) }
+        if (status >= 500 && attempt < MAX_RETRIES && replaySafe) {
+            Thread.sleep(RETRY_BACKOFF_BASE_MS * (attempt + 1))
+            return execute(request, attempt + 1, keyIsAutomatic)
+        }
+        return handleResponse(status, retryAfterHeader, bodyText)
     }
 
-    private fun handleResponse(response: Response): JSONObject {
-        val bodyText = response.body?.string().orEmpty()
-        val body: JSONObject = try {
-            JSONObject(bodyText)
-        } catch (e: Exception) {
-            JSONObject().put("error", bodyText)
-        }
+    private fun parseBody(bodyText: String): JSONObject = try {
+        JSONObject(bodyText)
+    } catch (e: Exception) {
+        JSONObject().put("error", bodyText)
+    }
 
-        return when (val code = response.code) {
+    private fun handleResponse(status: Int, retryAfterHeader: String?, bodyText: String): JSONObject {
+        val body: JSONObject = parseBody(bodyText)
+
+        return when (val code = status) {
             in 200..299 -> body // job submit answers 202
             401 -> throw VedikaAuthError(
                 body.optString("error", "Invalid API key"),
@@ -229,11 +275,31 @@ class VedikaClient @JvmOverloads constructor(
                 body.optString("error", "Insufficient wallet balance"),
                 body = body,
             )
-            429 -> throw VedikaRateLimitError(
-                body.optString("message", "Rate limit exceeded"),
-                body = body,
-                retryAfterSeconds = response.header("Retry-After")?.toIntOrNull(),
-            )
+            422 -> if (body.optString("code") == "IDEMPOTENCY_NOT_SUPPORTED") {
+                throw VedikaIdempotencyNotSupportedError(
+                    body.optString("message", "This endpoint does not accept an idempotency key; call again without one"),
+                    body = body,
+                )
+            } else {
+                throw VedikaApiError(
+                    body.optString("error", "API error: $code"),
+                    statusCode = code,
+                    body = body,
+                )
+            }
+            429 -> {
+                // The body `code` names the limiter that refused the call; the
+                // rate-limit headers describe the per-minute limiter only, so
+                // nothing is decided from them. This client never retries a 429.
+                val bodyRetry = if (body.has("retryAfter") && !body.isNull("retryAfter")) {
+                    (body.opt("retryAfter") as? Number)?.toInt()
+                } else null
+                throw VedikaRateLimitError(
+                    body.optString("message", "Rate limit exceeded"),
+                    body = body,
+                    retryAfterSeconds = bodyRetry ?: retryAfterHeader?.toIntOrNull(),
+                )
+            }
             else -> when {
                 code in 300..399 -> {
                     // Credential-routing: redirects are not followed (see
