@@ -78,8 +78,8 @@ class CredentialRoutingTest {
     @Test
     fun `typed inventory exposes every mounted logical operation exactly once`() {
         val paths = VastuOperation.entries.map { it.path }
-        assertEquals(98, paths.size)
-        assertEquals(98, paths.toSet().size)
+        assertEquals(147, paths.size)
+        assertEquals(147, paths.toSet().size)
         assertEquals("assessments", VastuOperation.Assessments.path)
         assertEquals("ar/true-north-calibrate", VastuOperation.ArTrueNorthCalibrate.path)
     }
@@ -113,9 +113,9 @@ class CredentialRoutingTest {
         assertEquals(VastuOperation.ArTrueNorthCalibrate, VastuContracts.arTrueNorthCalibrate.operation)
     }
 
-    // The 11 GET-only reference tables + the GET+POST dual, from the Rust
-    // router (VASTU_GET_REFERENCE_ROUTES + VASTU_DUAL_ROUTE in
-    // vedika-v2/src/vastu.rs) — identical list to the Flutter/JS SDK tests.
+    // The 11 GET-only reference tables + the GET+POST dual, from the server
+    // router (VASTU_GET_REFERENCE_ROUTES + VASTU_DUAL_ROUTE) — identical list
+    // to the Flutter/JS SDK tests.
     private val getOps = listOf(
         "reference/directions/8",
         "reference/directions/16",

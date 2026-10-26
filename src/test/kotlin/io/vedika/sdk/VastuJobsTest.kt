@@ -12,6 +12,18 @@ import org.junit.Test
 class VastuJobsTest {
     private val job = "vjob_0123456789abcdef0123456789abcdef"
 
+    @Test fun `plan operations and typed artifacts preserve portable content`() {
+        for (operation in listOf("plan-analyze", "plan-report")) {
+            assertEquals(operation, VastuJobsRequest(emptyList(), operation = operation).toMap()["operation"])
+        }
+        val artifact = JSONObject().put("artifactId", "a1").put("jobId", job).put("itemId", "unit/1").put("contentType", "text/html").put("filename", "report.html").put("content", "<html>Report</html>")
+        val item = VastuJobResultItem(JSONObject().put("artifacts", org.json.JSONArray().put(artifact)))
+        assertEquals("unit/1", item.artifacts.single().itemId)
+        assertEquals("report.html", item.artifacts.single().filename)
+        assertEquals("<html>Report</html>", item.artifacts.single().content)
+        assertTrue(VastuJobResultItem(JSONObject()).artifacts.isEmpty())
+    }
+
     private fun request() = VastuJobsRequest(
         listOf(VastuJobsRequestItem("p1", VastuAssessmentsRequest("plan-derived"))),
         webhookId = "wh_12345678",
@@ -29,10 +41,10 @@ class VastuJobsTest {
     private fun server(): MockWebServer = MockWebServer().also { it.start(InetAddress.getByName("127.0.0.1"), 0) }
     private fun client(server: MockWebServer) = VedikaClient(apiKey = "vk_test", baseUrl = server.url("/").toString())
 
-    @Test fun `the inventory declares all 98 paths and refuses templated job paths`() {
+    @Test fun `the inventory declares all 147 paths and refuses templated job paths`() {
         val paths = VastuOperation.values().map { it.path }
-        assertEquals(98, paths.size)
-        assertEquals(98, paths.toSet().size)
+        assertEquals(147, paths.size)
+        assertEquals(147, paths.toSet().size)
         assertTrue(paths.containsAll(listOf("jobs", "jobs/{id}", "jobs/{id}/results", "jobs/{id}/cancel")))
         val server = server()
         try {
